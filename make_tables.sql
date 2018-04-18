@@ -1,6 +1,7 @@
 USE lluo2_db;
 
 CREATE TABLE user_id (uID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		      uType ENUM('general', 'admin') DEFAULT 'general',
                       uName varchar(100) NOT NULL,
                       email varchar(100) NOT NULL,
                       pwd varchar(255) NOT NULL) ENGINE=InnoDB;
@@ -10,8 +11,10 @@ CREATE TABLE human_resources(uID int DEFAULT NULL,
 			     cID int NOT NULL,
 			     email varchar(100) NOT NULL,
 			     personType ENUM('recruiter', 'referral') NOT NULL,
+			     poster int NOT NULL,
 			     FOREIGN KEY (uID) REFERENCES user_id(uID) ON DELETE SET NULL,
-			     FOREIGN KEY (cID) REFERENCES company(cID) ON DELETE CASCADE) ENGINE=InnoDB; 
+			     FOREIGN KEY (cID) REFERENCES company(cID) ON DELETE CASCADE,
+			     FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE SET RESTRICT) ENGINE=InnoDB; 
 
 CREATE TABLE job_opp (jobID int NOT NULL AUTO_INCREMENT PRIMARY KEY, 
        	     	      cID int NOT NULL, 
@@ -20,8 +23,10 @@ CREATE TABLE job_opp (jobID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		      jobTitle ENUM('ENGINEERING', 'DESIGN', 'PM', 'OTHER') NOT NULL, 
 		      jobType ENUM('internship', 'part-time', 'full-time') NOT NULL,
 		      season ENUM('fall', 'spring', 'summer', 'winter', 'year-round') NOT NULL, 
-		      deadline DATE NOT NULL
-		      FOREIGN KEY (cID) REFERENCES company(cID) ON DELETE CASCADE) ENGINE=InnoDB;
+		      deadline DATE NOT NULL,
+		      poster int NOT NULL,
+		      FOREIGN KEY (cID) REFERENCES company(cID) ON DELETE CASCADE,
+		      FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE SET RESTRICT) ENGINE=InnoDB;
 
 CREATE TABLE job_location (jobID int NOT NULL,
        	     		   city varchar(50) NOT NULL, 
@@ -44,8 +49,10 @@ CREATE TABLE reu_opp (reuID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		      link varchar(255) NOT NULL,
 		      classPref ENUM('freshman', 'sophomore', 'junior', 'senior', 'underclassman', 'upperclassman', 'all') NOT NULL,
 		      deadline DATE NOT NULL,
-		      isUROP boolean NOT NULL,		      
-		      FOREIGN KEY (deptID) REFERENCES department(deptID) ON DELETE CASCADE) ENGINE=InnoDB;  
+		      isUROP boolean NOT NULL,
+		      poster int NOT NULL,
+		      FOREIGN KEY (deptID) REFERENCES department(deptID) ON DELETE CASCADE,
+		      FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE SET RESTRICT) ENGINE=InnoDB;  
 
 CREATE TABLE department (deptID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
        	     	 	 deptName varchar(100) NOT NULL,
