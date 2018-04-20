@@ -1,0 +1,3 @@
+USE lluo2_db;
+
+INSERT INTO user_id (uType, uName, email, pwd) VALUES ()
