@@ -1,0 +1,80 @@
+<head>
+    <meta charset="utf-8">
+    <meta name=author content="Fistbump">
+    <meta name=description content="">
+    <meta name=keywords content="">
+    <title>Fist-bump</title>
+    <link rel="stylesheet" href="">
+</head>
+<body>
+
+    <header> <h1> Fistbump </h1>
+      {% if loggedin %}
+      <div class = 'account_info'> <p> Logged in as {%uName%}</p>
+        <form method=POST action="">
+          <input type="submit" name="logout-btn" value="Log Out">
+        </form>
+      {% else %}
+      <form method=POST action="">
+        <input type="submit" name="register-btn" value="Register">
+      </form>
+      {% endif %}
+      <form method=POST action="">
+        <input name="search" value="">
+        <input type="submit" name="search-btn" value="Search">
+      </form>
+
+    </header>
+
+<div class = 'filter'>
+    <div id="myDropdown" class="dropdown-content">
+      <form method="post" action="">
+          <h3> Filter by: </h3>
+          <p><label for="classPref">Class Preference</label></p>
+          <input type="radio" name="classPref" value ="1"> freshman
+          <input type="radio" name="classPref" value ="2"> sophomore
+          <input type="radio" name="classPref" value ="3"> junior
+          <input type="radio" name="classPref" value ="4"> senior
+          <input type="radio" name="classPref" value ="5"> underclassman
+          <input type="radio" name="classPref" value ="6"> upperclassman
+          <input type="radio" name="classPref" value ="7"> all
+
+          <p> <label for="jobType">Job Type</label></p>
+          <input type="radio" name="JobType" value ="1"> internship
+          <input type="radio" name="JobType" value ="2"> part-time
+          <input type="radio" name="JobType" value ="3"> full-time
+
+          <p> <label for="season">Season</label></p>
+          <input type="radio" name="season" value ="1"> Summer
+          <input type="radio" name="season" value ="2"> Winter
+          <input type="radio" name="season" value ="3"> Fall
+          <input type="radio" name="season" value ="4"> Spring
+
+          <p> <label for="database">Kind</label></p>
+          <input type="radio" name="database" value ="reu_opp"> Research
+          <input type="radio" name="database" value ="job_opp"> Industry
+      </form>
+    </div>
+    <button onclick="myFunction()" class="dropbtn">Done</button>
+  </div>
+  <div class = 'sort'></div>
+    <div class = 'listings'>
+      <!-- flashes -->
+    {% if opportunities %}
+        <div id="opportunities">
+        {% for opportunity in opportunities %}
+            <p>{{opportunity.jobTitle}}</p>
+            <p>{{opportunity.companyName}}</p>
+            {% for location in locations %}
+              <p>{{location}}</p>
+            {% endfor %}
+        {% endfor %}
+        </div>
+    {% endif %}
+    </div>
+
+
+    <footer>
+    </footer>
+</body>
+</html>
