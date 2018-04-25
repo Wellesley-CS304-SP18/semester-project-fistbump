@@ -22,6 +22,7 @@ CREATE TABLE department (deptID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                          university varchar(50) NOT NULL) ENGINE=InnoDB;
 
 CREATE TABLE reu_opp (reuID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		      reuTitle varchar(100) NOT NULL,
                       deptID int NOT NULL,
                       link varchar(255) NOT NULL,
                       classPref ENUM('freshman', 'sophomore', 'junior', 'senior', 'underclassman', 'upperclassman', 'all') NOT NULL,
