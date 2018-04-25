@@ -14,7 +14,7 @@ CREATE TABLE user_id (uID int AUTO_INCREMENT PRIMARY KEY,
 		      uType ENUM('general', 'admin') DEFAULT 'general',
                       uName varchar(100) NOT NULL,
                       email varchar(100) NOT NULL,
-                      pwd varchar(255) NOT NULL) ENGINE=InnoDB;
+                      pwd varchar(255)) ENGINE=InnoDB;
 
 CREATE TABLE department (deptID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                          deptName varchar(100) NOT NULL,
@@ -65,12 +65,12 @@ CREATE TABLE job_location (jobID int NOT NULL,
                            PRIMARY KEY (jobID, city),
                            FOREIGN KEY (jobID) REFERENCES job_opp(jobID)) ENGINE=InnoDB;
 
-CREATE TABLE human_resources(uID int DEFAULT NULL,
+CREATE TABLE human_resources(uID int NOT NULL,
        	     		     uName varchar(100) NOT NULL,
 			     companyName int NOT NULL,
 			     email varchar(100) NOT NULL,
 			     personType ENUM('recruiter', 'referral') NOT NULL,
 			     poster int NOT NULL,
-			     FOREIGN KEY (uID) REFERENCES user_id(uID) ON DELETE SET NULL,
+			     FOREIGN KEY (uID) REFERENCES user_id(uID) ON DELETE CASCADE,
 			     FOREIGN KEY (companyName) REFERENCES company(companyName) ON DELETE CASCADE,
 			     FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE RESTRICT) ENGINE=InnoDB; 
