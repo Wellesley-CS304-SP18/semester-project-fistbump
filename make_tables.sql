@@ -40,7 +40,6 @@ CREATE TABLE reu_review (deptID int DEFAULT NULL,
 CREATE TABLE company (companyName varchar(100) NOT NULL PRIMARY KEY) ENGINE=InnoDB;
 
 CREATE TABLE job_opp (jobID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                      cID int NOT NULL,
                       link varchar(255) NOT NULL,
                       classPref ENUM('freshman', 'sophomore', 'junior', 'senior', 'underclassman', 'upperclassman', 'all') NOT NULL,
                       jobTitle ENUM('ENGINEERING', 'DESIGN', 'PM', 'OTHER') NOT NULL,
@@ -50,7 +49,6 @@ CREATE TABLE job_opp (jobID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                       deadline DATE NOT NULL,
                       poster int NOT NULL,
 		      companyName varchar(100) NOT NULL, 
-                      FOREIGN KEY (cID) REFERENCES company(cID) ON DELETE CASCADE,
                       FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE RESTRICT,
 		      FOREIGN KEY (companyName) REFERENCES company(companyName) ON DELETE RESTRICT) ENGINE=InnoDB;
 
@@ -68,10 +66,10 @@ CREATE TABLE job_location (jobID int NOT NULL,
 
 CREATE TABLE human_resources(uID int DEFAULT NULL,
        	     		     uName varchar(100) NOT NULL,
-			     cID int NOT NULL,
+			     companyName int NOT NULL,
 			     email varchar(100) NOT NULL,
 			     personType ENUM('recruiter', 'referral') NOT NULL,
 			     poster int NOT NULL,
 			     FOREIGN KEY (uID) REFERENCES user_id(uID) ON DELETE SET NULL,
-			     FOREIGN KEY (cID) REFERENCES company(cID) ON DELETE CASCADE,
+			     FOREIGN KEY (companyName) REFERENCES company(companyName) ON DELETE CASCADE,
 			     FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE RESTRICT) ENGINE=InnoDB; 
