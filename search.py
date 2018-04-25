@@ -7,15 +7,29 @@ import dbconn2
 
 db = 'lluo_db'
 
-# returns all jobs
+# return all jobs
 def allJobs(conn):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('select * from job_opp')
     info = curs.fetchall()
     return info
 
-# returns all jobs given search terms
-    def searchJobs(conn):
+# return all reus
+def allREUs(conn):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select * from reu_opp')
+    info = curs.fetchall()
+    return info
+
+# return all jobs given search terms
+def searchJobs(conn, companyName, classPref, jobType, jobTitle, season,
+               deadline, orderBy):
+    asdf
+
+# return all reus given search terms
+def searchREUs(conn, deptID, classPref, deadline, isUROP, orderBy):
+    asdf
+
 
 # ==============================================================================
 
