@@ -132,7 +132,7 @@ def addREU(conn, uID, reuTitle, deptID, link, classPref, deadline, isUROP):
 
 # update human resource
 def updateHR(conn, uID, hrUID, uName, companyName, email, personType):
-    if canUpdate(conn, "hr", hrUID, uID):
+    if canUpdate(conn, "hr", hrUID, uID) or uID==hrUID:
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('update human_resources set uName=%s, companyName=%s, \
             email=%s, personType=%s, poster=%s, where uID=%s',
