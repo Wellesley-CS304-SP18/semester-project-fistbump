@@ -37,8 +37,7 @@ CREATE TABLE reu_review (deptID int DEFAULT NULL,
                          FOREIGN KEY (deptID) REFERENCES department(deptID) ON DELETE CASCADE,
                          FOREIGN KEY (reviewer) REFERENCES user_id(uID) ON DELETE CASCADE) ENGINE=InnoDB;
 
-CREATE TABLE company (cID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                      companyName varchar(100) NOT NULL) ENGINE=InnoDB;
+CREATE TABLE company (companyName varchar(100) NOT NULL PRIMARY KEY) ENGINE=InnoDB;
 
 CREATE TABLE job_opp (jobID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                       cID int NOT NULL,
@@ -50,8 +49,10 @@ CREATE TABLE job_opp (jobID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                       season ENUM('fall', 'spring', 'summer', 'winter', 'year-round') NOT NULL,
                       deadline DATE NOT NULL,
                       poster int NOT NULL,
+		      companyName varchar(100) NOT NULL, 
                       FOREIGN KEY (cID) REFERENCES company(cID) ON DELETE CASCADE,
-                      FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE RESTRICT) ENGINE=InnoDB;
+                      FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE RESTRICT,
+		      FOREIGN KEY (companyName) REFERENCES company(companyName) ON DELETE RESTRICT) ENGINE=InnoDB;
 
 CREATE TABLE job_review (jobID int,
                          jobYear int NOT NULL,
