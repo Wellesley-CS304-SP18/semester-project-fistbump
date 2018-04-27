@@ -7,21 +7,26 @@
       <title>Fist-bump</title>
       <link rel="stylesheet" href="">
   </head>
-
+  
   <body>
+    <h1>Login!!</h1>
 
+    {% for message in get_flashed_messages() %}
+      {{message}}
+    {% endfor %}
+    
   <form method="post" action="">
-    <p><label for="userid">Username: <input type="text" name="uName"></label></p>
+    <p><label for="email">Email: <input type="text" name="email"></label></p>
     <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
-    <p><button type="submit">submit</button></p>
+    <p><button type="submit" name="submit" value="login">submit</button></p>
   </form>
 
   <p> No login? Register below </p>
   <form method="post" action="">
-    <p><label for="userid">Email: <input type="text" name="email"></label></p>
-    <p><label for="userid">Username: <input type="text" name="uName"></label></p>
+    <p><label for="email">Email: <input type="text" name="email"></label></p>
+    <p><label for="uName">Name: <input type="text" name="uName"></label></p>
     <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
-    <p><button type="submit">submit</button></p>
+    <p><button type="submit" name="submit" value="register">submit</button></p>
   </form>
 
 
