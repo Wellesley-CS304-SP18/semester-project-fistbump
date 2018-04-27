@@ -1,29 +1,33 @@
 #fistbump!
 
-from flask import (Flask, render_template, make_response, url_for, request, redirect, flash, session, send_from_director, jsonify)
+from flask import (Flask, render_template, make_response, url_for, request, redirect, flash, session, send_from_directory, jsonify)
 from werkzeug import secure_filename
 app = Flask(__name__)
 
 import sys, os, random
 import dbconn2
 import bcrypt
-from operations import *
 from login import * 
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
                                           '0123456789'))
                            for i in range(20) ])
-app.confid['TRAP_BAD_REQUEST_ERRORS'] = True
+app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
 db = 'lluo2_db'
 
 # --------------------------------------------
 # ROUTES
 
+@app.route('/', methods=['GET']) 
+def landing():
+    return redirect(url_for('login'))
+
+# login and register on the same html page
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
-    errorMsg = 'Username and/or password are incorrect.'
+    errorMsg = 'email and/or password are incorrect.'
     successMsg = 'Successful login.'
     conn = dbconn2.connect(DSN)
    
@@ -31,38 +35,33 @@ def login():
         return render_template('login.html')
 
     if request.method == 'POST':
-        email = request.form.get('email')
-        pwd = request.form.get('pwd')
-        hashed = getPwd(conn, email)['pwd']
-        if hashed is not None:
-            if bcrypt.hashpw(pwd, hashed) != hashed:
+        if request.form.get('submit') == 'login':
+            email = request.form.get('email')
+            pwd = request.form.get('pwd')
+            hashed = getPwd(conn, email)['pwd']
+            if hashed is not None:
+                if bcrypt.hashpw(pwd, hashed) != hashed:
+                    flash(errorMsg)
+                    return render_template('login.html')
+                else:
+                    flash(successMsg)
+                    return redirect(url_for('home'))
+            else:
                 flash(errorMsg)
                 return render_template('login.html')
+        if request.form.get('submit') == 'register':
+            uName = request.form.get('uName')
+            email = request.form.get('email')
+            pwd = request.form.get('pwd')
+
+            if not emailIsFree(conn, email):
+                flash('Email already in use.')
+                return render_template('login.html')
             else:
-                flash(successMsg)
-                return redirect(url_for('home'))
-        else:
-            flash(errorMsg)
-            return render_template('login.html')
-
-@app.route('/register/', methods=['GET', 'POST'])
-def register():
-    if request.method == 'GET':
-        return render_template('register.html')
-
-    if request.method == 'POST':
-        uName = request.form.get('uName')
-        email = request.form.get('email')
-        pwd = request.form.get('pwd')
-        
-        if not emailIsFree(conn, email):
-            flash('Email already in use.')
-            return render_template('register.html')
-        else:
-            hashedPwd = bcrypt.hashpw(pwd, bcrypt.gensalt())
-            insertUser(conn, uName, email, hashedPwd);
-            flash('User successfully added.')
-            return redirect(url_for('login.html'))
+                hashedPwd = bcrypt.hashpw(pwd, bcrypt.gensalt())
+                insertUser(conn, uName, email, hashedPwd);
+                flash('User successfully added.')
+                return redirect(url_for('login.html'))
 
 @app.route('/home/', methods=['GET','POST'])
 def home():
@@ -78,7 +77,7 @@ def reu():
 
 # --------------------------------------------
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     if len(sys.argv) > 1:
         # arg, if any, is the desired port number                          
         port = int(sys.argv[1])
