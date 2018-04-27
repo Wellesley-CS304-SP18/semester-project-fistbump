@@ -22,15 +22,18 @@ def allREUs(conn):
     return info
 
 # return all jobs given search terms
-def searchJobs(conn, companyName, classPref, jobType, jobTitle, season,
+def searchJobs(conn, companyName, classPref, jobTitle, jobType, season,
                deadline, orderBy):
-    asdf
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('start transaction')
+
 
 # return all reus given search terms
 def searchREUs(conn, deptID, classPref, deadline, isUROP, orderBy):
-    asdf
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('start transaction')
 
-
+def searchHRs(conn, companyName, )
 # ==============================================================================
 
 if __name__ == '__main__':
