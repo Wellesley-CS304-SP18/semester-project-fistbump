@@ -83,6 +83,13 @@ def deleteJobLoc(conn, uID, jobID, cID):
         return "Deleted cID="+cID+" for jobID="+jobID+"."
     return "Cannot delete job location. You are not an admin."
 
+# return all company names
+def allComp(conn):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select * from company')
+    info = curs.fetchall()
+    return info
+
 # check if company name is in company table & add it if it isn't
 def checkCompany(conn, companyName):
     try:

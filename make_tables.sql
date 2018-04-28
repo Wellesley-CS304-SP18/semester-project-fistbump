@@ -18,10 +18,10 @@ CREATE TABLE user_id (uID int AUTO_INCREMENT PRIMARY KEY,
                       email varchar(100) NOT NULL,
                       pwd varchar(255)) ENGINE=InnoDB;
 
-CREATE TABLE city (cID int NOT NULL AUTO_INCREMENT PRIORITY KEY,
+CREATE TABLE city (cID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                    city varchar(50) NOT NULL) ENGINE=InnoDB;
 
-CREATE TABLE university (university varchar(50) NOT NULL PRIORITY KEY) ENGINE=InnoDB;
+CREATE TABLE university (university varchar(50) NOT NULL PRIMARY KEY) ENGINE=InnoDB;
 
 CREATE TABLE department (deptID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                          deptName varchar(100) NOT NULL,
