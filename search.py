@@ -23,7 +23,7 @@ def allREUs(conn):
 
 # return all jobs given search terms
 def searchJobs(conn, companyName, classPref, jobTitle, jobType, season,
-               deadline, orderBy):
+               deadline):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('select * from job_opp where companyName=%s \
                   intersect \
@@ -41,7 +41,7 @@ def searchJobs(conn, companyName, classPref, jobTitle, jobType, season,
     return info
 
 # return all reus given search terms
-def searchREUs(conn, deptID, classPref, deadline, isUROP, orderBy):
+def searchREUs(conn, deptID, classPref, deadline, isUROP):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('select * from reu_opp where deptID=%s \
                   intersect \

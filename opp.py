@@ -42,9 +42,9 @@ def updateJob(conn, jobID, uID, companyName, link, classPref, jobType, jobTitle,
             [uID, link, classPref, jobType, jobTitle, positonName,
             season, deadline, companyName, jobID])
         curs.execute('commit')
-        return "Updated job opportunity to: poster="+uID+"; cID="+cID+"; \
-            link="+link+"; classPref="+classPref+"; jobType="+jobType+"; \
-            postionName="+positionName+"; season="+season+"; deadline="+
+        return "Updated job opportunity to: poster="+uID+"; link="+link+"; \
+            classPref="+classPref+"; jobType="+jobType+"; postionName="+
+            positionName+"; season="+season+"; deadline="+
             deadline+"; companyName="+companyName"."
     return "Cannot update job opportunity. You are not the original poster or \
         an admin."
@@ -67,7 +67,7 @@ def addJobLoc(conn, uID, jobID, city):
                 (%s, %s)', [jobID, city])
                 return "city="+city+" added for jobID="+jobID
         except:
-            return city+" already listed in location."
+            return city+" already listed for jobID="+jobID+"."
     return "Cannot add location. You are not the original poster or an admin."
 
 # delete job location
@@ -166,29 +166,27 @@ def deleteUni(conn, uID, university):
     return "Cannot delete university. You are not an admin."
 
 # update dept (only available if admin)
-def updateDept(conn, uID, deptID, deptName, cID, university):
+def updateDept(conn, uID, deptID, deptName, city, university):
     if isAdmin(conn, uID):
+        checkCity(conn, city)
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
-        curs.execute('update department set deptName=%s, cID=%s, university=%s \
-            where deptID=%s',[deptID, cID, uniID, deptID])
-        return "Updated dept to: deptID="+deptID+"; cID="+cID+"; university="+
+        curs.execute('update department set deptName=%s, city=%s, university=%s \
+            where deptID=%s',[deptID, city, uniID, deptID])
+        return "Updated dept to: deptID="+deptID+"; city="+city+"; university="+
             university+"."
     return "Cannot update department. You are not an admin."
 
-# check if dept is in department table & add it if it isn't; return deptID
-def addDepartment(conn, deptName, cID, university):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('start transaction')
+# add dept
+def addDepartment(conn, deptName, city, university):
     try:
-        curs.execute('insert into department (deptName, cID, university) \
-            values (%s, %s, %s)', [deptName, cID, university])
-        curs.execute('select last_insert_id()')
-        info = curs.fetchone()
-        curs.execute('commit')
-        return info['last_insert_id()']
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('insert into department (deptName, city, university) \
+            values (%s, %s, %s)', [deptName, city, university])
+        return "Added deptName="+deptName+"; university="+university+"; city="+
+            city+" to department."
     except:
-        curs.execute('commit')
-        return info['deptID']
+        return "deptName="+deptName+"; university="+university+"; city="+city+
+            " already in department."
 
 # delete dept (only available if admin)
 def deleteDept(conn, uID, deptID):
