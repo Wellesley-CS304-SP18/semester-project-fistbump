@@ -49,38 +49,34 @@ def updateJob(conn, jobID, uID, companyName, link, classPref, jobType, jobTitle,
     return "Cannot update job opportunity. You are not the original poster or \
         an admin."
 
-# check if city is in city table & add it if it isn't; returns tuple of (cID, message)
+# check if city is in city table & add it if it isn't
 def checkCity(conn, city):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
     try:
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('insert into city (city) values (%s)', [city])
-        curs.execute('select last_insert_id()')
-        info = curs.fetchone()
-        return (info['last_insert_id()'], city+" added to city.")
+        return city+" added to city."
     except:
-        curs.execute('select cID from city where city=%s', [city])
-        info = curs.fetchone()
-        return (info['cID'], city+" already in city.")
+        return city+" already in city."
 
 # add job location
-def addJobLoc(conn, uID, jobID, cID):
+def addJobLoc(conn, uID, jobID, city):
     if canUpdate(conn, "job", jobID, uID):
         try:
             curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('insert into job_location (jobID, cID) values \
-                (%s, %s)', [jobID, cID])
-                return "cID="+cID+" added for jobID="+jobID
+            curs.execute('insert into job_location (jobID, city) values \
+                (%s, %s)', [jobID, city])
+                return "city="+city+" added for jobID="+jobID
         except:
-            return cID+" already listed in location."
+            return city+" already listed in location."
     return "Cannot add location. You are not the original poster or an admin."
 
 # delete job location
-def deleteJobLoc(conn, uID, jobID, cID):
+def deleteJobLoc(conn, uID, jobID, city):
     if canUpdate(conn, "job", jobID, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
-        curs.execute('delete from job_location where jobID=%s and cID=%s',
-                [jobID, cID])
-        return "Deleted cID="+cID+" for jobID="+jobID+"."
+        curs.execute('delete from job_location where jobID=%s and city=%s',
+                [jobID, city])
+        return "Deleted city="+city+" for jobID="+jobID+"."
     return "Cannot delete job location. You are not an admin."
 
 # return all company names
@@ -102,7 +98,7 @@ def checkCompany(conn, companyName):
 
 # add job opp
 def addJob(conn, uID, companyName, link, classPref, jobType, jobTitle,
-           positionName, season, deadline, cID):
+           positionName, season, deadline, city):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('start transaction')
     curs.execute('insert into job_opp (poster, companyName, link, classPref, \
@@ -110,8 +106,8 @@ def addJob(conn, uID, companyName, link, classPref, jobType, jobTitle,
         (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
         [uID, companyName, link, classPref, jobType, jobTitle, positonName,
         season, deadline])
-    curs.execute('insert into location (jobID, cID) values (%s, %s)',
-        [jobID, location])
+    curs.execute('insert into location (jobID, city) values (%s, %s)',
+        [jobID, city])
     curs.execute('commit')
     return "Added new job opportunity: poster="+uID+"; companyName="+
         companyName+"; link="+link+"; classPref="+classPref+"; jobType="+
