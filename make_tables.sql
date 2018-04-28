@@ -41,7 +41,8 @@ CREATE TABLE reu_opp (reuID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                       FOREIGN KEY (deptID) REFERENCES department(deptID) ON DELETE CASCADE,
                       FOREIGN KEY (poster) REFERENCES user_id(uID) ON DELETE RESTRICT) ENGINE=InnoDB;
 
-CREATE TABLE reu_review (deptID int DEFAULT NULL,
+CREATE TABLE reu_review (reviewID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			 deptID int DEFAULT NULL,
                          reviewer int NOT NULL,
                          review varchar(1000) NOT NULL,
                          FOREIGN KEY (deptID) REFERENCES department(deptID) ON DELETE CASCADE,
@@ -66,6 +67,7 @@ CREATE TABLE job_review (jobID int,
                          jobYear int NOT NULL,
                          reviewer int NOT NULL,
                          review varchar(1000) NOT NULL,
+			 PRIMARY KEY (jobID, reviewer),
                          FOREIGN KEY (jobID) REFERENCES job_opp(jobID) ON DELETE RESTRICT,
                          FOREIGN KEY (reviewer) REFERENCES user_id(uID) ON DELETE CASCADE) ENGINE=InnoDB;
 
@@ -75,7 +77,7 @@ CREATE TABLE job_location (jobID int NOT NULL,
                            FOREIGN KEY (jobID) REFERENCES job_opp(jobID) ON DELETE CASCADE,
 			   FOREIGN KEY (cID) REFERENCES city(cID) ON DELETE RESTRICT) ENGINE=InnoDB;
 
-CREATE TABLE human_resources(uID int NOT NULL,
+CREATE TABLE human_resources(uID int NOT NULL PRIMARY KEY,
        	     		     uName varchar(100) NOT NULL,
 			     companyName int NOT NULL,
 			     email varchar(100) NOT NULL,
