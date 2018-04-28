@@ -27,6 +27,11 @@ def landing():
 # login and register on the same html page
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    if 'uID' in session:
+        uID = session['uID']
+        flash('You\'re already logged in!')
+        return redirect(url_for('home'))
+
     errorMsg = 'email and/or password are incorrect.'
     successMsg = 'Successful login.'
     conn = dbconn2.connect(DSN)
@@ -35,18 +40,18 @@ def login():
         return render_template('login.html')
 
     if request.method == 'POST':
-
+        
         if request.form['submit'] == 'login':
             email = request.form['email']
             pwd = request.form['pwd']
-            hashed = getPwd(conn, email)['pwd']
-
+            hashed = getPwd(conn, email)
+            
             if hashed is not None:
-                if bcrypt.hashpw(pwd.encode('utf-8'), hashed.encode('utf-8')) != hashed:
+                if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
                     flash(errorMsg)
                     return render_template('login.html')
-                else:
-                    flash(successMsg)
+                else:                    
+                    session['uID'] = getUID(conn, email)['uID']
                     return redirect(url_for('home'))
             else:
                 flash(errorMsg)
@@ -57,7 +62,7 @@ def login():
             email = request.form['email']
             pwd = request.form['pwd']
 
-            if not emailIsFree(conn, email):
+            if getUID(conn, email) != None:
                 flash('Email already in use.')
                 return render_template('login.html')
             else:
@@ -68,7 +73,23 @@ def login():
         
 @app.route('/home/', methods=['GET','POST'])
 def home():
-    return
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+    else:    
+        uID = session['uID']
+    
+    conn = dbconn2.connect(DSN)
+
+    if request.method == 'GET':
+        name = getUName(conn, uID)['uName']
+        return render_template('home.html',
+                               uName = name)
+
+    if request.method == 'POST':
+        if request.form['submit'] == "Log Out":
+            session.pop('uID', None)
+            return redirect(url_for('login'))
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job():
