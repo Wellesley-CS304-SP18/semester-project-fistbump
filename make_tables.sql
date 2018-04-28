@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS city;
 DROP TABLE IF EXISTS user_id;
 
 CREATE TABLE user_id (uID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		                  uType ENUM('general', 'admin') NOT NULL,
+		      uType ENUM('general', 'admin') NOT NULL,
                       uName varchar(100) NOT NULL,
                       email varchar(100) NOT NULL,
                       pwd varchar(255)) ENGINE=InnoDB;
@@ -44,7 +44,7 @@ CREATE TABLE reu_review (reviewID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			 deptID int DEFAULT NULL,
                          reviewer int NOT NULL,
                          review varchar(1000) NOT NULL,
-d                         FOREIGN KEY (reviewer) REFERENCES user_id(uID) ON DELETE CASCADE) ENGINE=InnoDB;
+                         FOREIGN KEY (reviewer) REFERENCES user_id(uID) ON DELETE CASCADE) ENGINE=InnoDB;
 
 CREATE TABLE company (companyName varchar(100) NOT NULL PRIMARY KEY) ENGINE=InnoDB;
 
