@@ -77,13 +77,10 @@ def addJobLoc(conn, uID, jobID, cID):
 # delete job location
 def deleteJobLoc(conn, uID, jobID, cID):
     if canUpdate(conn, "job", jobID, uID):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('delete from job_location where jobID=%s and cID=%s',
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('delete from job_location where jobID=%s and cID=%s',
                 [jobID, cID])
-            return "Deleted cID="+cID+" for jobID="+jobID+"."
-        except:
-            return "cID="+cID+" and jobID="+jobID+" not in job_location."
+        return "Deleted cID="+cID+" for jobID="+jobID+"."
     return "Cannot delete job location. You are not an admin."
 
 # check if company name is in company table & add it if it isn't
@@ -160,13 +157,9 @@ def addUni(conn, university):
 # delete university (only available if admin)
 def deleteUni(conn, uID, university):
     if isAdmin(conn, uID):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('delete from university where university=%s',
-                [university])
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('delete from university where university=%s', [university])
             return "Deleted university "+university+"."
-        except:
-            return university+" not in university."
     return "Cannot delete university. You are not an admin."
 
 # update dept (only available if admin)
@@ -197,12 +190,9 @@ def addDepartment(conn, deptName, cID, university):
 # delete dept (only available if admin)
 def deleteDept(conn, uID, deptID):
     if isAdmin(conn, uID):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('delete from department where deptID=%s', [deptId])
-            return "Deleted deptID="+deptID
-        except:
-            return "deptID="+deptID+" does not exist in department."
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('delete from department where deptID=%s', [deptId])
+        return "Deleted deptID="+deptID
     return "Cannot delete department. You are not an admin."
 
 # add reu opp
@@ -218,12 +208,9 @@ def addREU(conn, uID, reuTitle, deptID, link, classPref, deadline, isUROP):
 # delete job opp
 def deleteREU(conn, uID, reuID):
     if canUpdate(conn, "reu", reuID, uID):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('delete from reu_opp where reuID=%s', [reuID])
-            return "Deleted reuID="+reuID+"."
-        except:
-            return "reuID="+reuID+" does not exist in reu_opp."
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('delete from reu_opp where reuID=%s', [reuID])
+        return "Deleted reuID="+reuID+"."
     return "Cannot delete reuID. You are not the original poster or an admin."
 
 # update human resource
@@ -277,16 +264,11 @@ def deleteHR(conn, uID, hrID):
     if canUpdate(conn, "hr", hrID, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         if isNotAccount(conn, uID):
-            try:
-                curs.execute('delete from user_id where uID=%s', [hrID])
-                return "Deleted uID="+uID+" from human_resources and user_id."
-            except:
-                return "uID="+uID+" is not in user_id."
-        try:
+            curs.execute('delete from user_id where uID=%s', [hrID])
+            return "Deleted uID="+uID+" from human_resources and user_id."
+        else:
             curs.execute('delete from human_resources where uID=%s', [hrID])
             return "Deleted uID="+uID+"."
-        except:
-            return "uID="+uID+" does not exist in human_resources."
     return "Cannot delete uID. You are not the original poster or an admin."
 
 # ==============================================================================
