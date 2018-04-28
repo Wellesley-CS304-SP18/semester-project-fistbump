@@ -11,10 +11,15 @@ def getPwd(conn, email):
     curs.execute("SELECT pwd FROM user_id WHERE email=%s", [email])
     return curs.fetchone()
 
-def emailIsFree(conn, email):
+def getUID(conn, email):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute("SELECT uID FROM user_id WHERE email=%s", [email])
-    return curs.fetchone() == None
+    return curs.fetchone()
+
+def getUName(conn, uID):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute("SELECT uName FROM user_id WHERE uID=%s", [uID])
+    return curs.fetchone()
 
 def insertUser(conn, uName, email, pwd):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
