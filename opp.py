@@ -114,7 +114,11 @@ def addJob(conn, uID, companyName, link, classPref, jobType, jobTitle,
         [uID, companyName, link, classPref, jobType, jobTitle, positonName,
         season, deadline])
     addCity(conn, city)
+<<<<<<< HEAD
     addJobLoc(conn, conn, uID, jobID, city)
+=======
+    addJobLoc(conn, uID, jobID, city)
+>>>>>>> master
     curs.execute('commit')
     return "Added new job opportunity: poster="+uID+"; companyName="+
         companyName+"; link="+link+"; classPref="+classPref+"; jobType="+
