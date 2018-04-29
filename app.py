@@ -8,6 +8,8 @@ import sys, os, random
 import dbconn2
 import bcrypt
 from login import *
+import opp
+import search
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
@@ -27,11 +29,6 @@ def landing():
 # login and register on the same html page
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
-    if 'uID' in session:
-        uID = session['uID']
-        flash('You\'re already logged in!')
-        return redirect(url_for('home'))
-
     errorMsg = 'email and/or password are incorrect.'
     successMsg = 'Successful login.'
     conn = dbconn2.connect(DSN)
@@ -40,18 +37,18 @@ def login():
         return render_template('login.html')
 
     if request.method == 'POST':
-        
+
         if request.form['submit'] == 'login':
             email = request.form['email']
             pwd = request.form['pwd']
-            hashed = getPwd(conn, email)
-            
+            hashed = getPwd(conn, email)['pwd']
+
             if hashed is not None:
-                if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
+                if bcrypt.hashpw(pwd.encode('utf-8'), hashed.encode('utf-8')) != hashed:
                     flash(errorMsg)
                     return render_template('login.html')
-                else:                    
-                    session['uID'] = getUID(conn, email)['uID']
+                else:
+                    flash(successMsg)
                     return redirect(url_for('home'))
             else:
                 flash(errorMsg)
@@ -62,7 +59,7 @@ def login():
             email = request.form['email']
             pwd = request.form['pwd']
 
-            if getUID(conn, email) != None:
+            if not emailIsFree(conn, email):
                 flash('Email already in use.')
                 return render_template('login.html')
             else:
@@ -70,33 +67,24 @@ def login():
                 insertUser(conn, uName, email, hashedPwd);
                 flash('User successfully added.')
                 return redirect(url_for('login'))
-        
+
 @app.route('/home/', methods=['GET','POST'])
 def home():
-    if 'uID' not in session:
-        flash('Please login to view site')
-        return redirect(url_for('login'))
-    else:    
-        uID = session['uID']
-    
     conn = dbconn2.connect(DSN)
-
-    if request.method == 'GET':
-        name = getUName(conn, uID)['uName']
-        return render_template('home.html',
-                               uName = name)
-
-    if request.method == 'POST':
-        if request.form['submit'] == "Log Out":
-            session.pop('uID', None)
-            return redirect(url_for('login'))
+    jobs = search.allJobs(conn)
+    reus = search.allREUs(conn)
+    return
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job():
+    conn = dbconn2.connect(DSN)
+    job, reviews, hrs = search.findJob(conn, jobID)
     return
 
 @app.route('/reu/<reuID>', methods=['GET', 'POST'])
 def reu():
+    conn = dbconn2.connect(DSN)
+    reu, reviews = search.findREU(conn, reuID)
     return
 
 # --------------------------------------------
