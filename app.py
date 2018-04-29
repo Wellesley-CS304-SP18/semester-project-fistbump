@@ -8,6 +8,8 @@ import sys, os, random
 import dbconn2
 import bcrypt
 from login import *
+import opp
+import search
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
@@ -65,17 +67,24 @@ def login():
                 insertUser(conn, uName, email, hashedPwd);
                 flash('User successfully added.')
                 return redirect(url_for('login'))
-        
+
 @app.route('/home/', methods=['GET','POST'])
 def home():
+    conn = dbconn2.connect(DSN)
+    jobs = search.allJobs(conn)
+    reus = search.allREUs(conn)
     return
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job():
+    conn = dbconn2.connect(DSN)
+    job, reviews, hrs = search.findJob(conn, jobID)
     return
 
 @app.route('/reu/<reuID>', methods=['GET', 'POST'])
 def reu():
+    conn = dbconn2.connect(DSN)
+    reu, reviews = search.findREU(conn, reuID)
     return
 
 # --------------------------------------------
