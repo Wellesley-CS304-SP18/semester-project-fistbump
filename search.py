@@ -22,6 +22,7 @@ def allREUs(conn):
     return info
 
 # return all jobs given search terms
+# if didn't pick filter input % for param
 def searchJobs(conn, companyName, classPref, jobTitle, jobType, season,
                deadline):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -41,6 +42,7 @@ def searchJobs(conn, companyName, classPref, jobTitle, jobType, season,
     return info
 
 # return all reus given search terms
+# if didn't pick filter input % for param
 def searchREUs(conn, deptID, classPref, deadline, isUROP):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('select * from reu_opp where deptID=%s \
