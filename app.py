@@ -17,7 +17,7 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                            for i in range(20) ])
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
-db = 'mshen4_db'
+db = 'lluo2_db'
 
 # --------------------------------------------
 # ROUTES
