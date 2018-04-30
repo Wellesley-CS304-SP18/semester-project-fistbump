@@ -7,8 +7,10 @@ app = Flask(__name__)
 import sys, os, random
 import dbconn2
 import bcrypt
-from login import *
-from view import *
+import login
+import view
+import opp
+#import search
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
@@ -92,8 +94,12 @@ def home():
             session.pop('uID', None)
             return redirect(url_for('login'))
 
-@app.route('/addJob', methods=['POST'])
-def addJob():
+@app.route('/addJob/')
+def display():
+    return render_template('job_form.html')
+
+@app.route('/addJob/', methods=['GET','POST'])
+def addNewJob():
     conn = dbconn2.connect(DSN)
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
@@ -105,23 +111,37 @@ def addJob():
             season = request.form[('season')] #radio button
             deadline = request.form[('deadline')]
             company = request.form[('companyName')] #can only add in one job
-            uID = session['uID']
-            addJob(conn, uID, companyName, link, classPref, jobType, jobTitle, positionName, season, deadline, city)
-    return redirect(url_for('jobLocation'))
+            if company == 'none':
+                company = request.form[('newCompany')]
+            #uID = session['uID']
+            uID = 1
+        jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
+    return redirect(url_for('addJobLocation', jobID=jobID))
 
-@app.route('/addjobLocation/<jobID>', methods=['POST'])
-def addJobLocation():
+@app.route('/addJobLocation/<jobID>')
+def displayAddJobLocation(jobID):
+    conn = dbconn2.connect(DSN)
+    cities = opp.allCities(conn)
+    return render_template('jobLocation.html',jobID = jobID,cities = cities)
+
+@app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
+def addJobLocation(jobID):
     conn = dbconn2.connect(DSN)
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
-            uID = session['uID']
-            locations = request.form[('city')] #returns an array? not sure
-            for city in locations:
-                addJobLoc(conn, uID, jobID, city)
+            uID = 1
+            #uID = session['uID']
+            cities = opp.allCities(conn)
+            if bool(cities):
+                locations = request.form[('city')] #returns an array? not sure
+                for city in locations:
+                    opp.addJobLoc(conn, uID, jobID, city)
+            
             newLocation = request.form[('newLocation')]
             if newLocation: #can a user submit with an empty value
-                addCity(conn, newLocation)
-                addJobLoc(conn, uID ,jobID ,city)
+                opp.addCity(conn, newLocation)
+                opp.addJobLoc(conn, uID ,jobID ,city)
+    return redirect(url_for('home'))
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job():

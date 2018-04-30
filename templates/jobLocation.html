@@ -1,0 +1,39 @@
+<head>
+    <meta charset="utf-8">
+    <meta name=author content="Fistbump">
+    <meta name=description content="">
+    <meta name=keywords content="">
+    <title>Fist-bump</title>
+    <link rel="stylesheet" href="">
+</head>
+<body>
+
+
+    <form method=POST action="{{url_for('addJobLocation',jobID = jobID, cities = cities)}}">
+      <table>
+        {% block content %}
+        <label for="locations">Please select all the locations of your job posting:</label>
+        <tr>
+          {% for row in cities %}
+          <td>
+            <input type="checkbox" name="city" value="{{row.city}}">{{row.city}}<br>
+          </td>
+	  {% endfor %}
+         {% endblock %}
+        </tr>
+        <tr>
+          <td>
+            <label for="newLocation"> If you have a new location to add,
+              please enter it here: </label>
+              <input name="newLocation" value="">
+          </td>
+        </tr>
+
+      </table>
+      <input type="submit" name="submit" value="submit">
+    </form>
+
+    <footer>
+    </footer>
+</body>
+</html>
