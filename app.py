@@ -75,12 +75,6 @@ def login():
 
 @app.route('/home/', methods=['GET','POST'])
 def home():
-<<<<<<< HEAD
-    conn = dbconn2.connect(DSN)
-    jobs = search.allJobs(conn)
-    reus = search.allREUs(conn)
-    return
-=======
     if 'uID' not in session:
         flash('Please login to view site')
         return redirect(url_for('login'))
@@ -91,8 +85,7 @@ def home():
 
     if request.method == 'GET':
         name = getUName(conn, uID)['uName']
-        return render_template('home.html',
-                               uName = name)
+        return render_template('home.html', uName = name)
 
     if request.method == 'POST':
         if request.form['submit'] == "Log Out":
