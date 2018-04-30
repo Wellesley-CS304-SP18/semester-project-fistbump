@@ -5,7 +5,7 @@ import sys
 import MySQLdb
 import dbconn2
 
-db = 'lluo_db'
+db = 'mshen4_db'
 
 # check if uID can update table (same poster or admin)
 def canUpdate(conn, table, ID, uID):
@@ -15,13 +15,15 @@ def canUpdate(conn, table, ID, uID):
         curs.execute('select poster from job_opp where jobID= %s', [ID])
     if table == "reu":
         curs.execute('select poster from reu_opp where reuID=%s', [ID])
-    if table == "hr"
+    if table == "hr":
         curs.execute('select poster from human_resources where uID=%s', [ID])
     info = curs.fetchone()
     curs.execute('commit')
-    samePoster = (info['poster'] == uID)
-    isAdmin = isAdmin(conn, uID)
-    return (samePoster or isAdmin)
+    if info is not None:
+        samePoster = (info['poster'] == uID)
+        isAd = isAdmin(conn, uID)
+        return (samePoster or isAd)
+    return True
 
 # check if user is admin
 def isAdmin(conn, uID):
@@ -41,6 +43,13 @@ def addCity(conn, city):
     except:
         return city+" already in city."
 
+# return all cities in city
+def allCities(conn):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select * from city')
+    info = curs.fetchall()
+    return info
+
 # update job opp
 def updateJob(conn, jobID, uID, companyName, link, classPref, jobType, jobTitle,
               positionName, season, deadline):
@@ -54,12 +63,12 @@ def updateJob(conn, jobID, uID, companyName, link, classPref, jobType, jobTitle,
             [uID, link, classPref, jobType, jobTitle, positonName,
             season, deadline, companyName, jobID])
         curs.execute('commit')
-        return "Updated job opportunity to: poster="+uID+"; link="+link+"; \
-            classPref="+classPref+"; jobType="+jobType+"; postionName="+
-            positionName+"; season="+season+"; deadline="+
-            deadline+"; companyName="+companyName"."
-    return "Cannot update job opportunity. You are not the original poster or \
-        an admin."
+        #return "Updated job opportunity to: poster="+uID+"; link="+link+"; \
+            #classPref="+classPref+"; jobType="+jobType+"; postionName="+
+            #positionName+"; season="+season+"; deadline="+
+            #deadline+"; companyName="+companyName"."
+    #return "Cannot update job opportunity. You are not the original poster or \
+        #an admin."
 
 # add job location
 def addJobLoc(conn, uID, jobID, city):
@@ -71,10 +80,10 @@ def addJobLoc(conn, uID, jobID, city):
             curs.execute('insert into job_location (jobID, city) values \
                 (%s, %s)', [jobID, city])
             curs.execute('commit')
-            return "city="+city+" added for jobID="+jobID
+            return True
         except:
-            return city+" already listed for jobID="+jobID+"."
-    return "Cannot add location. You are not the original poster or an admin."
+            return False
+    return False
 
 # delete job location
 def deleteJobLoc(conn, uID, jobID, city):
@@ -82,8 +91,8 @@ def deleteJobLoc(conn, uID, jobID, city):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('delete from job_location where jobID=%s and city=%s',
                 [jobID, city])
-        return "Deleted city="+city+" for jobID="+jobID+"."
-    return "Cannot delete job location. You are not an admin."
+        return True
+    return False
 
 # return all company names
 def allCompany(conn):
@@ -98,36 +107,33 @@ def addCompany(conn, companyName):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('insert into company (companyName) values (%s)',
             [companyName])
-        return companyName+" added to company."
+        return True
     except:
-        return companyName+" already in company."
+        return True
 
 # add job opp
-def addJob(conn, uID, companyName, link, classPref, jobType, jobTitle,
-           positionName, season, deadline, city):
+def addJob(conn, uID, companyName, link, classPref, jobType, jobTitle, positionName, season, deadline):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('start transaction')
     addCompany(conn, companyName)
     curs.execute('insert into job_opp (poster, companyName, link, classPref, \
         jobType, jobTitle, positionName, season, deadline) values \
         (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
-        [uID, companyName, link, classPref, jobType, jobTitle, positonName,
+        [uID, companyName, link, classPref, jobType, jobTitle, positionName,
         season, deadline])
-    addCity(conn, city)
-    addJobLoc(conn, uID, jobID, city)
+    curs.execute('select last_insert_id()')
+    info = curs.fetchone()
+    jobID = info['last_insert_id()']
     curs.execute('commit')
-    return "Added new job opportunity: poster="+uID+"; companyName="+
-        companyName+"; link="+link+"; classPref="+classPref+"; jobType="+
-        jobType+"; postionName="+positionName+"; season="+season+"; deadline="+
-        deadline+"."
+    return jobID
 
 # delete job opp
 def deleteJob(conn, uID, jobID):
     if canUpdate(conn, "job", jobID, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('delete from job_opp where jobID=%s', [jobID])
-        return "Deleted jobID="+jobID+"."
-    return "Cannot delete jobID. You are not the original poster or an admin."
+        return True
+    return False
 
 # update reu opp
 def updateREU(conn, reuID, uID, deptID, link, classPref, deadline, isUROP):
@@ -137,13 +143,10 @@ def updateREU(conn, reuID, uID, deptID, link, classPref, deadline, isUROP):
             curs.execute('update reu_opp set poster=%s, deptID=%s, link=%s, \
                 classPref=%s, deadline=%s, isUROP=%s where reuID=%s',
                 [uID, deptID, link, classPref, deadline, isUROP, reuID])
-            return "Updated REU opportunity to: poster="+uID+"; deptID="+
-                deptID+"; link="+link+"; classPref="+classPref+"; deadline="+
-                deadline+"; isUROP="+isUROP+"."
+            return True
         except:
-            return "Wasn't able to update REU "+reuID+"."
-    return "Cannot update REU opportunity. You are not the original poster or \
-        an admin."
+            return False
+    return False
 
 # add university
 def addUni(conn, university):
@@ -151,17 +154,17 @@ def addUni(conn, university):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('insert into university (university) values (%s)',
             [university])
-        return "Added university "+university+"."
+        return True
     except:
-        return university+" already in university."
+        return False
 
 # delete university (only available if admin)
 def deleteUni(conn, uID, university):
     if isAdmin(conn, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('delete from university where university=%s', [university])
-            return "Deleted university "+university+"."
-    return "Cannot delete university. You are not an admin."
+        return True
+    return False
 
 # update university (only available if admin)
 def updateUni(conn, uID, oldUniversity, newUniversity):
@@ -173,8 +176,8 @@ def updateUni(conn, uID, oldUniversity, newUniversity):
             [oldUniversity, newUniversity])
         deleteUni(conn, uID, oldUniversity)
         curs.execute('commit')
-        return "Updated university to "+newUniversity+"."
-    return "Cannot update university. You are not an admin."
+        return True
+    return False
 
 # update dept (only available if admin)
 def updateDept(conn, uID, deptID, deptName, city, university):
@@ -186,9 +189,8 @@ def updateDept(conn, uID, deptID, deptName, city, university):
         curs.execute('update department set deptName=%s, city=%s, \
             university=%s where deptID=%s',[deptName, city, university, deptID])
         curs.execute('commit')
-        return "Updated dept to: deptID="+deptID+"; city="+city+"; university="+
-            university+"."
-    return "Cannot update department. You are not an admin."
+        return True
+    return False
 
 # add dept
 def addDepartment(conn, deptName, city, university):
@@ -200,19 +202,17 @@ def addDepartment(conn, deptName, city, university):
         curs.execute('insert into department (deptName, city, university) \
             values (%s, %s, %s)', [deptName, city, university])
         curs.execute('commit')
-        return "Added deptName="+deptName+"; university="+university+"; city="+
-            city+" to department."
+        return True
     except:
-        return "deptName="+deptName+"; university="+university+"; city="+city+
-            " already in department."
+        return False
 
 # delete dept (only available if admin)
 def deleteDept(conn, uID, deptID):
     if isAdmin(conn, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('delete from department where deptID=%s', [deptId])
-        return "Deleted deptID="+deptID+"."
-    return "Cannot delete department. You are not an admin."
+        return True
+    return False
 
 # all depts
 def allDept(conn):
@@ -227,17 +227,15 @@ def addREU(conn, uID, reuTitle, deptID, link, classPref, deadline, isUROP):
     curs.execute('insert into reu_opp (poster, reuTitle, deptID, link, \
         classPref, deadline, isUROP) values (%s, %s, %s, %s, %s, %s)',
         [uID, reuTitle, deptID, link, classPref, deadline, isUROP])
-    return "Added new REU opportunity: poster="+uID+"; reuTitle="+
-        reuTitle+"; deptID="+deptID+"; link="+link+"; classPref="+classPref+
-        "; deadline="+deadline+"; isUROP="+isUROP+"."
+    return True
 
 # delete job opp
 def deleteREU(conn, uID, reuID):
     if canUpdate(conn, "reu", reuID, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('delete from reu_opp where reuID=%s', [reuID])
-        return "Deleted reuID="+reuID+"."
-    return "Cannot delete reuID. You are not the original poster or an admin."
+        return True
+    return False
 
 # update human resource
 def updateHR(conn, uID, hrUID, uName, companyName, email, personType):
@@ -246,11 +244,8 @@ def updateHR(conn, uID, hrUID, uName, companyName, email, personType):
         curs.execute('update human_resources set uName=%s, companyName=%s, \
             email=%s, personType=%s, poster=%s, where uID=%s',
             [uName, companyName, email, personType, uID, hrUID])
-        return "Updated human resource to: poster="+uID+"; uName="+uName+
-            "; companyName="+companyName+"; email="+email+"; personType="+
-            personType+"."
-    return "Cannot update human resource. You are not the original poster or \
-        an admin."
+        return True
+    return False
 
 # add user
 def addUser(conn, uName, email):
@@ -263,9 +258,9 @@ def addUser(conn, uName, email):
         info = curs.fetchone()
         uID = info['last_insert_id()']
         curs.execute('commit')
-        return "uName="+uName+"; email="+email+" added with uID="+uID+"."
+        return True
     except:
-        return "email="+email+" already in user."
+        return False
 
 # add human resource
 def addHR(conn, uID, hrUID, uName, companyName, email, personType):
@@ -277,11 +272,9 @@ def addHR(conn, uID, hrUID, uName, companyName, email, personType):
             companyName, personType, email) values (%s, %s, %s, %s, %s, %s)',
             [uID, hrUID, uName, companyName, personType, email])
         curs.execute('commit')
-        return "Added new human resource: poster="+uID+"; uID="+hrUID+"; \
-            uName="+uName+"; companyName="+companyName+"; personType="+
-            personType+"; email="+email+"."
+        return True
     except:
-        return "uID="+uID+" already listed in human_resources."
+        return False
 
 # check if uID is an account
 def isNotAccount(conn, uID):
@@ -296,11 +289,11 @@ def deleteHR(conn, uID, hrID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         if isNotAccount(conn, uID):
             curs.execute('delete from user_id where uID=%s', [hrID])
-            return "Deleted uID="+uID+" from human_resources and user_id."
+            return True
         else:
             curs.execute('delete from human_resources where uID=%s', [hrID])
-            return "Deleted uID="+uID+"."
-    return "Cannot delete uID. You are not the original poster or an admin."
+            return True
+    return False
 
 # ==============================================================================
 
