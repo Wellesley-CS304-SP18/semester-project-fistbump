@@ -8,6 +8,7 @@ import sys, os, random
 import dbconn2
 import bcrypt
 from login import *
+from view import *
 import opp
 #import search
 
@@ -42,17 +43,16 @@ def login():
         return render_template('login.html')
 
     if request.method == 'POST':
-
         if request.form['submit'] == 'login':
             email = request.form['email']
             pwd = request.form['pwd']
             hashed = getPwd(conn, email)
-
+            
             if hashed is not None:
                 if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
                     flash(errorMsg)
                     return render_template('login.html')
-                else:
+                else:                    
                     session['uID'] = getUID(conn, email)['uID']
                     return redirect(url_for('home'))
             else:
@@ -86,20 +86,21 @@ def home():
     if request.method == 'GET':
         name = getUName(conn, uID)['uName']
         return render_template('home.html',
-                               uName = name)
+                               uName = name,
+                               opportunities = getOpps(conn))
 
     if request.method == 'POST':
         if request.form['submit'] == "Log Out":
             session.pop('uID', None)
             return redirect(url_for('login'))
 
-@app.route('/addJob/')
-def displayAddJob():
-    return render_template('job_form.html')
-
-@app.route('/addJob/', methods=['GET', 'POST'])
+@app.route('/addJob/', methods=['GET','POST'])
 def addNewJob():
     conn = dbconn2.connect(DSN)
+
+    if request.method == 'GET':
+        return render_template('job_form.html')
+
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
             link = request.form[('link')]
@@ -109,19 +110,19 @@ def addNewJob():
             positionName = request.form[('positionName')]
             season = request.form[('season')] #radio button
             deadline = request.form[('deadline')]
-            companyName = request.form[('companyName')] #can only add in one job
-            if companyName == 'none':
-                companyName = request.form[('newCompany')]
+            company = request.form[('companyName')] #can only add in one job
+            if company == 'none':
+                company = request.form[('newCompany')]
             #uID = session['uID']
             uID = 1
-        jobID = opp.addJob(conn, uID, companyName, link, classPref, jobType, jobTitle, positionName, season, deadline)
+        jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
     return redirect(url_for('addJobLocation', jobID=jobID))
 
 @app.route('/addJobLocation/<jobID>')
 def displayAddJobLocation(jobID):
     conn = dbconn2.connect(DSN)
     cities = opp.allCities(conn)
-    return render_template('jobLocation.html', jobID=jobID, cities=cities)
+    return render_template('jobLocation.html',jobID = jobID,cities = cities)
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
@@ -138,12 +139,12 @@ def addJobLocation(jobID):
                         opp.addJobLoc(conn, uID, jobID, city)
                 except:
                     pass
+
             newLocation = request.form[('newLocation')]
             if newLocation: #can a user submit with an empty value
                 opp.addCity(conn, newLocation)
                 opp.addJobLoc(conn, uID ,jobID, newLocation)
     return redirect(url_for('home'))
-
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job():
