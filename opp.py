@@ -18,6 +18,7 @@ def canUpdate(conn, table, ID, uID):
     if table == "hr"
         curs.execute('select poster from human_resources where uID=%s', [ID])
     info = curs.fetchone()
+    curs.execute('commit')
     samePoster = (info['poster'] == uID)
     isAdmin = isAdmin(conn, uID)
     return (samePoster or isAdmin)
@@ -28,7 +29,17 @@ def isAdmin(conn, uID):
     curs.execute('start transaction')
     curs.execute('select uType from user_id where uID=%s', [uID])
     info = curs.fetchone()
+    curs.execute('commit')
     return info['uType'] == "admin"
+
+# add city
+def addCity(conn, city):
+    try:
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('insert into city (city) values (%s)', [city])
+        return city+" added to city."
+    except:
+        return city+" already in city."
 
 # update job opp
 def updateJob(conn, jobID, uID, companyName, link, classPref, jobType, jobTitle,
@@ -36,58 +47,53 @@ def updateJob(conn, jobID, uID, companyName, link, classPref, jobType, jobTitle,
     if canUpdate(conn, "job", jobID, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('start transaction')
+        addCompany(conn, companyName)
         curs.execute('update job_opp set poster=%s, link=%s, classPref=%s, \
             jobType=%s, jobTitle=%s, positonName=%s, season=%s, \
             deadline=%s, companyName=%s where jobID=%s',
             [uID, link, classPref, jobType, jobTitle, positonName,
             season, deadline, companyName, jobID])
         curs.execute('commit')
-        return "Updated job opportunity to: poster="+uID+"; cID="+cID+"; \
-            link="+link+"; classPref="+classPref+"; jobType="+jobType+"; \
-            postionName="+positionName+"; season="+season+"; deadline="+
+        return "Updated job opportunity to: poster="+uID+"; link="+link+"; \
+            classPref="+classPref+"; jobType="+jobType+"; postionName="+
+            positionName+"; season="+season+"; deadline="+
             deadline+"; companyName="+companyName"."
     return "Cannot update job opportunity. You are not the original poster or \
         an admin."
 
-# check if city is in city table & add it if it isn't; returns tuple of (cID, message)
-def checkCity(conn, city):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    try:
-        curs.execute('insert into city (city) values (%s)', [city])
-        curs.execute('select last_insert_id()')
-        info = curs.fetchone()
-        return (info['last_insert_id()'], city+" added to city.")
-    except:
-        curs.execute('select cID from city where city=%s', [city])
-        info = curs.fetchone()
-        return (info['cID'], city+" already in city.")
-
 # add job location
-def addJobLoc(conn, uID, jobID, cID):
+def addJobLoc(conn, uID, jobID, city):
     if canUpdate(conn, "job", jobID, uID):
         try:
             curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('insert into job_location (jobID, cID) values \
-                (%s, %s)', [jobID, cID])
-                return "cID="+cID+" added for jobID="+jobID
+            curs.execute('start transaction')
+            addCity(conn, city)
+            curs.execute('insert into job_location (jobID, city) values \
+                (%s, %s)', [jobID, city])
+            curs.execute('commit')
+            return "city="+city+" added for jobID="+jobID
         except:
-            return cID+" already listed in location."
+            return city+" already listed for jobID="+jobID+"."
     return "Cannot add location. You are not the original poster or an admin."
 
 # delete job location
-def deleteJobLoc(conn, uID, jobID, cID):
+def deleteJobLoc(conn, uID, jobID, city):
     if canUpdate(conn, "job", jobID, uID):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('delete from job_location where jobID=%s and cID=%s',
-                [jobID, cID])
-            return "Deleted cID="+cID+" for jobID="+jobID+"."
-        except:
-            return "cID="+cID+" and jobID="+jobID+" not in job_location."
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('delete from job_location where jobID=%s and city=%s',
+                [jobID, city])
+        return "Deleted city="+city+" for jobID="+jobID+"."
     return "Cannot delete job location. You are not an admin."
 
-# check if company name is in company table & add it if it isn't
-def checkCompany(conn, companyName):
+# return all company names
+def allCompany(conn):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select * from company')
+    info = curs.fetchall()
+    return info
+
+# add company
+def addCompany(conn, companyName):
     try:
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('insert into company (companyName) values (%s)',
@@ -98,16 +104,17 @@ def checkCompany(conn, companyName):
 
 # add job opp
 def addJob(conn, uID, companyName, link, classPref, jobType, jobTitle,
-           positionName, season, deadline, cID):
+           positionName, season, deadline, city):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('start transaction')
+    addCompany(conn, companyName)
     curs.execute('insert into job_opp (poster, companyName, link, classPref, \
         jobType, jobTitle, positionName, season, deadline) values \
         (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
         [uID, companyName, link, classPref, jobType, jobTitle, positonName,
         season, deadline])
-    curs.execute('insert into location (jobID, cID) values (%s, %s)',
-        [jobID, location])
+    addCity(conn, city)
+    addJobLoc(conn, uID, jobID, city)
     curs.execute('commit')
     return "Added new job opportunity: poster="+uID+"; companyName="+
         companyName+"; link="+link+"; classPref="+classPref+"; jobType="+
@@ -138,15 +145,6 @@ def updateREU(conn, reuID, uID, deptID, link, classPref, deadline, isUROP):
     return "Cannot update REU opportunity. You are not the original poster or \
         an admin."
 
-# update university (only available if admin)
-def updateUni(conn, uID, oldUniversity, newUniversity):
-    if isAdmin(conn, uID):
-        curs = conn.cursor(MySQLdb.cursors.DictCursor)
-        curs.execute('update university set university=%s where university=%s',
-            [oldUniversity, newUniversity])
-        return "Updated university to "+university+"."
-    return "Cannot update university. You are not an admin."
-
 # add university
 def addUni(conn, university):
     try:
@@ -160,50 +158,68 @@ def addUni(conn, university):
 # delete university (only available if admin)
 def deleteUni(conn, uID, university):
     if isAdmin(conn, uID):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('delete from university where university=%s',
-                [university])
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('delete from university where university=%s', [university])
             return "Deleted university "+university+"."
-        except:
-            return university+" not in university."
     return "Cannot delete university. You are not an admin."
 
-# update dept (only available if admin)
-def updateDept(conn, uID, deptID, deptName, cID, university):
+# update university (only available if admin)
+def updateUni(conn, uID, oldUniversity, newUniversity):
     if isAdmin(conn, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
-        curs.execute('update department set deptName=%s, cID=%s, university=%s \
-            where deptID=%s',[deptID, cID, uniID, deptID])
-        return "Updated dept to: deptID="+deptID+"; cID="+cID+"; university="+
+        curs.execute('start transaction')
+        addUni(conn, newUniversity)
+        curs.execute('update department university=%s where university=%s',
+            [oldUniversity, newUniversity])
+        deleteUni(conn, uID, oldUniversity)
+        curs.execute('commit')
+        return "Updated university to "+newUniversity+"."
+    return "Cannot update university. You are not an admin."
+
+# update dept (only available if admin)
+def updateDept(conn, uID, deptID, deptName, city, university):
+    if isAdmin(conn, uID):
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('start transaction')
+        addCity(conn, city)
+        addUni(conn, university)
+        curs.execute('update department set deptName=%s, city=%s, \
+            university=%s where deptID=%s',[deptName, city, university, deptID])
+        curs.execute('commit')
+        return "Updated dept to: deptID="+deptID+"; city="+city+"; university="+
             university+"."
     return "Cannot update department. You are not an admin."
 
-# check if dept is in department table & add it if it isn't; return deptID
-def addDepartment(conn, deptName, cID, university):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('start transaction')
+# add dept
+def addDepartment(conn, deptName, city, university):
     try:
-        curs.execute('insert into department (deptName, cID, university) \
-            values (%s, %s, %s)', [deptName, cID, university])
-        curs.execute('select last_insert_id()')
-        info = curs.fetchone()
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('start transaction')
+        addCity(conn, city)
+        addUni(conn, university)
+        curs.execute('insert into department (deptName, city, university) \
+            values (%s, %s, %s)', [deptName, city, university])
         curs.execute('commit')
-        return info['last_insert_id()']
+        return "Added deptName="+deptName+"; university="+university+"; city="+
+            city+" to department."
     except:
-        curs.execute('commit')
-        return info['deptID']
+        return "deptName="+deptName+"; university="+university+"; city="+city+
+            " already in department."
 
 # delete dept (only available if admin)
 def deleteDept(conn, uID, deptID):
     if isAdmin(conn, uID):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('delete from department where deptID=%s', [deptId])
-            return "Deleted deptID="+deptID
-        except:
-            return "deptID="+deptID+" does not exist in department."
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('delete from department where deptID=%s', [deptId])
+        return "Deleted deptID="+deptID+"."
     return "Cannot delete department. You are not an admin."
+
+# all depts
+def allDept(conn):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select * from department')
+    info = curs.fetchall()
+    return info
 
 # add reu opp
 def addREU(conn, uID, reuTitle, deptID, link, classPref, deadline, isUROP):
@@ -218,12 +234,9 @@ def addREU(conn, uID, reuTitle, deptID, link, classPref, deadline, isUROP):
 # delete job opp
 def deleteREU(conn, uID, reuID):
     if canUpdate(conn, "reu", reuID, uID):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('delete from reu_opp where reuID=%s', [reuID])
-            return "Deleted reuID="+reuID+"."
-        except:
-            return "reuID="+reuID+" does not exist in reu_opp."
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('delete from reu_opp where reuID=%s', [reuID])
+        return "Deleted reuID="+reuID+"."
     return "Cannot delete reuID. You are not the original poster or an admin."
 
 # update human resource
@@ -239,31 +252,36 @@ def updateHR(conn, uID, hrUID, uName, companyName, email, personType):
     return "Cannot update human resource. You are not the original poster or \
         an admin."
 
-# check if email is user & add person if isn't; return uID
-def checkUser(conn, uName, email):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('start transaction')
-    curs.execute('select * from user_id where email=%s', [email])
-    info = curs.fetchone()
-    if info is None:
-        curs.execute('insert into user_id (uName, email, uType) \
-            values (%s, %s, %s)', [uName, email, 'general'])
+# add user
+def addUser(conn, uName, email):
+    try:
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('start transaction')
+        curs.execute('insert into user_id (uName, email, uType) values \
+            (%s, %s, %s)', [uName, email, 'general'])
         curs.execute('select last_insert_id()')
         info = curs.fetchone()
+        uID = info['last_insert_id()']
         curs.execute('commit')
-        return info['last_insert_id()']
-    curs.execute('commit')
-    return info['uID']
+        return "uName="+uName+"; email="+email+" added with uID="+uID+"."
+    except:
+        return "email="+email+" already in user."
 
 # add human resource
 def addHR(conn, uID, hrUID, uName, companyName, email, personType):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('insert into human_resources (poster, uID, uName, \
-        companyName, personType, email) values (%s, %s, %s, %s, %s, %s)',
-        [uID, hrUID, uName, companyName, personType, email])
-    return "Added new human resource: poster="+uID+"; uID="+hrUID+"; uName="+
-        uName+"; companyName="+companyName+"; personType="+personType+
-        "; email="+email+"."
+    try:
+        curs = conn.cursor(MySQLdb.cursors.DictCursor)
+        curs.execute('start transaction')
+        addUser(conn, uName, email)
+        curs.execute('insert into human_resources (poster, uID, uName, \
+            companyName, personType, email) values (%s, %s, %s, %s, %s, %s)',
+            [uID, hrUID, uName, companyName, personType, email])
+        curs.execute('commit')
+        return "Added new human resource: poster="+uID+"; uID="+hrUID+"; \
+            uName="+uName+"; companyName="+companyName+"; personType="+
+            personType+"; email="+email+"."
+    except:
+        return "uID="+uID+" already listed in human_resources."
 
 # check if uID is an account
 def isNotAccount(conn, uID):
@@ -277,16 +295,11 @@ def deleteHR(conn, uID, hrID):
     if canUpdate(conn, "hr", hrID, uID):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         if isNotAccount(conn, uID):
-            try:
-                curs.execute('delete from user_id where uID=%s', [hrID])
-                return "Deleted uID="+uID+" from human_resources and user_id."
-            except:
-                return "uID="+uID+" is not in user_id."
-        try:
+            curs.execute('delete from user_id where uID=%s', [hrID])
+            return "Deleted uID="+uID+" from human_resources and user_id."
+        else:
             curs.execute('delete from human_resources where uID=%s', [hrID])
             return "Deleted uID="+uID+"."
-        except:
-            return "uID="+uID+" does not exist in human_resources."
     return "Cannot delete uID. You are not the original poster or an admin."
 
 # ==============================================================================

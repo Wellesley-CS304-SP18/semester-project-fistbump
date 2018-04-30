@@ -40,7 +40,6 @@ def login():
         return render_template('login.html')
 
     if request.method == 'POST':
-        
         if request.form['submit'] == 'login':
             email = request.form['email']
             pwd = request.form['pwd']
@@ -70,15 +69,15 @@ def login():
                 insertUser(conn, uName, email, hashedPwd);
                 flash('User successfully added.')
                 return redirect(url_for('login'))
-        
+
 @app.route('/home/', methods=['GET','POST'])
 def home():
     if 'uID' not in session:
         flash('Please login to view site')
         return redirect(url_for('login'))
-    else:    
+    else:
         uID = session['uID']
-    
+
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -90,6 +89,37 @@ def home():
         if request.form['submit'] == "Log Out":
             session.pop('uID', None)
             return redirect(url_for('login'))
+
+@app.route('/addJob', methods=['POST'])
+def addJob():
+    conn = dbconn2.connect(DSN)
+    if request.method == 'POST':
+        if request.form['submit'] == 'submit'
+            link = request.form[('link')]
+    		classPref = request.form[('classPref')] #radio button
+    		jobTitle = request.form[('jobTitle')] #radio button
+    		jobType = request.form[('jobType')] #radio button
+    		positionName = request.form[('positionName')]
+            season = request.form[('season')] #radio button
+            deadline = request.form[('deadline')]
+            company = request.form[('companyName')] #can only add in one job
+            uID = session['uID']
+        addJob(conn, uID, companyName, link, classPref, jobType, jobTitle, positionName, season, deadline, city)
+    return return redirect(url_for('jobLocation'))
+
+@app.route('/addjobLocation/<jobID>', methods=['POST'])
+def addJobLocation():
+    conn = dbconn2.connect(DSN)
+    if request.method == 'POST':
+        if request.form['submit'] == 'submit'
+            uID = session['uID']
+            locations = request.form[('city')] #returns an array? not sure
+            for city in locations:
+                addJobLoc(conn, uID, jobID, city)
+            newLocation = request.form[('newLocation')]
+            if newLocation: #can a user submit with an empty value
+                addCity(conn, newLocation)
+                addJobLoc(conn, uID ,jobID ,city)
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job():
