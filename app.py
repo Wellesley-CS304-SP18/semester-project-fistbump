@@ -8,6 +8,7 @@ import sys, os, random
 import dbconn2
 import bcrypt
 from login import *
+from view import *
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
@@ -83,7 +84,8 @@ def home():
     if request.method == 'GET':
         name = getUName(conn, uID)['uName']
         return render_template('home.html',
-                               uName = name)
+                               uName = name,
+                               opportunities = getOpps(conn))
 
     if request.method == 'POST':
         if request.form['submit'] == "Log Out":
@@ -94,24 +96,24 @@ def home():
 def addJob():
     conn = dbconn2.connect(DSN)
     if request.method == 'POST':
-        if request.form['submit'] == 'submit'
+        if request.form['submit'] == 'submit':
             link = request.form[('link')]
-    		classPref = request.form[('classPref')] #radio button
-    		jobTitle = request.form[('jobTitle')] #radio button
-    		jobType = request.form[('jobType')] #radio button
-    		positionName = request.form[('positionName')]
+            classPref = request.form[('classPref')] #radio button
+            jobTitle = request.form[('jobTitle')] #radio button
+            jobType = request.form[('jobType')] #radio button
+            positionName = request.form[('positionName')]
             season = request.form[('season')] #radio button
             deadline = request.form[('deadline')]
             company = request.form[('companyName')] #can only add in one job
             uID = session['uID']
-        addJob(conn, uID, companyName, link, classPref, jobType, jobTitle, positionName, season, deadline, city)
-    return return redirect(url_for('jobLocation'))
+            addJob(conn, uID, companyName, link, classPref, jobType, jobTitle, positionName, season, deadline, city)
+    return redirect(url_for('jobLocation'))
 
 @app.route('/addjobLocation/<jobID>', methods=['POST'])
 def addJobLocation():
     conn = dbconn2.connect(DSN)
     if request.method == 'POST':
-        if request.form['submit'] == 'submit'
+        if request.form['submit'] == 'submit':
             uID = session['uID']
             locations = request.form[('city')] #returns an array? not sure
             for city in locations:
