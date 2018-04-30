@@ -94,7 +94,10 @@ def home():
             session.pop('uID', None)
             return redirect(url_for('login'))
 
-@app.route('/addJob/', methods=['GET','POST'])
+        if request.form['submit'] == "Add New Job":
+            return redirect(url_for('addNewJob'))
+
+@app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
     conn = dbconn2.connect(DSN)
 
@@ -118,15 +121,16 @@ def addNewJob():
         jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
     return redirect(url_for('addJobLocation', jobID=jobID))
 
-@app.route('/addJobLocation/<jobID>')
-def displayAddJobLocation(jobID):
-    conn = dbconn2.connect(DSN)
-    cities = opp.allCities(conn)
-    return render_template('jobLocation.html',jobID = jobID,cities = cities)
-
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
     conn = dbconn2.connect(DSN)
+    
+    if request.method == 'GET':
+        cities = opp.allCities(conn)
+        return render_template('jobLocation.html',
+                               jobID = jobID,
+                               cities = cities)
+
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
             uID = 1
