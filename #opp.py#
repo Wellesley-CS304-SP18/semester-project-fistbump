@@ -21,8 +21,13 @@ def canUpdate(conn, table, ID, uID):
     curs.execute('commit')
     if info is not None:
         samePoster = (info['poster'] == uID)
+<<<<<<< HEAD
         isAd = isAdmin(conn, uID)
         return (samePoster or isAd)
+=======
+        isAdmin = isAdmin(conn, uID)
+        return (samePoster or isAdmin)
+>>>>>>> master
     return True
 
 # check if user is admin

@@ -73,7 +73,7 @@ def login():
                 flash('User successfully added.')
                 return redirect(url_for('login'))
 
-@app.route('/home/', methods=['GET','POST'])
+@app.route('/home/', methods=['GET', 'POST'])
 def home():
     if 'uID' not in session:
         flash('Please login to view site')
@@ -133,14 +133,17 @@ def addJobLocation(jobID):
             #uID = session['uID']
             cities = opp.allCities(conn)
             if bool(cities):
-                locations = request.form[('city')] #returns an array? not sure
-                for city in locations:
-                    opp.addJobLoc(conn, uID, jobID, city)
-            
+                try:
+                    locations = request.form.getlist('city') #returns an array? not sure
+                    for city in locations:
+                        opp.addJobLoc(conn, uID, jobID, city)
+                except:
+                    pass
+
             newLocation = request.form[('newLocation')]
             if newLocation: #can a user submit with an empty value
                 opp.addCity(conn, newLocation)
-                opp.addJobLoc(conn, uID ,jobID ,city)
+                opp.addJobLoc(conn, uID ,jobID, newLocation)
     return redirect(url_for('home'))
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
