@@ -9,7 +9,7 @@
 <body>
 
 
-    <form method="POST" action="{{url_for('addNewJob')}}">
+    <form method="POST" action="{{url_for('addJob')}}">
       <table>
         <tr>
           <td><label for="positionName">Position Name</label>
