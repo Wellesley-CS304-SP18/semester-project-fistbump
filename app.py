@@ -7,8 +7,8 @@ app = Flask(__name__)
 import sys, os, random
 import dbconn2
 import bcrypt
-import login
-import view
+from login import *
+from view import *
 import opp
 #import search
 
@@ -94,13 +94,13 @@ def home():
             session.pop('uID', None)
             return redirect(url_for('login'))
 
-@app.route('/addJob/')
-def display():
-    return render_template('job_form.html')
-
 @app.route('/addJob/', methods=['GET','POST'])
 def addNewJob():
     conn = dbconn2.connect(DSN)
+
+    if request.method == 'GET':
+        return render_template('job_form.html')
+
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
             link = request.form[('link')]
