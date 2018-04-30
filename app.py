@@ -8,6 +8,7 @@ import sys, os, random
 import dbconn2
 import bcrypt
 from login import *
+from view import *
 import opp
 #import search
 
@@ -17,7 +18,7 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                            for i in range(20) ])
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
-db = 'htran_db'
+db = 'lluo2_db'
 
 # --------------------------------------------
 # ROUTES
@@ -42,17 +43,16 @@ def login():
         return render_template('login.html')
 
     if request.method == 'POST':
-
         if request.form['submit'] == 'login':
             email = request.form['email']
             pwd = request.form['pwd']
             hashed = getPwd(conn, email)
-
+            
             if hashed is not None:
                 if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
                     flash(errorMsg)
                     return render_template('login.html')
-                else:
+                else:                    
                     session['uID'] = getUID(conn, email)['uID']
                     return redirect(url_for('home'))
             else:
@@ -86,20 +86,21 @@ def home():
     if request.method == 'GET':
         name = getUName(conn, uID)['uName']
         return render_template('home.html',
-                               uName = name)
+                               uName = name,
+                               opportunities = getOpps(conn))
 
     if request.method == 'POST':
         if request.form['submit'] == "Log Out":
             session.pop('uID', None)
             return redirect(url_for('login'))
 
-@app.route('/addJob/')
-def display():
-    return render_template('job_form.html')
-
 @app.route('/addJob/', methods=['GET','POST'])
 def addNewJob():
     conn = dbconn2.connect(DSN)
+
+    if request.method == 'GET':
+        return render_template('job_form.html')
+
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
             link = request.form[('link')]
@@ -141,7 +142,6 @@ def addJobLocation(jobID):
                 opp.addCity(conn, newLocation)
                 opp.addJobLoc(conn, uID ,jobID ,city)
     return redirect(url_for('home'))
-
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job():

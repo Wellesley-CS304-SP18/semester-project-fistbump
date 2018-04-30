@@ -67,8 +67,7 @@
   {% if opportunities %}
   <div id="opportunities">
     {% for opportunity in opportunities %}
-      <p>{{opportunity.jobTitle}}</p>
-      <p>{{opportunity.companyName}}</p>
+      <p>ID:{{opportunity.jobID}}//{{opportunity.positionName}}//{{opportunity.companyName}}</p>
         {% for location in locations %}
           <p>{{location}}</p>
 	{% endfor %}
