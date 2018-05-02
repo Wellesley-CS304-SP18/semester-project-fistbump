@@ -5,7 +5,7 @@ import sys
 import MySQLdb
 import dbconn2
 
-db = 'fistbump_db'
+db = 'mshen4_db'
 
 # return all jobs
 def allJobs(conn):

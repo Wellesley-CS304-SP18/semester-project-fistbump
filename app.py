@@ -18,7 +18,7 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                            for i in range(20) ])
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
-db = 'fistbump_db'
+db = 'lluo2_db'
 
 # --------------------------------------------
 # ROUTES
@@ -47,12 +47,12 @@ def login():
             email = request.form['email']
             pwd = request.form['pwd']
             hashed = getPwd(conn, email)
-
+            
             if hashed is not None:
                 if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
                     flash(errorMsg)
                     return render_template('login.html')
-                else:
+                else:                    
                     session['uID'] = getUID(conn, email)['uID']
                     return redirect(url_for('home'))
             else:
@@ -124,7 +124,7 @@ def addNewJob():
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
     conn = dbconn2.connect(DSN)
-
+    
     if request.method == 'GET':
         cities = opp.allCities(conn)
         return render_template('jobLocation.html',
