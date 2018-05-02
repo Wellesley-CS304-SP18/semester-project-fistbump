@@ -1,4 +1,4 @@
-USE fistbump_db;
+USE mshen4_db;
 
 DROP TABLE IF EXISTS human_resources;
 DROP TABLE IF EXISTS job_location;
