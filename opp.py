@@ -5,7 +5,7 @@ import sys
 import MySQLdb
 import dbconn2
 
-db = 'lluo2_db'
+db = 'fistbump_db'
 
 # check if uID can update table (same poster or admin)
 def canUpdate(conn, table, ID, uID):

@@ -1,0 +1,36 @@
+<html>
+  <head>
+      <meta charset="utf-8">
+      <meta name=author content="Fistbump">
+      <meta name=description content="">
+      <meta name=keywords content="">
+      <title>Fist-bump</title>
+      <link rel="stylesheet" href="">
+  </head>
+
+  <body>
+    <header>
+      <h1> Fistbump </h1>
+      {% if loggedin %}
+      <div class = 'account_info'> <p> Logged in as {%uName%}</p>
+        <form method=POST action="">
+          <input type="submit" name="logout-btn" value="Log Out">
+        </form>
+      {% else %}
+      <form method=POST action="">
+        <input type="submit" name="register-btn" value="Register">
+      </form>
+      {% endif %}
+      <form method=POST action="">
+        <input name="search" value="">
+        <input type="submit" name="search-btn" value="Search">
+      </form>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+
+  </body>
+
+</html>
