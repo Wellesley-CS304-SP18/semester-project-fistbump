@@ -1,13 +1,6 @@
-<head>
-    <meta charset="utf-8">
-    <meta name=author content="Fistbump">
-    <meta name=description content="">
-    <meta name=keywords content="">
-    <title>Fist-bump</title>
-    <link rel="stylesheet" href="">
-</head>
-<body>
+{% extends "base.html" %}
 
+{% block content %}
 
     <form method="POST" action="{{url_for('addNewJob')}}">
       <table>
@@ -101,7 +94,4 @@
       <input type="submit" name="submit" value="submit">
     </form>
 
-    <footer>
-    </footer>
-</body>
-</html>
+{% endblock %}
