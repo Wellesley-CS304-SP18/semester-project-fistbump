@@ -18,7 +18,7 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                            for i in range(20) ])
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
-db = 'mshen4_db'
+db = 'lluo2_db'
 
 # ------------------------------------------------------------------------------
 # ROUTES
@@ -197,16 +197,10 @@ def addJobLocation(jobID):
 def job(jobID):
     conn = dbconn2.connect(DSN)
     (job, reviews, hrs) = search.findJob(conn, jobID)
-    for rev in reviews:
-        print rev['review']
     return render_template('job.html',
                            job=job,
                            reviews=reviews,
                            hrs=hrs)
-
-@app.route('/reu/<reuID>', methods=['GET', 'POST'])
-def reu(reuID):
-    return
 
 # ------------------------------------------------------------------------------
 
