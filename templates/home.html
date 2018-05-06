@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="">
 </head>
 <body>
-  
+
   <header> <h1> Fistbump </h1>
-    
+
     {% for message in get_flashed_messages() %}
       {{message}}
     {% endfor %}
@@ -37,30 +37,37 @@
   <div id="myDropdown" class="dropdown-content">
     <form method="post" action="">
       <h3> Filter by: </h3>
-        
+
       <p><label for="classPref">Class Preference</label></p>
-      <input type="radio" name="classPref" value ="1"> freshman
-      <input type="radio" name="classPref" value ="2"> sophomore
-      <input type="radio" name="classPref" value ="3"> junior
-      <input type="radio" name="classPref" value ="4"> senior
-      <input type="radio" name="classPref" value ="5"> underclassman
-      <input type="radio" name="classPref" value ="6"> upperclassman
-      <input type="radio" name="classPref" value ="7"> all
-      
+      <input type="radio" name="classPref" value="freshman"> Freshman
+      <input type="radio" name="classPref" value="sophomore"> Sophomore
+      <input type="radio" name="classPref" value="junior"> Junior
+      <input type="radio" name="classPref" value="senior"> Senior
+      <input type="radio" name="classPref" value="underclassman"> Underclassman
+      <input type="radio" name="classPref" value="upperclassman"> Upperclassman
+      <input type="radio" name="classPref" value="all"> All
+
       <p> <label for="jobType">Job Type</label></p>
-      <input type="radio" name="JobType" value ="1"> internship
-      <input type="radio" name="JobType" value ="2"> part-time
-      <input type="radio" name="JobType" value ="3"> full-time
-      
+      <input type="radio" name="type" value="internship"> Internship
+      <input type="radio" name="type" value="part-time"> Part-Time
+      <input type="radio" name="type" value="full-time"> Full-Time
+
+      <p> <label for="jobTitle">Job Title</label></p>
+      <input type="radio" name="type" value="engineering"> Engineering
+      <input type="radio" name="type" value="design"> Design
+      <input type="radio" name="type" value="pm"> PM
+      <input type="radio" name="type" value="other"> Other
+
       <p> <label for="season">Season</label></p>
-      <input type="radio" name="season" value ="1"> Summer
-      <input type="radio" name="season" value ="2"> Winter
-      <input type="radio" name="season" value ="3"> Fall
-      <input type="radio" name="season" value ="4"> Spring
-      
+      <input type="radio" name="season" value="summer"> Summer
+      <input type="radio" name="season" value="winter"> Winter
+      <input type="radio" name="season" value="fall"> Fall
+      <input type="radio" name="season" value="spring"> Spring
+      <input type="radio" name="season" value="year-round"> Year-Round
+
       <p> <label for="database">Kind</label></p>
-      <input type="radio" name="database" value ="reu_opp"> Research
-      <input type="radio" name="database" value ="job_opp"> Industry
+      <input type="radio" name="database" value="reu_opp"> Research
+      <input type="radio" name="database" value="job_opp"> Industry
     </form>
   </div>
   <button onclick="myFunction()" class="dropbtn">Done</button>

@@ -5,7 +5,7 @@ import sys
 import MySQLdb
 import dbconn2
 
-db = 'mshen4_db'
+# ------------------------------------------------------------------------------
 
 # return all jobs
 def allJobs(conn):
@@ -22,13 +22,10 @@ def allREUs(conn):
     return info
 
 # return all jobs given search terms
-# if didn't pick filter input % for param
-def searchJobs(conn, companyName, classPref, jobTitle, jobType, season,
-               deadline):
+# if didn't pick filter input defaulted % in routing
+def searchJobs(conn, classPref, jobTitle, jobType, season, deadline):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('select * from job_opp where companyName=%s \
-                  intersect \
-                  select * from job_opp where classPref=%s \
+    curs.execute('select * from job_opp where classPref=%s \
                   intersect \
                   select * from job_opp where jobTitle=%s \
                   intersect \
@@ -37,7 +34,7 @@ def searchJobs(conn, companyName, classPref, jobTitle, jobType, season,
                   select * from job_opp where season=%s \
                   intersect \
                   select * from job_opp where deadline<=%s',
-                  [companyName, classPref, jobTitle, jobType, season, deadline])
+                  [classPref, jobTitle, jobType, season, deadline])
     info = curs.fetchall()
     return info
 
@@ -54,6 +51,9 @@ def findJob(conn, jobID):
     companyName = info['companyName']
     hrs = searchHRs(conn, companyName)
     curs.execute('commit')
+    print job
+    print reviews
+    print hrs
     return (job, reviews, hrs)
 
 # return all reus given search terms
@@ -90,10 +90,3 @@ def searchHRs(conn, companyName):
         [companyName])
     info = curs.fetchall()
     return info
-
-# ==============================================================================
-
-if __name__ == '__main__':
-    DSN = dbconn2.read_cnf()
-    DSN['db'] = db     # the database we want to connect to
-    dbconn2.connect(DSN)
