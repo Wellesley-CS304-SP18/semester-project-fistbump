@@ -123,23 +123,10 @@ def home():
                 season = request.form['season']
             except:
                 season = "%"
-            try:
-                database = request.form['database']
-            except:
-                database = "both"
 
-            # only look at jobs
-            if database == "job_opp":
-                jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
+            jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
                                          season, "%")
-            # only look at reus
-            elif database == "reu_opp":
-                reus = search.searchREUs(conn, "%", classPref, "%", "%")
-            # both jobs & reus
-            else:
-                jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
-                                         season, "%")
-                reus = search.searchREUs(conn, "%", classPref, "%", "%")
+
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
