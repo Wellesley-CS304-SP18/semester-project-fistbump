@@ -3,20 +3,23 @@
 {% block content %}
 
 <h3>Job Info</h3>
-
+  
+  {% if job %}
   <div id = "job_info">
-    <p> {%companyName%} </p>
-    <p> {%jobTitle%} </p>
-    <p> {%jobType%} </p>
-    <p> {%link%} </p>
-    <p> {%season%} </p>
-    <p> {%deadline%} </p>
+    <p> Job Title: {{job.jobTitle}} </p>
+    <p> Company Name: {{job.companyName}} </p>
+    <p> Job Type: {{job.jobType}} </p>
+    <p> Link to Posting: {{job.link}} </p>
+    <p> Season: {{job.season}} </p>
+    <p> Application Deadline: {{job.deadline}} </p>
     <ul>
       {% for location in locations %}
-        <li> {%location.city%} </li>
+        <li> {{location.city}} </li>
+      {% endfor %}
     </ul>
-    <p> {%poster%} </p>
+    <p> {{poster}} </p>
   </div>
+  {% endif %}
 
 <h3>Reviews</h3> 
    
@@ -30,7 +33,9 @@
     {% if reviews %}
       {% for review in reviews %}
         <p>Name: {{review.reviewer}}</p>
-        <p> {{review.review}}</p>
+        <p>Review: {{review.review}}</p>
+      {% endfor %}
+    {% endif %}
   </div>
 
   <div class = 'redirect_home'>

@@ -142,6 +142,10 @@ def home():
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+    
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -166,6 +170,10 @@ def addNewJob():
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+    
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -194,6 +202,10 @@ def addJobLocation(jobID):
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+    
     conn = dbconn2.connect(DSN)
     
     if request.method == 'GET':
