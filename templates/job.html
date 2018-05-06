@@ -8,44 +8,41 @@
 </head>
 <body>
 
-    <header> <h1> Fistbump </h1>
-      {% if loggedin %}
-      <div class = 'account_info'> <p> Logged in as {%uName%}</p>
-        <form method=POST action="">
-          <input type="submit" name="logout-btn" value="Log Out">
-        </form>
-      {% else %}
-      <form method=POST action="">
-        <input type="submit" name="register-btn" value="Register">
-      </form>
-      {% endif %}
-      <form method=POST action="">
-        <input name="search" value="">
-        <input type="submit" name="search-btn" value="Search">
-      </form>
-
-    </header>
-
     <div id = "job_info">
-      <p> {%companyName%} </p>
-      <p> {%jobTitle%} </p>
-      <p> {%jobType%} </p>
-      <p> {%link%} </p>
-      <p> {%season%} </p>
-      <p> {%deadline%} </p>
-      <ul>
-        {% for location in locations %}
-          <li> {%location.city%} </li>
-      </ul>
-      <p> {%poster%} </p>
+      {% if job %}
+        <p>Company: {{job.companyName}} </p>
+        <p>Job Title: {{job.jobTitle}} </p>
+        <p>Job Type: {{job.jobType}} </p>
+        <p>Link: {{job.link}} </p>
+        <p>Season: {{job.season}} </p>
+        <p>Deadline: {{job.deadline}} </p>
+        <ul>
+          {% for location in locations %}
+            <li> {{location.city}} </li>
+          {% endfor %}
+          </ul>
+        <p>Poster ID: {{job.poster}} </p>
+      {% endif %}
 
+    </div>
+
+    <div id = "human_resources">
+      {% if hrs %}
+        {% for hr in hrs %}
+          <p>Name: {{hr.uName}}</p>
+          <p>{{hr.personType}}</p>
+          <p>Email: {{hr.email}}</p>
+        {% endfor %}
+      {% endif %}
     </div>
 
     <div id = "reviews">
       {% if reviews %}
-        {% for review in reviews %}
-          <p>Name: {{review.reviewer}}</p>
-          <p> {{review.review}}</p>
+        {% for rev in reviews %}
+          <p>Year: {{rev.jobYear}}</p>
+          <p>Review: {{rev.review}}</p>
+        {% endfor %}
+      {% endif %}
     </div>
 
     <footer>

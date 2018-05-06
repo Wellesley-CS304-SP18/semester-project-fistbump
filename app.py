@@ -1,4 +1,4 @@
-#fistbump!
+# Fistbump!
 
 from flask import (Flask, render_template, make_response, url_for, request, redirect, flash, session, send_from_directory, jsonify)
 from werkzeug import secure_filename
@@ -10,7 +10,7 @@ import bcrypt
 from login import *
 from view import *
 import opp
-#import search
+import search
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
@@ -18,9 +18,9 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                            for i in range(20) ])
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
-db = 'lluo2_db'
+db = 'mshen4_db'
 
-# --------------------------------------------
+# ------------------------------------------------------------------------------
 # ROUTES
 
 @app.route('/', methods=['GET'])
@@ -47,12 +47,12 @@ def login():
             email = request.form['email']
             pwd = request.form['pwd']
             hashed = getPwd(conn, email)
-            
+
             if hashed is not None:
                 if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
                     flash(errorMsg)
                     return render_template('login.html')
-                else:                    
+                else:
                     session['uID'] = getUID(conn, email)['uID']
                     return redirect(url_for('home'))
             else:
@@ -90,12 +90,56 @@ def home():
                                opportunities = getOpps(conn))
 
     if request.method == 'POST':
+        # log out of account & session
         if request.form['submit'] == "Log Out":
             session.pop('uID', None)
             return redirect(url_for('login'))
 
+        # add a new job opportunity
         if request.form['submit'] == "Add New Job":
             return redirect(url_for('addNewJob'))
+
+        # search for a job or reu with a key word
+        if request.form['submit'] == "Search":
+            # SEARCH JOB TITLE?
+            pass
+
+        # filter through all opportunities
+        if request.form['submit'] == "Filter":
+            # try & except (do not need to check something for all filters)
+            try:
+                classPref = request.form['classPref']
+            except:
+                classPref = "%"
+            try:
+                jobType = request.form['jobType']
+            except:
+                jobType = "%"
+            try:
+                jobTitle = request.form['jobTitle']
+            except:
+                jobTitle = "%"
+            try:
+                season = request.form['season']
+            except:
+                season = "%"
+            try:
+                database = request.form['database']
+            except:
+                database = "both"
+
+            # only look at jobs
+            if database == "job_opp":
+                jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
+                                         season, "%")
+            # only look at reus
+            elif database == "reu_opp":
+                reus = search.searchREUs(conn, "%", classPref, "%", "%")
+            # both jobs & reus
+            else:
+                jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
+                                         season, "%")
+                reus = search.searchREUs(conn, "%", classPref, "%", "%")
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
@@ -124,7 +168,7 @@ def addNewJob():
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
     conn = dbconn2.connect(DSN)
-    
+
     if request.method == 'GET':
         cities = opp.allCities(conn)
         return render_template('jobLocation.html',
@@ -138,12 +182,11 @@ def addJobLocation(jobID):
             cities = opp.allCities(conn)
             if bool(cities):
                 try:
-                    locations = request.form.getlist('city') #returns an array? not sure
+                    locations = request.form.getlist('city')
                     for city in locations:
                         opp.addJobLoc(conn, uID, jobID, city)
                 except:
                     pass
-
             newLocation = request.form[('newLocation')]
             if newLocation: #can a user submit with an empty value
                 opp.addCity(conn, newLocation)
@@ -151,14 +194,21 @@ def addJobLocation(jobID):
     return redirect(url_for('home'))
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
-def job():
-    return
+def job(jobID):
+    conn = dbconn2.connect(DSN)
+    (job, reviews, hrs) = search.findJob(conn, jobID)
+    for rev in reviews:
+        print rev['review']
+    return render_template('job.html',
+                           job=job,
+                           reviews=reviews,
+                           hrs=hrs)
 
 @app.route('/reu/<reuID>', methods=['GET', 'POST'])
-def reu():
+def reu(reuID):
     return
 
-# --------------------------------------------
+# ------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

@@ -1,10 +1,11 @@
 #!/usr/local/bin/python2.7
+# Fistbump!
 
 import sys
 import MySQLdb
 import dbconn2
 
-#------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 def getPwd(conn, email):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
