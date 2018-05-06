@@ -12,16 +12,15 @@
   <body>
     <header>
       <h1> Fistbump </h1>
-      {% if loggedin %}
+        
+        {% for message in get_flashed_messages() %}
+          {{message}}
+        {% endfor %}
+      
         <div class = 'account_info'> <p> Logged in as {{uName}}</p>
           <form method=POST action="">
             <input type="submit" name="submit" value="Log Out">
-          </form>
-      {% else %}
-        <form method=POST action="">
-          <input type="submit" name="submit" value="Register">
-        </form>
-      {% endif %}
+          </form>  
         </div>
 
       <div class = 'search'>

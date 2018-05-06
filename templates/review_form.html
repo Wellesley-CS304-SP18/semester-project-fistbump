@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form method="POST" action="">
+      
+      <p>jobID = {{ jobID }}</p>
+
+      <table>
+	<tr>
+          <td><label for="jobYear">Job Year</label>
+            <input name='jobYear' value=""></td>
+        </tr>
+
+	<tr>
+	  <td><label for="review">Review</label>
+            <input name='review' value=""></td>
+        </tr>
+      </table>
+
+      <input type="submit" name="submit" value="Submit Review">
+    </form>
+
+{% endblock %}

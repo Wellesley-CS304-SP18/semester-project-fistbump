@@ -11,6 +11,7 @@ from login import *
 from view import *
 import opp
 import search
+from rev import *
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
@@ -145,7 +146,9 @@ def addNewJob():
     if 'uID' not in session:
         flash('Please login to view site')
         return redirect(url_for('login'))
-    
+    else:
+        uID = session['uID']
+
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -163,10 +166,9 @@ def addNewJob():
             company = request.form[('companyName')] #can only add in one job
             if company == 'none':
                 company = request.form[('newCompany')]
-            #uID = session['uID']
-            uID = 1
-        jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
-    return redirect(url_for('addJobLocation', jobID=jobID))
+            
+            jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
+            return redirect(url_for('addJobLocation', jobID=jobID))
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
@@ -205,19 +207,54 @@ def job(jobID):
     if 'uID' not in session:
         flash('Please login to view site')
         return redirect(url_for('login'))
+    else:
+        uID = session['uID']
     
     conn = dbconn2.connect(DSN)
     
     if request.method == 'GET':
         (job, reviews, hrs) = search.findJob(conn, jobID)
+        name = getUName(conn, uID)['uName']
         return render_template('job.html',
+                               uName=name,
                                job=job,
                                reviews=reviews,
                                hrs=hrs)
     
     if request.method == 'POST':
+        if request.form['submit'] == 'Add Job Review':
+            return redirect(url_for('addNewReview', 
+                                    jobID=jobID))
+        
         if request.form['submit'] == 'Back to Home':
-            return redirect(url_for('home'))
+            return redirect(url_for('home'));
+
+@app.route('/addNewReview/<jobID>', methods=['GET','POST'])
+def addNewReview(jobID):
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+    else:
+        uID = session['uID']
+    
+    conn = dbconn2.connect(DSN)
+
+    if request.method == 'GET':
+        return render_template('review_form.html',
+                               jobID = jobID)
+
+    if request.method == 'POST':
+        if request.form['submit'] == 'Submit Review':
+            jobYear = request.form[('jobYear')]
+            review = request.form[('review')] 
+          
+            addJob = addJobRev(conn, uID, jobID, jobYear, review)
+            if not addJob:
+                flash("A review already exists for this job and user")
+            else:
+                flash("Review added successfully")
+            
+        return redirect(url_for('job', jobID=jobID))
 
 # ------------------------------------------------------------------------------
 
