@@ -30,6 +30,7 @@ def landing():
 # login and register on the same html page
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    #if user is already logged in, redirect to home
     if 'uID' in session:
         uID = session['uID']
         flash('You\'re already logged in!')
@@ -39,39 +40,50 @@ def login():
     successMsg = 'Successful login.'
     conn = dbconn2.connect(DSN)
 
+    #render empty login page
     if request.method == 'GET':
         return render_template('login.html')
 
     if request.method == 'POST':
+        #if user is logging in
         if request.form['submit'] == 'login':
             email = request.form['email']
             pwd = request.form['pwd']
             hashed = getPwd(conn, email)
 
+            #if user exists in db
             if hashed is not None:
+                #input password does not match db password
                 if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
                     flash(errorMsg)
                     return render_template('login.html')
+                #user successfully logged in
                 else:
                     session['uID'] = getUID(conn, email)['uID']
                     return redirect(url_for('home'))
+            #user does not exist in db
             else:
                 flash(errorMsg)
                 return render_template('login.html')
 
+        #user account doesn't exist, register
         if request.form['submit'] == 'register':
             uName = request.form['uName']
             email = request.form['email']
             pwd = request.form['pwd']
 
+            #email is already used by another user
             if getUID(conn, email) != None:
                 flash('Email already in use.')
                 return render_template('login.html')
             else:
+                #email is available, and user info is input into db
                 hashedPwd = bcrypt.hashpw(pwd.encode('utf-8'), bcrypt.gensalt())
                 insertUser(conn, uName, email, hashedPwd);
+                #session uID is set
+                session['uID'] = getUID(conn, email)['uID']
                 flash('User successfully added.')
-                return redirect(url_for('login'))
+                return redirect(url_for('home'))
 
 @app.route('/home/', methods=['GET', 'POST'])
 def home():
@@ -183,11 +195,17 @@ def addJobLocation(jobID):
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
     conn = dbconn2.connect(DSN)
-    (job, reviews, hrs) = search.findJob(conn, jobID)
-    return render_template('job.html',
-                           job=job,
-                           reviews=reviews,
-                           hrs=hrs)
+    
+    if request.method == 'GET':
+        (job, reviews, hrs) = search.findJob(conn, jobID)
+        return render_template('job.html',
+                               job=job,
+                               reviews=reviews,
+                               hrs=hrs)
+    
+    if request.method == 'POST':
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'))
 
 # ------------------------------------------------------------------------------
 
