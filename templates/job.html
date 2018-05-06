@@ -1,51 +1,27 @@
-<head>
-    <meta charset="utf-8">
-    <meta name=author content="Fistbump">
-    <meta name=description content="">
-    <meta name=keywords content="">
-    <title>Fist-bump</title>
-    <link rel="stylesheet" href="">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
 
     <div id = "job_info">
-      {% if job %}
-        <p>Company: {{job.companyName}} </p>
-        <p>Job Title: {{job.jobTitle}} </p>
-        <p>Job Type: {{job.jobType}} </p>
-        <p>Link: {{job.link}} </p>
-        <p>Season: {{job.season}} </p>
-        <p>Deadline: {{job.deadline}} </p>
-        <ul>
-          {% for location in locations %}
-            <li> {{location.city}} </li>
-          {% endfor %}
-          </ul>
-        <p>Poster ID: {{job.poster}} </p>
-      {% endif %}
+      <p> {%companyName%} </p>
+      <p> {%jobTitle%} </p>
+      <p> {%jobType%} </p>
+      <p> {%link%} </p>
+      <p> {%season%} </p>
+      <p> {%deadline%} </p>
+      <ul>
+        {% for location in locations %}
+          <li> {%location.city%} </li>
+      </ul>
+      <p> {%poster%} </p>
 
-    </div>
-
-    <div id = "human_resources">
-      {% if hrs %}
-        {% for hr in hrs %}
-          <p>Name: {{hr.uName}}</p>
-          <p>{{hr.personType}}</p>
-          <p>Email: {{hr.email}}</p>
-        {% endfor %}
-      {% endif %}
     </div>
 
     <div id = "reviews">
       {% if reviews %}
-        {% for rev in reviews %}
-          <p>Year: {{rev.jobYear}}</p>
-          <p>Review: {{rev.review}}</p>
-        {% endfor %}
-      {% endif %}
+        {% for review in reviews %}
+          <p>Name: {{review.reviewer}}</p>
+          <p> {{review.review}}</p>
     </div>
 
-    <footer>
-    </footer>
-</body>
-</html>
+{% endblock %}
