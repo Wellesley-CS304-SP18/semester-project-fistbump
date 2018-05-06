@@ -86,6 +86,9 @@ def login():
                 flash('User successfully added.')
                 return redirect(url_for('home'))
 
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
+
 @app.route('/home/', methods=['GET', 'POST'])
 def home():
     if 'uID' not in session:
@@ -139,7 +142,9 @@ def home():
 
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
                                          season, "%")
-
+            
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
@@ -169,6 +174,9 @@ def addNewJob():
             
             jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
             return redirect(url_for('addJobLocation', jobID=jobID))
+
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
@@ -200,7 +208,10 @@ def addJobLocation(jobID):
             if newLocation: #can a user submit with an empty value
                 opp.addCity(conn, newLocation)
                 opp.addJobLoc(conn, uID ,jobID, newLocation)
-    return redirect(url_for('home'))
+        return redirect(url_for('home'))
+
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
@@ -254,7 +265,10 @@ def addNewReview(jobID):
             else:
                 flash("Review added successfully")
             
-        return redirect(url_for('job', jobID=jobID))
+            return redirect(url_for('job', jobID=jobID))
+
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
 
 # ------------------------------------------------------------------------------
 
