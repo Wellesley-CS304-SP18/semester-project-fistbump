@@ -13,9 +13,9 @@ def addJobRev(conn, uID, jobID, jobYear, review):
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('insert into job_review (jobID, jobYear, reviewer, \
             review) values (%s, %s, %s, %s)', [jobID, jobYear, uID, review])
-        return 'job review inserted'
+        return True
     except:
-        'job review already made for this job & user'
+        False
 
 # update a job review (can update year & review, given uID & jobID)
 def updateJobRev(conn, uID, jobID, jobYear, review):

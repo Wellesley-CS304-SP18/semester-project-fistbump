@@ -1,19 +1,14 @@
-<head>
-    <meta charset="utf-8">
-    <meta name=author content="Fistbump">
-    <meta name=description content="">
-    <meta name=keywords content="">
-    <title>Fist-bump</title>
-    <link rel="stylesheet" href="">
-</head>
-<body>
+{% extends "base.html" %}
 
-
-    <form method="POST" action="{{url_for('addNewJob')}}">
+{% block content %}
+    
+    <!--<script type="text/javascript" src="checkEmptyForm.js"></script>
+-->
+    <form name="addJob" method="POST" action="{{url_for('addNewJob')}}" <!--onsubmit="return validateForm()"-->>
       <table>
         <tr>
           <td><label for="positionName">Position Name</label>
-            <input name='positionName' value=""></td>
+            <input name="positionName" value="" required></td>
         </tr>
 
         <tr>
@@ -62,17 +57,17 @@
         <tr>
           <td>
           <label for="deadline">Deadline</label>
-          <input type="date" name="deadline" min="2018-05-01">
+          <input type="date" name="deadline" min="2018-05-01" required>
           </td>
         </tr>
 
         <tr>
           <td>
             <label for="companyName">Companies:</label>
-            <select name="companyName">
+	    <select name="companyName">
               <option value="none">Choose One</option>
               {% for company in companies %}
-                 <option value="{{companyName}}"> {{companyName}} </option> <!-- quotations ? -->
+              <option value="{{company.companyName}}"> {{company.companyName}} </option> <!-- quotations ? -->
               {% endfor %}
             </select>
           </td>
@@ -88,7 +83,7 @@
 
         <tr>
           <td><label for="link">Link to Job description</label>
-            <input name='link' value=""></td>
+            <input name='link' value="" required></td>
         </tr>
 
         <tr>
@@ -101,7 +96,4 @@
       <input type="submit" name="submit" value="submit">
     </form>
 
-    <footer>
-    </footer>
-</body>
-</html>
+{% endblock %}

@@ -31,7 +31,7 @@ def landing():
 # login and register on the same html page
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
-    # if user is already logged in, redirect to home
+    #if user is already logged in, redirect to home
     if 'uID' in session:
         uID = session['uID']
         flash('You\'re already logged in!')
@@ -41,47 +41,47 @@ def login():
     successMsg = 'Successful login.'
     conn = dbconn2.connect(DSN)
 
-    # render empty login page
+    #render empty login page
     if request.method == 'GET':
         return render_template('login.html')
 
     if request.method == 'POST':
-        # if user is logging in
+        #if user is logging in
         if request.form['submit'] == 'login':
             email = request.form['email']
             pwd = request.form['pwd']
             hashed = getPwd(conn, email)
 
-            # if user exists in db
+            #if user exists in db
             if hashed is not None:
-                # input password does not match db password
+                #input password does not match db password
                 if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
                     flash(errorMsg)
                     return render_template('login.html')
-                # user successfully logged in
+                #user successfully logged in
                 else:
                     session['uID'] = getUID(conn, email)['uID']
                     return redirect(url_for('home'))
-            # user does not exist in db
+            #user does not exist in db
             else:
                 flash(errorMsg)
                 return render_template('login.html')
 
-        # user account doesn't exist, register
+        #user account doesn't exist, register
         if request.form['submit'] == 'register':
             uName = request.form['uName']
             email = request.form['email']
             pwd = request.form['pwd']
 
-            # email is already used by another user
+            #email is already used by another user
             if getUID(conn, email) != None:
                 flash('Email already in use.')
                 return render_template('login.html')
             else:
-                # email is available, and user info is input into db
+                #email is available, and user info is input into db
                 hashedPwd = bcrypt.hashpw(pwd.encode('utf-8'), bcrypt.gensalt())
                 insertUser(conn, uName, email, hashedPwd);
-                # session uID is set
+                #session uID is set
                 session['uID'] = getUID(conn, email)['uID']
                 flash('User successfully added.')
                 return redirect(url_for('home'))
@@ -140,8 +140,7 @@ def home():
             except:
                 season = "regexp 'fall|spring|summer|winter|year-round'"
 
-            jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
-                                     season)
+            jobs = search.searchJobs(conn, classPref, jobTitle, jobType,season)
             return render_template('home.html',
                                    uName = name,
                                    opportunities = jobs)
@@ -157,10 +156,13 @@ def addNewJob():
     else:
         uID = session['uID']
 
+    formErr = 'Please fill in the blank fields'
     conn = dbconn2.connect(DSN)
+    name = getUName(conn, uID)['uName']
 
     if request.method == 'GET':
-        return render_template('job_form.html')
+        return render_template('job_form.html',
+                               uName = name)
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
@@ -174,7 +176,6 @@ def addNewJob():
             company = request.form[('companyName')] #can only add in one job
             if company == 'none':
                 company = request.form[('newCompany')]
-
             jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
             return redirect(url_for('addJobLocation', jobID=jobID))
 
@@ -186,7 +187,6 @@ def addJobLocation(jobID):
     if 'uID' not in session:
         flash('Please login to view site')
         return redirect(url_for('login'))
-
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -259,14 +259,13 @@ def addNewReview(jobID):
     if request.method == 'POST':
         if request.form['submit'] == 'Submit Review':
             jobYear = request.form[('jobYear')]
-            review = request.form[('review')]
-
+            review = request.form[('review')] 
+          
             addJob = addJobRev(conn, uID, jobID, jobYear, review)
             if not addJob:
                 flash("A review already exists for this job and user")
             else:
                 flash("Review added successfully")
-
             return redirect(url_for('job', jobID=jobID))
 
         if request.form['submit'] == 'Back to Home':
