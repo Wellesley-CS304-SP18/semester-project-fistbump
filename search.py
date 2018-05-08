@@ -23,18 +23,16 @@ def allREUs(conn):
 
 # return all jobs given search terms
 # if didn't pick filter input defaulted % in routing
-def searchJobs(conn, classPref, jobTitle, jobType, season, deadline):
+def searchJobs(conn, classPref, jobTitle, jobType, season):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('select * from job_opp where classPref=%s \
-                  intersect \
-                  select * from job_opp where jobTitle=%s \
-                  intersect \
-                  select * from job_opp where jobType=%s \
-                  intersect \
-                  select * from job_opp where season=%s \
-                  intersect \
-                  select * from job_opp where deadline<=%s',
-                  [classPref, jobTitle, jobType, season, deadline])
+    # strings for what sql query to execute (since all enums could need regexp)
+    classPrefExec = "jobID in (select jobID from job_opp where classPref"+classPref+")"
+    jobTitleExec = "jobID in (select jobID from job_opp where jobTitle"+jobTitle+")"
+    jobTypeExec = "jobID in (select jobID from job_opp where jobType"+jobType+")"
+    seasonExec = "jobID in (select jobID from job_opp where season"+season+")"
+    filters = " and ".join([classPrefExec, jobTitleExec, jobTypeExec, seasonExec])
+    # don't need to worry about sql injections (values coming from our own form)
+    curs.execute('select * from job_opp where '+filters)
     info = curs.fetchall()
     return info
 
@@ -51,9 +49,6 @@ def findJob(conn, jobID):
     companyName = info['companyName']
     hrs = searchHRs(conn, companyName)
     curs.execute('commit')
-    print job
-    print reviews
-    print hrs
     return (job, reviews, hrs)
 
 # return all reus given search terms

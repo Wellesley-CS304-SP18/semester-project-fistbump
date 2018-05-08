@@ -82,9 +82,9 @@ def home():
         uID = session['uID']
 
     conn = dbconn2.connect(DSN)
+    name = getUName(conn, uID)['uName']
 
     if request.method == 'GET':
-        name = getUName(conn, uID)['uName']
         return render_template('home.html',
                                uName = name,
                                opportunities = getOpps(conn))
@@ -108,25 +108,27 @@ def home():
         if request.form['submit'] == "Filter":
             # try & except (do not need to check something for all filters)
             try:
-                classPref = request.form['classPref']
+                classPref = "='"+request.form['classPref']+"'"
             except:
-                classPref = "%"
+                classPref = "regexp 'freshman|sophomore|junior|senior|underclassman|upperclassman|all'"
             try:
-                jobType = request.form['jobType']
+                jobType = "='"+request.form['jobType']+"'"
             except:
-                jobType = "%"
+                jobType = "regexp 'internship|part-time|full-time'"
             try:
-                jobTitle = request.form['jobTitle']
+                jobTitle = "='"+request.form['jobTitle']+"'"
             except:
-                jobTitle = "%"
+                jobTitle = "regexp 'engineering|design|pm|other'"
             try:
-                season = request.form['season']
+                season = "='"+request.form['season']+"'"
             except:
-                season = "%"
+                season = "regexp 'fall|spring|summer|winter|year-round'"
 
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
-                                         season, "%")
-
+                                     season)
+            return render_template('home.html',
+                                   uName = name,
+                                   opportunities = jobs)
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
