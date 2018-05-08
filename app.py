@@ -197,8 +197,7 @@ def addJobLocation(jobID):
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
-            uID = 1
-            #uID = session['uID']
+            uID = session['uID']
             cities = opp.allCities(conn)
             if bool(cities):
                 try:
