@@ -98,9 +98,9 @@ def home():
         uID = session['uID']
 
     conn = dbconn2.connect(DSN)
+    name = getUName(conn, uID)['uName']
 
     if request.method == 'GET':
-        name = getUName(conn, uID)['uName']
         return render_template('home.html',
                                uName = name,
                                opportunities = getOpps(conn))
@@ -124,25 +124,27 @@ def home():
         if request.form['submit'] == "Filter":
             # try & except (do not need to check something for all filters)
             try:
-                classPref = request.form['classPref']
+                classPref = "='"+request.form['classPref']+"'"
             except:
-                classPref = "%"
+                classPref = "regexp 'freshman|sophomore|junior|senior|underclassman|upperclassman|all'"
             try:
-                jobType = request.form['jobType']
+                jobType = "='"+request.form['jobType']+"'"
             except:
-                jobType = "%"
+                jobType = "regexp 'internship|part-time|full-time'"
             try:
-                jobTitle = request.form['jobTitle']
+                jobTitle = "='"+request.form['jobTitle']+"'"
             except:
-                jobTitle = "%"
+                jobTitle = "regexp 'engineering|design|pm|other'"
             try:
-                season = request.form['season']
+                season = "='"+request.form['season']+"'"
             except:
-                season = "%"
+                season = "regexp 'fall|spring|summer|winter|year-round'"
 
-            jobs = search.searchJobs(conn, classPref, jobTitle, jobType,
-                                         season, "%")
-            
+            jobs = search.searchJobs(conn, classPref, jobTitle, jobType,season)
+            return render_template('home.html',
+                                   uName = name,
+                                   opportunities = jobs)
+
         if request.form['submit'] == 'Back to Home':
             return redirect(url_for('home'));
 
@@ -174,7 +176,6 @@ def addNewJob():
             company = request.form[('companyName')] #can only add in one job
             if company == 'none':
                 company = request.form[('newCompany')]
-            
             jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
             return redirect(url_for('addJobLocation', jobID=jobID))
 
@@ -186,7 +187,6 @@ def addJobLocation(jobID):
     if 'uID' not in session:
         flash('Please login to view site')
         return redirect(url_for('login'))
-    
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -197,8 +197,7 @@ def addJobLocation(jobID):
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
-            uID = 1
-            #uID = session['uID']
+            uID = session['uID']
             cities = opp.allCities(conn)
             if bool(cities):
                 try:
@@ -223,9 +222,9 @@ def job(jobID):
         return redirect(url_for('login'))
     else:
         uID = session['uID']
-    
+
     conn = dbconn2.connect(DSN)
-    
+
     if request.method == 'GET':
         (job, reviews, hrs) = search.findJob(conn, jobID)
         name = getUName(conn, uID)['uName']
@@ -234,12 +233,12 @@ def job(jobID):
                                job=job,
                                reviews=reviews,
                                hrs=hrs)
-    
+
     if request.method == 'POST':
         if request.form['submit'] == 'Add Job Review':
-            return redirect(url_for('addNewReview', 
+            return redirect(url_for('addNewReview',
                                     jobID=jobID))
-        
+
         if request.form['submit'] == 'Back to Home':
             return redirect(url_for('home'));
 
@@ -250,7 +249,7 @@ def addNewReview(jobID):
         return redirect(url_for('login'))
     else:
         uID = session['uID']
-    
+
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -267,7 +266,6 @@ def addNewReview(jobID):
                 flash("A review already exists for this job and user")
             else:
                 flash("Review added successfully")
-            
             return redirect(url_for('job', jobID=jobID))
 
         if request.form['submit'] == 'Back to Home':
