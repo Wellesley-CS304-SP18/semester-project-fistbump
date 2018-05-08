@@ -5,7 +5,7 @@ import sys
 import MySQLdb
 import dbconn2
 
-#------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # add a job review (individual can only make 1 review for a single jobID)
 def addJobRev(conn, uID, jobID, jobYear, review):
