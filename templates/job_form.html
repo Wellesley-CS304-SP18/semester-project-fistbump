@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    <form method="POST" action="{{url_for('addNewJob')}}">
+    
+    <!--<script type="text/javascript" src="checkEmptyForm.js"></script>
+-->
+    <form name="addJob" method="POST" action="{{url_for('addNewJob')}}" <!--onsubmit="return validateForm()"-->>
       <table>
         <tr>
           <td><label for="positionName">Position Name</label>
-            <input name='positionName' value=""></td>
+            <input name="positionName" value="" required></td>
         </tr>
 
         <tr>
@@ -55,7 +57,7 @@
         <tr>
           <td>
           <label for="deadline">Deadline</label>
-          <input type="date" name="deadline" min="2018-05-01">
+          <input type="date" name="deadline" min="2018-05-01" required>
           </td>
         </tr>
 
@@ -81,7 +83,7 @@
 
         <tr>
           <td><label for="link">Link to Job description</label>
-            <input name='link' value=""></td>
+            <input name='link' value="" required></td>
         </tr>
 
         <tr>

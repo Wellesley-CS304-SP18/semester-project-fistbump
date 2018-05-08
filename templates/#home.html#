@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <div class = 'add_job'>
+    <form method="POST" action="">
+      <input type="submit" name="submit" value="Add New Job">
+    </form>
+  </div>
+
+<div class="dropdown">
+<button onclick="myFunction()" class="dropbtn">Filter</button>
+
+  <div id="myDropdown" class="dropdown-content">
+    <form method="post" action="">
+      <h3> Filter by: </h3>
+
+      <p><label for="classPref">Class Preference</label></p>
+      <input type="radio" name="classPref" value ="1"> freshman
+      <input type="radio" name="classPref" value ="2"> sophomore
+      <input type="radio" name="classPref" value ="3"> junior
+      <input type="radio" name="classPref" value ="4"> senior
+      <input type="radio" name="classPref" value ="5"> underclassman
+      <input type="radio" name="classPref" value ="6"> upperclassman
+      <input type="radio" name="classPref" value ="7"> all
+
+      <p> <label for="jobType">Job Type</label></p>
+      <input type="radio" name="JobType" value ="1"> internship
+      <input type="radio" name="JobType" value ="2"> part-time
+      <input type="radio" name="JobType" value ="3"> full-time
+
+      <p> <label for="season">Season</label></p>
+      <input type="radio" name="season" value ="1"> Summer
+      <input type="radio" name="season" value ="2"> Winter
+      <input type="radio" name="season" value ="3"> Fall
+      <input type="radio" name="season" value ="4"> Spring
+
+      <p> <label for="database">Kind</label></p>
+      <input type="radio" name="database" value ="reu_opp"> Research
+      <input type="radio" name="database" value ="job_opp"> Industry
+    </form>
+  </div>
+  <button onclick="submission()" class="dropbtn">Done</button>
+</div>
+
+
+<div class = 'sort'></div>
+<div class = 'listings'>
+  <!-- flashes -->
+  <p> Current Job Opportunities: </p>
+  {% if opportunities %}
+  <div id="opportunities">
+    {% for opportunity in opportunities %}
+      <p><a href="{{url_for('job',jobID=opportunity.jobID)}}">ID:{{opportunity.jobID}}//{{opportunity.positionName}}//{{opportunity.companyName}}</a></p>
+        {% for location in locations %}
+          <p>{{location}}</p>
+	{% endfor %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

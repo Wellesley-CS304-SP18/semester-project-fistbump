@@ -154,10 +154,13 @@ def addNewJob():
     else:
         uID = session['uID']
 
+    formErr = 'Please fill in the blank fields'
     conn = dbconn2.connect(DSN)
+    name = getUName(conn, uID)['uName']
 
     if request.method == 'GET':
-        return render_template('job_form.html')
+        return render_template('job_form.html',
+                               uName = name)
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
