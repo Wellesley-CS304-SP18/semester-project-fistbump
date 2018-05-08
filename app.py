@@ -19,7 +19,7 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                            for i in range(20) ])
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
-db = 'lluo2_db'
+db = 'fistbump_db'
 
 # ------------------------------------------------------------------------------
 # ROUTES
@@ -259,8 +259,8 @@ def addNewReview(jobID):
     if request.method == 'POST':
         if request.form['submit'] == 'Submit Review':
             jobYear = request.form[('jobYear')]
-            review = request.form[('review')] 
-          
+            review = request.form[('review')]
+
             addJob = addJobRev(conn, uID, jobID, jobYear, review)
             if not addJob:
                 flash("A review already exists for this job and user")

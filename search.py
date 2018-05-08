@@ -26,11 +26,12 @@ def allREUs(conn):
 def searchJobs(conn, classPref, jobTitle, jobType, season):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     # strings for what sql query to execute (since all enums could need regexp)
-    classPrefExec = "jobID in (select jobID from job_opp where classPref"+classPref+")"
-    jobTitleExec = "jobID in (select jobID from job_opp where jobTitle"+jobTitle+")"
-    jobTypeExec = "jobID in (select jobID from job_opp where jobType"+jobType+")"
-    seasonExec = "jobID in (select jobID from job_opp where season"+season+")"
+    classPrefExec = "jobID in (select jobID from job_opp where classPref "+classPref+")"
+    jobTitleExec = "jobID in (select jobID from job_opp where jobTitle "+jobTitle+")"
+    jobTypeExec = "jobID in (select jobID from job_opp where jobType "+jobType+")"
+    seasonExec = "jobID in (select jobID from job_opp where season "+season+")"
     filters = " and ".join([classPrefExec, jobTitleExec, jobTypeExec, seasonExec])
+    print('select * from job_opp where '+filters)
     # don't need to worry about sql injections (values coming from our own form)
     curs.execute('select * from job_opp where '+filters)
     info = curs.fetchall()

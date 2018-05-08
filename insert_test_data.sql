@@ -1,4 +1,4 @@
-USE lluo2_db;
+USE fistbump_db;
 
 INSERT INTO user_id (uType, uName, email, pwd) VALUES ('admin', 'Havannah Tran', 'htran@wellesley.edu', 'password123');
 INSERT INTO user_id (uType, uName, email, pwd) VALUES ('admin', 'Marissa Shen', 'mshen4n@wellesley.edu', 'password456');
@@ -14,7 +14,7 @@ INSERT INTO reu_opp(deptID, link, classPref, deadline, isUROP, poster) VALUES (3
 
 INSERT INTO reu_review(deptID, reviewer, review) VALUES (2, 1, 'WOW SMITH IS AWESOME');
 INSERT INTO reu_review(deptID, reviewer, review) VALUES (1, 3, 'Yeah this place is kinda sketchy');
-INSERT INTO reu_review(deptID, reviewer, review) VALUES	(3, 3, 'I would love to go back!'); 
+INSERT INTO reu_review(deptID, reviewer, review) VALUES	(3, 3, 'I would love to go back!');
 
 INSERT INTO company(companyName) VALUES ('Google');
 INSERT INTO company(companyName) VALUES ('Adobe');
