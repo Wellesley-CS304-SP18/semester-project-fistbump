@@ -140,7 +140,7 @@ def home():
             except:
                 season = "regexp 'fall|spring|summer|winter|year-round'"
 
-            jobs = search.searchJobs(conn, classPref, jobTitle, jobType,season)
+            jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
             return render_template('home.html',
                                    uName = name,
                                    opportunities = jobs)

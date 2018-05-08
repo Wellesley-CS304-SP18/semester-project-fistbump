@@ -2,9 +2,7 @@
 
 {% block content %}
     
-    <!--<script type="text/javascript" src="checkEmptyForm.js"></script>
--->
-    <form name="addJob" method="POST" action="{{url_for('addNewJob')}}" <!--onsubmit="return validateForm()"-->>
+    <form name="addJob" method="POST" action="{{url_for('addNewJob')}}">
       <table>
         <tr>
           <td><label for="positionName">Position Name</label>
@@ -14,43 +12,43 @@
         <tr>
           <td>
             <label for="jobTitle">Job Title</label>
-            <input type="radio" name="jobTitle" value ="1"> Design
-            <input type="radio" name="jobTitle" value ="2"> Engineering
-            <input type="radio" name="jobTitle" value ="3"> PM
-            <input type="radio" name="jobTitle" value ="4"> Other
+            <input type="radio" name="jobTitle" value="1" required> Design
+            <input type="radio" name="jobTitle" value="2"> Engineering
+            <input type="radio" name="jobTitle" value="3"> PM
+            <input type="radio" name="jobTitle" value="4"> Other
           </td>
         </tr>
 
         <tr>
           <td>
             <label for="jobType">Job Type</label>
-            <input type="radio" name="jobType" value ="1"> internship
-            <input type="radio" name="jobType" value ="2"> part-time
-            <input type="radio" name="jobType" value ="3"> full-time
+            <input type="radio" name="jobType" value="1" required> internship
+            <input type="radio" name="jobType" value="2"> part-time
+            <input type="radio" name="jobType" value="3"> full-time
           </td>
         </tr>
 
         <tr>
           <td>
             <label for="season">Season</label>
-            <input type="radio" name="season" value ="1"> fall
-            <input type="radio" name="season" value ="2"> spring
-            <input type="radio" name="season" value ="3"> summer
-            <input type="radio" name="season" value ="4"> winter
-            <input type="radio" name="season" value ="5"> year-long
+            <input type="radio" name="season" value="1" required> fall
+            <input type="radio" name="season" value="2"> spring
+            <input type="radio" name="season" value="3"> summer
+            <input type="radio" name="season" value="4"> winter
+            <input type="radio" name="season" value="5"> year-long
           </td>
         </tr>
 
         <tr>
           <td>
             <label for="classPref">Class Preference</label>
-            <input type="radio" name="classPref" value ="1"> Freshman
-            <input type="radio" name="classPref" value ="2"> Sophomore
-            <input type="radio" name="classPref" value ="3"> Junior
-            <input type="radio" name="classPref" value ="4"> Senior
-            <input type="radio" name="classPref" value ="5"> Underclassmen
-            <input type="radio" name="classPref" value ="6"> Upperclassmen
-            <input type="radio" name="classPref" value ="7"> All
+            <input type="radio" name="classPref" value="1" required> Freshman
+            <input type="radio" name="classPref" value="2"> Sophomore
+            <input type="radio" name="classPref" value="3"> Junior
+            <input type="radio" name="classPref" value="4"> Senior
+            <input type="radio" name="classPref" value="5"> Underclassmen
+            <input type="radio" name="classPref" value="6"> Upperclassmen
+            <input type="radio" name="classPref" value="7"> All
           </td>
         </tr>
 
@@ -64,7 +62,7 @@
         <tr>
           <td>
             <label for="companyName">Companies:</label>
-	    <select name="companyName">
+	    <select name="companyName" required>
               <option value="none">Choose One</option>
               {% for company in companies %}
               <option value="{{company.companyName}}"> {{company.companyName}} </option> <!-- quotations ? -->
@@ -88,7 +86,7 @@
 
         <tr>
           <td><label for="link">Job Location</label>
-            <input name='link' value=""></td>
+            <input name='link' value="" required></td>
             <p> Note: You will have an opportunity to more companies on the next page
         </tr>
 
