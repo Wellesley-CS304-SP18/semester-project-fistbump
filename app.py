@@ -11,6 +11,7 @@ from login import *
 from view import *
 import opp
 import search
+from rev import *
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
@@ -18,7 +19,7 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                            for i in range(20) ])
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
-db = 'mshen4_db'
+db = 'lluo2_db'
 
 # ------------------------------------------------------------------------------
 # ROUTES
@@ -30,6 +31,7 @@ def landing():
 # login and register on the same html page
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    # if user is already logged in, redirect to home
     if 'uID' in session:
         uID = session['uID']
         flash('You\'re already logged in!')
@@ -39,39 +41,53 @@ def login():
     successMsg = 'Successful login.'
     conn = dbconn2.connect(DSN)
 
+    # render empty login page
     if request.method == 'GET':
         return render_template('login.html')
 
     if request.method == 'POST':
+        # if user is logging in
         if request.form['submit'] == 'login':
             email = request.form['email']
             pwd = request.form['pwd']
             hashed = getPwd(conn, email)
 
+            # if user exists in db
             if hashed is not None:
+                # input password does not match db password
                 if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
                     flash(errorMsg)
                     return render_template('login.html')
+                # user successfully logged in
                 else:
                     session['uID'] = getUID(conn, email)['uID']
                     return redirect(url_for('home'))
+            # user does not exist in db
             else:
                 flash(errorMsg)
                 return render_template('login.html')
 
+        # user account doesn't exist, register
         if request.form['submit'] == 'register':
             uName = request.form['uName']
             email = request.form['email']
             pwd = request.form['pwd']
 
+            # email is already used by another user
             if getUID(conn, email) != None:
                 flash('Email already in use.')
                 return render_template('login.html')
             else:
+                # email is available, and user info is input into db
                 hashedPwd = bcrypt.hashpw(pwd.encode('utf-8'), bcrypt.gensalt())
                 insertUser(conn, uName, email, hashedPwd);
+                # session uID is set
+                session['uID'] = getUID(conn, email)['uID']
                 flash('User successfully added.')
-                return redirect(url_for('login'))
+                return redirect(url_for('home'))
+
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
 
 @app.route('/home/', methods=['GET', 'POST'])
 def home():
@@ -130,8 +146,17 @@ def home():
                                    uName = name,
                                    opportunities = jobs)
 
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
+
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+    else:
+        uID = session['uID']
+
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -149,13 +174,19 @@ def addNewJob():
             company = request.form[('companyName')] #can only add in one job
             if company == 'none':
                 company = request.form[('newCompany')]
-            #uID = session['uID']
-            uID = 1
-        jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
-    return redirect(url_for('addJobLocation', jobID=jobID))
+
+            jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
+            return redirect(url_for('addJobLocation', jobID=jobID))
+
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -180,22 +211,67 @@ def addJobLocation(jobID):
             if newLocation: #can a user submit with an empty value
                 opp.addCity(conn, newLocation)
                 opp.addJobLoc(conn, uID ,jobID, newLocation)
-    return redirect(url_for('home'))
+        return redirect(url_for('home'))
+
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
-    conn = dbconn2.connect(DSN)
-    (job, reviews, hrs) = search.findJob(conn, jobID)
-    for rev in reviews:
-        print rev['review']
-    return render_template('job.html',
-                           job=job,
-                           reviews=reviews,
-                           hrs=hrs)
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+    else:
+        uID = session['uID']
 
-@app.route('/reu/<reuID>', methods=['GET', 'POST'])
-def reu(reuID):
-    return
+    conn = dbconn2.connect(DSN)
+
+    if request.method == 'GET':
+        (job, reviews, hrs) = search.findJob(conn, jobID)
+        name = getUName(conn, uID)['uName']
+        return render_template('job.html',
+                               uName=name,
+                               job=job,
+                               reviews=reviews,
+                               hrs=hrs)
+
+    if request.method == 'POST':
+        if request.form['submit'] == 'Add Job Review':
+            return redirect(url_for('addNewReview',
+                                    jobID=jobID))
+
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
+
+@app.route('/addNewReview/<jobID>', methods=['GET','POST'])
+def addNewReview(jobID):
+    if 'uID' not in session:
+        flash('Please login to view site')
+        return redirect(url_for('login'))
+    else:
+        uID = session['uID']
+
+    conn = dbconn2.connect(DSN)
+
+    if request.method == 'GET':
+        return render_template('review_form.html',
+                               jobID = jobID)
+
+    if request.method == 'POST':
+        if request.form['submit'] == 'Submit Review':
+            jobYear = request.form[('jobYear')]
+            review = request.form[('review')]
+
+            addJob = addJobRev(conn, uID, jobID, jobYear, review)
+            if not addJob:
+                flash("A review already exists for this job and user")
+            else:
+                flash("Review added successfully")
+
+            return redirect(url_for('job', jobID=jobID))
+
+        if request.form['submit'] == 'Back to Home':
+            return redirect(url_for('home'));
 
 # ------------------------------------------------------------------------------
 
