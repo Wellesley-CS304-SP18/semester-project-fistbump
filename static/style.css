@@ -5,18 +5,36 @@ body{
   font-size:16px;
 }
 
+/*logo*/
+
+.logo{
+  height:10%;
+  position:absolute;
+  top:5%;
+  left:5%
+}
+
 /*login page*/
+#login_body{
+  background-image: url("wecode.jpg");
+  background-size:cover;
+}
+
 .login{
     margin: auto;
     width: 50%;
+    position:absolute;
+    top:25%;
+    left:25%;
     background-color: #ffffff;
     padding: 10px;
+    z-index:-2;
 }
 
 .block {
     float: left;
     width: 40%;
-    padding:10px
+    padding:15px
 }
 
 /* Clear floats after the columns */

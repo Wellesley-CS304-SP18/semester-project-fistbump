@@ -8,36 +8,40 @@
       <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css')}}">
   </head>
 
-  <body>
+  <body id = 'login_body'>
 
-  <div class = 'login'>
-    <h1>Welcome to Fistbump: A Wellesley CS Handshake</h1>
+    <img src = "{{url_for('static', filename='fistbump.png')}}" alt = 'iphone fistbump emoji' class = 'logo'>
 
-    {% for message in get_flashed_messages() %}
-          {{message}}
-    {% endfor %}
+      <div class = 'login'>
+        <h1>Welcome to Fistbump:</h1>
+        <h1>A Wellesley CS Handshake</h1>
 
-    <div class= "center">
-      <div class = "block">
-        <form method="post" action="">
-          <p><label for="email">Email: <input type="text" name="email"></label></p>
-          <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
-          <p><button type="submit" name="submit" value="login">Login</button></p>
-        </form>
-      </div> <!--login_block-->
+        {% for message in get_flashed_messages() %}
+              {{message}}
+        {% endfor %}
 
-      <div class = "block">
-        <form method="post" action="">
-          <p><label for="userid">Email: <input type="text" name="email"></label></p>
-          <p><label for="userid">Username: <input type="text" name="uName"></label></p>
-          <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
-          <p><button type="submit" name="submit" value="register">Sign Up</button></p>
-        </form>
-      </div> <!-- signup_block-->
-    </div> <!--center -->
-  </div> <!-- login -->
+        <div class= "center">
+          <div class = "block">
+            <form method="post" action="">
+              <p><label for="email">Email: <input type="text" name="email"></label></p>
+              <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
+              <p><button type="submit" name="submit"3 value="login">Login</button></p>
+            </form>
+          </div> <!--login_block-->
 
-      <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+          <div class = "block">
+            <form method="post" action="">
+              <p><label for="userid">Email: <input type="text" name="email"></label></p>
+              <p><label for="userid">Username: <input type="text" name="uName"></label></p>
+              <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
+              <p><button type="submit" name="submit" value="register">Sign Up</button></p>
+            </form>
+          </div> <!-- signup_block-->
+        </div> <!--center -->
+      </div> <!-- login -->
+  </div>
+
+  <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
 
   <!-- JS code would go here -->
 
