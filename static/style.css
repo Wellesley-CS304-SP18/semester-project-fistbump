@@ -1,12 +1,41 @@
 body{
   background-color:#f3f1e4;
   color:#222222;
+  font-family: sans-serif;
+  font-size:16px;
 }
 
-/*drop down css*/
+/*login page*/
+.login{
+    margin: auto;
+    width: 50%;
+    background-color: #ffffff;
+    padding: 10px;
+}
+
+.block {
+    float: left;
+    width: 40%;
+    padding:10px
+}
+
+/* Clear floats after the columns */
+.login:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.center{
+    margin: auto;
+    width: 70%;
+    padding: 10px;
+}
+
+/*filter css*/
 
 .dropbtn {
-    background-color: #3498DB;
+    background-color: #4471ab;
     color: white;
     padding: 16px;
     font-size: 16px;
@@ -44,13 +73,6 @@ body{
 
 .show {display:block;}
 
-.login{
-    margin: auto;
-    width: 50%;
-    background-color: #ffffff;
-    padding: 10px;
-}
-
 .listings{
     margin: auto;
     width: 80%;
@@ -65,6 +87,7 @@ header{
 }
 
 h1{
+  font-size:20px;
   text-align:center;
 }
 
