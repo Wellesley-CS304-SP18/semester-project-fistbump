@@ -43,7 +43,7 @@ def findJob(conn, jobID):
     curs.execute('start transaction')
     curs.execute('select * from job_opp where jobID=%s', [jobID])
     job = curs.fetchone()
-    curs.execute('select * from job_review where jobID=%s', [jobID])
+    curs.execute('select uName, jobYear, review from job_review, user_id where jobID=%s and reviewer=uID', [jobID])
     reviews = curs.fetchall()
     curs.execute('select companyName from job_opp where jobID=%s', [jobID])
     info = curs.fetchone()
