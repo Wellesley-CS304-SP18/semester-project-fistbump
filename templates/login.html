@@ -9,29 +9,33 @@
   </head>
 
   <body>
+
   <div class = 'login'>
+    <h1>Welcome to Fistbump: A Wellesley CS Handshake</h1>
 
-    <h1>Login</h1>
+    {% for message in get_flashed_messages() %}
+          {{message}}
+    {% endfor %}
 
-    <form method="post" action="">
-      <p><label for="email">Email: <input type="text" name="email"></label></p>
-      <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
-      <p><button type="submit" name="submit" value="login">submit</button></p>
-    </form>
+    <div class= "center">
+      <div class = "block">
+        <form method="post" action="">
+          <p><label for="email">Email: <input type="text" name="email"></label></p>
+          <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
+          <p><button type="submit" name="submit" value="login">Login</button></p>
+        </form>
+      </div> <!--login_block-->
 
-    <p> No login? Register below </p>
-    <form method="post" action="">
-      <p><label for="userid">Email: <input type="text" name="email"></label></p>
-      <p><label for="userid">Username: <input type="text" name="uName"></label></p>
-      <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
-      <p><button type="submit" name="submit" value="register">submit</button></p>
-    </form>
-
-  </div>
-
-
-
-    </div>
+      <div class = "block">
+        <form method="post" action="">
+          <p><label for="userid">Email: <input type="text" name="email"></label></p>
+          <p><label for="userid">Username: <input type="text" name="uName"></label></p>
+          <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
+          <p><button type="submit" name="submit" value="register">Sign Up</button></p>
+        </form>
+      </div> <!-- signup_block-->
+    </div> <!--center -->
+  </div> <!-- login -->
 
       <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
 
