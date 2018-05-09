@@ -3,7 +3,7 @@
 {% block content %}
 
 <h3>Job Info</h3>
-  
+
   {% if job %}
   <div id = "job_info">
     <p> Job Title: {{job.jobTitle}} </p>
@@ -21,8 +21,8 @@
   </div>
   {% endif %}
 
-<h3>Reviews</h3> 
-   
+<h3>Reviews</h3>
+
   <div class = 'add_job_review'>
     <form method="POST" action="">
       <input type="submit" name="submit" value="Add Job Review">
@@ -32,11 +32,11 @@
   <div id = "reviews">
     {% if reviews %}
       {% for review in reviews %}
-        <p>Name: {{review.reviewer}}</p>
+        <p>Name: {{review.uName}}</p>
+        <p>Year: {{review.jobYear}}</p>
         <p>Review: {{review.review}}</p>
       {% endfor %}
     {% endif %}
   </div>
 
 {% endblock %}
-
