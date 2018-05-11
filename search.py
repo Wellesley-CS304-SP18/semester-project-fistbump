@@ -43,14 +43,12 @@ def findJob(conn, jobID):
     curs.execute('start transaction')
     curs.execute('select * from job_opp where jobID=%s', [jobID])
     job = curs.fetchone()
-    curs.execute('select uName, jobYear, review from job_review, user_id where jobID=%s and reviewer=uID', [jobID])
+    curs.execute('select jobYear, review from job_review, user_id where jobID=%s and reviewer=bnum', [jobID])
     reviews = curs.fetchall()
     curs.execute('select companyName from job_opp where jobID=%s', [jobID])
     info = curs.fetchone()
-    companyName = info['companyName']
-    hrs = searchHRs(conn, companyName)
     curs.execute('commit')
-    return (job, reviews, hrs)
+    return (job, reviews)
 
 # return all reus given search terms
 # if didn't pick filter input % for param
