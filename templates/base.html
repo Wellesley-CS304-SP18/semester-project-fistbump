@@ -11,31 +11,28 @@
 
   <body>
     <header>
-      <h1> Fistbump </h1>
-        
+
+        <a href = "{{ url_for('home') }}">
+        <img src = "{{url_for('static', filename='fistbump.png')}}" alt = 'iphone fistbump emoji' class = 'logo'>
+        </a>
+
         {% for message in get_flashed_messages() %}
           {{message}}
         {% endfor %}
-      
+
         <div class = 'account_info'> <p> Logged in as {{uName}}</p>
           <form method=POST action="">
             <input type="submit" name="submit" value="Log Out">
-          </form>  
+          </form>
         </div>
-	
+    </header>
+<!--
 	<div class = 'redirect_home'>
 	  <form method="POST" action="">
 	    <input type="submit" name="submit" value="Back to Home">
 	  </form>
 	</div>
-	
-	<div class = 'search'>
-          <form method=POST action="">
-            <input name="search" value="">
-            <input type="submit" name="search-btn" value="Search">
-          </form>
-	</div>
-    </header>
+-->
 
     {% block content %}
     {% endblock %}

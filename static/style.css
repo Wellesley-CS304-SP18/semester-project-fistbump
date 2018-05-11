@@ -3,18 +3,35 @@ body{
   color:#222222;
   font-family: sans-serif;
   font-size:16px;
+  margin:0px;
+  padding:0px;
 }
 
+/*header*/
+
+header{
+  width:100%;
+  height:15%;
+  background-color:#4471ab;
+  color:#ffffff;
+}
+
+.account_info{
+  position:relative;
+  left:85%;
+  top:10px;
+}
 /*logo*/
 
 .logo{
   height:10%;
   position:absolute;
-  top:5%;
-  left:5%
+  top:2%;
+  left:2%
 }
 
 /*login page*/
+
 #login_body{
   background-image: url("wecode.jpg");
   background-size:cover;
@@ -23,18 +40,17 @@ body{
 .login{
     margin: auto;
     width: 50%;
-    position:absolute;
+    position: absolute;
     top:25%;
     left:25%;
     background-color: #ffffff;
     padding: 10px;
-    z-index:-2;
 }
 
 .block {
     float: left;
     width: 40%;
-    padding:15px
+    padding:20px;
 }
 
 /* Clear floats after the columns */
@@ -52,7 +68,7 @@ body{
 
 /*filter css*/
 
-.dropbtn {
+.bluebtn {
     background-color: #4471ab;
     color: white;
     padding: 16px;
@@ -73,8 +89,8 @@ body{
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f1f1f1;
-    min-width: 160px;
+    background-color: #ffffff;
+    min-width: 600px;
     overflow: auto;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
@@ -98,11 +114,10 @@ body{
     padding: 10px;
 }
 
-header{
-  width:100%;
-  background-color:#4471ab;
-  color:#ffffff;
+.dropdown_menu{
+  margin:5%;
 }
+
 
 h1{
   font-size:20px;
