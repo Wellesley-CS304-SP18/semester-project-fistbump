@@ -5,6 +5,8 @@ body{
   font-size:16px;
   margin:0px;
   padding:0px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /*header*/
@@ -16,10 +18,18 @@ header{
   color:#ffffff;
 }
 
+.logout-style{
+  background-color:inherit;
+  color:inherit;
+  border:none;
+  position:relative;
+  left:6.5%;
+  top:-10;
+}
 .account_info{
   position:relative;
   left:85%;
-  top:10px;
+  top:15px;
 }
 /*logo*/
 
@@ -77,6 +87,23 @@ header{
     cursor: pointer;
 }
 
+.whitebtn {
+    background-color: #ffffff;
+    border: 1px solid gray;
+    color: black;
+    padding: 16px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.dropbtn{
+  float:right;
+}
+
+.add_job{
+  float:right;
+}
+
 .dropbtn:hover, .dropbtn:focus {
     background-color: #2980B9;
 }
@@ -89,6 +116,7 @@ header{
 .dropdown-content {
     display: none;
     position: absolute;
+    top:60;
     background-color: #ffffff;
     min-width: 600px;
     overflow: auto;
@@ -110,6 +138,7 @@ header{
 .listings{
     margin: auto;
     width: 80%;
+    height:100%;
     background-color: #ffffff;
     padding: 10px;
 }
@@ -118,6 +147,10 @@ header{
   margin:5%;
 }
 
+#opportunities{
+  width:80%;
+  margin:auto;
+}
 
 h1{
   font-size:20px;

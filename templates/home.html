@@ -2,58 +2,58 @@
 
 {% block content %}
 
+
+
+<div class = 'listings'>
+
+  <div class="dropdown">
+  <button onclick="myFunction()" class = "whitebtn dropbtn">Filter</button>
+
+    <div id="myDropdown" class="dropdown-content">
+      <form class = 'dropdown_menu' method="post" action="">
+        <h3> Filter by: </h3>
+
+        <p><label for="classPref">Class Preference</label></p>
+        <input type="radio" name="classPref" value ="freshman"> Freshman
+        <input type="radio" name="classPref" value ="sophomore"> Sophomore
+        <input type="radio" name="classPref" value ="junior"> Junior
+        <input type="radio" name="classPref" value ="senior"> Senior
+        <input type="radio" name="classPref" value ="underclassman"> Underclassman
+        <input type="radio" name="classPref" value ="upperclassman"> Upperclassman
+        <input type="radio" name="classPref" value ="all"> All
+
+        <p> <label for="jobType">Job Type</label></p>
+        <input type="radio" name="jobType" value="internship"> Internship
+        <input type="radio" name="jobType" value="part-time"> Part-Time
+        <input type="radio" name="jobType" value="full-time"> Full-Time
+
+        <p> <label for="jobTitle">Job Title</label></p>
+        <input type="radio" name="jobTitle" value="engineering"> Engineering
+        <input type="radio" name="jobTitle" value="design"> Design
+        <input type="radio" name="jobTitle" value="pm"> PM
+        <input type="radio" name="jobTitle" value="other"> Other
+
+        <p> <label for="season">Season</label></p>
+        <input type="radio" name="season" value ="summer"> Summer
+        <input type="radio" name="season" value ="winter"> Winter
+        <input type="radio" name="season" value ="fall"> Fall
+        <input type="radio" name="season" value ="spring"> Spring
+        <input type="radio" name="season" value ="year-round"> Year-Round
+
+        <p> <input class = 'bluebtn' type="submit" name="submit" value="Filter"> </p>
+      </form>
+    </div>
+  </div>
+
   <div class = 'add_job'>
     <form method="POST" action="">
-      <input type="submit" name="submit" value="Add New Job">
+      <input class = "bluebtn" type="submit" name="submit" value="Add New Job">
     </form>
   </div>
-
-<div class="dropdown">
-<button onclick="myFunction()" class = "bluebtn dropbtn">Filter</button>
-
-  <div id="myDropdown" class="dropdown-content">
-    <form class = 'dropdown_menu' method="post" action="">
-      <h3> Filter by: </h3>
-
-      <p><label for="classPref">Class Preference</label></p>
-      <input type="radio" name="classPref" value ="freshman"> Freshman
-      <input type="radio" name="classPref" value ="sophomore"> Sophomore
-      <input type="radio" name="classPref" value ="junior"> Junior
-      <input type="radio" name="classPref" value ="senior"> Senior
-      <input type="radio" name="classPref" value ="underclassman"> Underclassman
-      <input type="radio" name="classPref" value ="upperclassman"> Upperclassman
-      <input type="radio" name="classPref" value ="all"> All
-
-      <p> <label for="jobType">Job Type</label></p>
-      <input type="radio" name="jobType" value="internship"> Internship
-      <input type="radio" name="jobType" value="part-time"> Part-Time
-      <input type="radio" name="jobType" value="full-time"> Full-Time
-
-      <p> <label for="jobTitle">Job Title</label></p>
-      <input type="radio" name="jobTitle" value="engineering"> Engineering
-      <input type="radio" name="jobTitle" value="design"> Design
-      <input type="radio" name="jobTitle" value="pm"> PM
-      <input type="radio" name="jobTitle" value="other"> Other
-
-      <p> <label for="season">Season</label></p>
-      <input type="radio" name="season" value ="summer"> Summer
-      <input type="radio" name="season" value ="winter"> Winter
-      <input type="radio" name="season" value ="fall"> Fall
-      <input type="radio" name="season" value ="spring"> Spring
-      <input type="radio" name="season" value ="year-round"> Year-Round
-
-      <p> <input class = 'bluebtn' type="submit" name="submit" value="Filter"> </p>
-    </form>
-  </div>
-</div>
-
-
-<div class = 'sort'></div>
-<div class = 'listings'>
   <!-- flashes -->
-  <p> Current Job Opportunities: </p>
   {% if opportunities %}
   <div id="opportunities">
+      <p> Current Job Opportunities: </p>
     {% for opportunity in opportunities %}
       <p><a href="{{url_for('job',jobID=opportunity.jobID)}}">ID:{{opportunity.jobID}}//{{opportunity.positionName}}//{{opportunity.companyName}}</a></p>
         {% for location in locations %}
