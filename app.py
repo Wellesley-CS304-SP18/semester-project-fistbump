@@ -2,15 +2,18 @@
 
 from flask import (Flask, render_template, make_response, url_for, request, redirect, flash, session, send_from_directory, jsonify)
 from werkzeug import secure_filename
+from flask_cas import CAS
+
 app = Flask(__name__)
+CAS(app)
 
 import sys, os, random
 import dbconn2
 import bcrypt
-from login import *
+import view, opp, search, rev
 from view import *
-import opp
-import search
+from opp import *
+from search import *
 from rev import *
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
@@ -18,107 +21,62 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           '0123456789'))
                            for i in range(20) ])
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
+app.config['CAS_SERVER'] = 'https://login.wellesley.edu:443'
+app.config['CAS_AFTER_LOGIN'] = 'home'
+app.config['CAS_LOGIN_ROUTE'] = '/module.php/casserver/cas.php/login'
+app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
+app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
+app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-db = 'fistbump_db'
+db = 'lluo2_db'
 
 # ------------------------------------------------------------------------------
 # ROUTES
 
 @app.route('/', methods=['GET'])
 def landing():
-    return redirect(url_for('login'))
+    return redirect(url_for('login_pg'))
 
 # login and register on the same html page
-@app.route('/login/', methods=['GET', 'POST'])
-def login():
+@app.route('/login_pg/', methods=['GET', 'POST'])
+def login_pg():
     #if user is already logged in, redirect to home
-    if 'uID' in session:
-        uID = session['uID']
-        flash('You\'re already logged in!')
-        return redirect(url_for('home'))
-
-    errorMsg = 'email and/or password are incorrect.'
-    successMsg = 'Successful login.'
-    conn = dbconn2.connect(DSN)
 
     #render empty login page
     if request.method == 'GET':
         return render_template('login.html')
 
-    if request.method == 'POST':
-        #if user is logging in
-        if request.form['submit'] == 'login':
-            email = request.form['email']
-            pwd = request.form['pwd']
-            hashed = getPwd(conn, email)
-
-            #if user exists in db
-            if hashed is not None:
-                #input password does not match db password
-                if bcrypt.hashpw(pwd.encode('utf-8'), hashed['pwd'].encode('utf-8')) != hashed['pwd']:
-                    flash(errorMsg)
-                    return render_template('login.html')
-                #user successfully logged in
-                else:
-                    session['uID'] = getUID(conn, email)['uID']
-                    return redirect(url_for('home'))
-            #user does not exist in db
-            else:
-                flash(errorMsg)
-                return render_template('login.html')
-
-        #user account doesn't exist, register
-        if request.form['submit'] == 'register':
-            uName = request.form['uName']
-            email = request.form['email']
-            pwd = request.form['pwd']
-
-            #email is already used by another user
-            if getUID(conn, email) != None:
-                flash('Email already in use.')
-                return render_template('login.html')
-            else:
-                #email is available, and user info is input into db
-                hashedPwd = bcrypt.hashpw(pwd.encode('utf-8'), bcrypt.gensalt())
-                insertUser(conn, uName, email, hashedPwd);
-                #session uID is set
-                session['uID'] = getUID(conn, email)['uID']
-                flash('User successfully added.')
-                return redirect(url_for('home'))
-
-        if request.form['submit'] == 'Back to Home':
-            return redirect(url_for('home'));
-
 @app.route('/home/', methods=['GET', 'POST'])
 def home():
-    if 'uID' not in session:
-        flash('Please login to view site')
-        return redirect(url_for('login'))
-    else:
-        uID = session['uID']
 
     conn = dbconn2.connect(DSN)
-    name = getUName(conn, uID)['uName']
+
+    if 'CAS_ATTRIBUTES' in session:
+        attribs = session['CAS_ATTRIBUTES']
+        if 'bnum' in session:
+            pass
+        else: 
+            session['bnum'] = attribs['cas:id']
+            bnum = session['bnum']
+            firstname = attribs['cas:givenName']
+            username = attribs['cas:sAMAccountName']
+            opp.addUser(conn, bnum, firstname, username)
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    else:
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
+    
 
     if request.method == 'GET':
         return render_template('home.html',
-                               uName = name,
+                               uName = username,
                                opportunities = getOpps(conn))
 
     if request.method == 'POST':
-        # log out of account & session
-        if request.form['submit'] == "Log Out":
-            session.pop('uID', None)
-            return redirect(url_for('login'))
-
         # add a new job opportunity
         if request.form['submit'] == "Add New Job":
             return redirect(url_for('addNewJob'))
-
-        # search for a job or reu with a key word
-        if request.form['submit'] == "Search":
-            # SEARCH JOB TITLE?
-            pass
 
         # filter through all opportunities
         if request.form['submit'] == "Filter":
@@ -142,27 +100,27 @@ def home():
 
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
             return render_template('home.html',
-                                   uName = name,
+                                   uName = username,
                                    opportunities = jobs)
-
-        if request.form['submit'] == 'Back to Home':
-            return redirect(url_for('home'));
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
-    if 'uID' not in session:
-        flash('Please login to view site')
-        return redirect(url_for('login'))
+    
+    if 'bnum' in session:
+        bnum = session['bnum']
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
     else:
-        uID = session['uID']
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
 
     formErr = 'Please fill in the blank fields'
     conn = dbconn2.connect(DSN)
-    name = getUName(conn, uID)['uName']
 
     if request.method == 'GET':
         return render_template('job_form.html',
-                               uName = name)
+                               uName = username,
+                               companies = opp.allCompany(conn))
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
@@ -176,17 +134,20 @@ def addNewJob():
             company = request.form[('companyName')] #can only add in one job
             if company == 'none':
                 company = request.form[('newCompany')]
-            jobID = opp.addJob(conn, uID, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
+            jobID = opp.addJob(conn, bnum, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
             return redirect(url_for('addJobLocation', jobID=jobID))
-
-        if request.form['submit'] == 'Back to Home':
-            return redirect(url_for('home'));
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
-    if 'uID' not in session:
-        flash('Please login to view site')
-        return redirect(url_for('login'))
+
+    if 'bnum' in session:
+        bnum = session['bnum']
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    else:
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
+
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
@@ -197,79 +158,74 @@ def addJobLocation(jobID):
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
-            uID = session['uID']
             cities = opp.allCities(conn)
             if bool(cities):
                 try:
                     locations = request.form.getlist('city')
                     for city in locations:
-                        opp.addJobLoc(conn, uID, jobID, city)
+                        opp.addJobLoc(conn, bnum, jobID, city)
                 except:
                     pass
             newLocation = request.form[('newLocation')]
             if newLocation: #can a user submit with an empty value
                 opp.addCity(conn, newLocation)
-                opp.addJobLoc(conn, uID ,jobID, newLocation)
+                opp.addJobLoc(conn, bnum, jobID, newLocation)
         return redirect(url_for('home'))
-
-        if request.form['submit'] == 'Back to Home':
-            return redirect(url_for('home'));
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
-    if 'uID' not in session:
-        flash('Please login to view site')
-        return redirect(url_for('login'))
+
+    if 'bnum' in session:
+        bnum = session['bnum']
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
     else:
-        uID = session['uID']
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
 
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
-        (job, reviews, hrs) = search.findJob(conn, jobID)
-        name = getUName(conn, uID)['uName']
+        (job, reviews) = search.findJob(conn, jobID)
         return render_template('job.html',
-                               uName=name,
+                               uName=username,
                                job=job,
-                               reviews=reviews,
-                               hrs=hrs)
+                               reviews=reviews)
 
     if request.method == 'POST':
         if request.form['submit'] == 'Add Job Review':
             return redirect(url_for('addNewReview',
                                     jobID=jobID))
 
-        if request.form['submit'] == 'Back to Home':
-            return redirect(url_for('home'));
-
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
 def addNewReview(jobID):
-    if 'uID' not in session:
-        flash('Please login to view site')
-        return redirect(url_for('login'))
+
+    if 'bnum' in session:
+        bnum = session['bnum']
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
     else:
-        uID = session['uID']
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
 
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
         return render_template('review_form.html',
-                               jobID = jobID)
+                               jobID = jobID,
+                               uName = username)
 
     if request.method == 'POST':
         if request.form['submit'] == 'Submit Review':
             jobYear = request.form[('jobYear')]
             review = request.form[('review')]
 
-            addJob = addJobRev(conn, uID, jobID, jobYear, review)
+            addJob = addJobRev(conn, bnum, jobID, jobYear, review)
             if not addJob:
                 flash("A review already exists for this job and user")
             else:
                 flash("Review added successfully")
             return redirect(url_for('job', jobID=jobID))
-
-        if request.form['submit'] == 'Back to Home':
-            return redirect(url_for('home'));
 
 # ------------------------------------------------------------------------------
 
