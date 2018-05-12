@@ -274,7 +274,7 @@ if __name__ == '__main__':
         port = int(sys.argv[1])
         assert(port>1024)
     else:
-        port = os.getuid()
+        port = 1945
     DSN = dbconn2.read_cnf()
     DSN['db'] = db
     app.debug = True
