@@ -7,6 +7,12 @@ import dbconn2
 
 # ------------------------------------------------------------------------------
 
+#gives the username based on bnum
+def getUserInfo(conn, bnum):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select firstname, username from user_id where bnum = %s',[bnum])
+    return curs.fetchone()
+
 # check if user can update table (same poster or admin)
 def canUpdate(conn, table, ID, bnum):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -128,7 +134,7 @@ def deleteJob(conn, bnum, jobID):
         curs.execute('delete from job_opp where jobID=%s', [jobID])
         return True
     return False
- 
+
 # add user
 def addUser(conn, bnum, firstname, username):
     try:

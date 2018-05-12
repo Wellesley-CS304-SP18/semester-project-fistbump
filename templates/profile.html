@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class = 'middle'>
+  <div class = "picture"> {{img_tag}} </div>
+    <form method=POST enctype=multipart/form-data action="{{ url_for('upload') }}">
+        <input type=file name=photo>
+        <input type="submit">
+    </form>
+  <h1> Name </h1>
+    <p> {{user.firstname}} </p>
+  <h1> Username </h1>
+    <p> {{user.username}} </p>
+
+  <h1> Favorites </h1>
+</div>
+
+
+{% endblock %}

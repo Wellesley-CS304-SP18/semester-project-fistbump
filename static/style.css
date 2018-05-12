@@ -135,7 +135,7 @@ header{
 
 .show {display:block;}
 
-.listings{
+.middle{
     margin: auto;
     width: 80%;
     height:100%;
@@ -150,6 +150,11 @@ header{
 #opportunities{
   width:80%;
   margin:auto;
+}
+
+#opportunities p {
+  border-bottom:1px solid gray;
+  padding:10px;
 }
 
 h1{

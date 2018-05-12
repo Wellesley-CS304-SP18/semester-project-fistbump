@@ -4,7 +4,7 @@
 
 
 
-<div class = 'listings'>
+<div class = 'middle'>
 
   <div class="dropdown">
   <button onclick="myFunction()" class = "whitebtn dropbtn">Filter</button>
@@ -53,7 +53,7 @@
   <!-- flashes -->
   {% if opportunities %}
   <div id="opportunities">
-      <p> Current Job Opportunities: </p>
+      <h1> Current Job Opportunities: </h1>
     {% for opportunity in opportunities %}
       <p><a href="{{url_for('job',jobID=opportunity.jobID)}}">ID:{{opportunity.jobID}}//{{opportunity.positionName}}//{{opportunity.companyName}}</a></p>
         {% for location in locations %}
