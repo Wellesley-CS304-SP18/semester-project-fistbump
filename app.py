@@ -154,7 +154,8 @@ def addJobLocation(jobID):
         cities = opp.allCities(conn)
         return render_template('jobLocation.html',
                                jobID = jobID,
-                               cities = cities)
+                               cities = cities,
+                               uName = username)
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
