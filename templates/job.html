@@ -2,26 +2,21 @@
 
 {% block content %}
 
-<h3>Job Info</h3>
-
   {% if job %}
   <div id = "job_info">
-    <p> Job Title: {{job.jobTitle}} </p>
-    <p> Company Name: {{job.companyName}} </p>
-    <p> Job Type: {{job.jobType}} </p>
-    <p> Link to Posting: {{job.link}} </p>
-    <p> Season: {{job.season}} </p>
-    <p> Application Deadline: {{job.deadline}} </p>
+    <a href="{{job.link}}" style="font-size: 50px">{{job.positionName}}</a>
+    <h3>{{job.jobTitle}} {{job.jobType}} opportunity at {{job.companyName}}</h3>
+    <h3>Application Deadline: {{job.deadline}}</h3>
+    <h3>Locations: </h3>
     <ul>
       {% for location in locations %}
-        <li> {{location.city}} </li>
+        <li>{{location.city}}</li>
       {% endfor %}
     </ul>
-    <p> {{poster}} </p>
   </div>
   {% endif %}
 
-<h3>Reviews</h3>
+<h2>Reviews</h2>
 
   <div class = 'add_job_review'>
     <form method="POST" action="">
@@ -32,9 +27,10 @@
   <div id = "reviews">
     {% if reviews %}
       {% for review in reviews %}
-        <p>Name: {{review.uName}}</p>
-        <p>Year: {{review.jobYear}}</p>
-        <p>Review: {{review.review}}</p>
+        <div style="background-color: "lightblue"; width: 90%; padding: 25px; margin: 25px;">
+          <h3>{{review.uName}}, <i>{{review.jobYear}}</i></h3>
+          <p>{{review.review}}</p>
+        </div>
       {% endfor %}
     {% endif %}
   </div>
