@@ -55,7 +55,7 @@ def home():
         attribs = session['CAS_ATTRIBUTES']
         if 'bnum' in session:
             pass
-        else: 
+        else:
             session['bnum'] = attribs['cas:id']
             bnum = session['bnum']
             firstname = attribs['cas:givenName']
@@ -66,7 +66,7 @@ def home():
     else:
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
-    
+
 
     if request.method == 'GET':
         return render_template('home.html',
@@ -105,7 +105,7 @@ def home():
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
-    
+
     if 'bnum' in session:
         bnum = session['bnum']
     if 'CAS_USERNAME' in session:
@@ -187,10 +187,11 @@ def job(jobID):
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
-        (job, reviews) = search.findJob(conn, jobID)
+        (job, locations, reviews) = search.findJob(conn, jobID)
         return render_template('job.html',
                                uName=username,
                                job=job,
+                               locations=locations,
                                reviews=reviews)
 
     if request.method == 'POST':
