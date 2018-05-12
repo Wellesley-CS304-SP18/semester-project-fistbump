@@ -229,6 +229,21 @@ def addNewReview(jobID):
                 flash("Review added successfully")
             return redirect(url_for('job', jobID=jobID))
 
+#profile page
+@app.route('/profile/', methods=['GET','POST'])
+def profile():
+    if 'bnum' in session:
+        bnum = session['bnum']
+    conn = dbconn2.connect(DSN)
+    user = getUserInfo(conn, bnum)
+    return render_template('profile.html', user = user)
+
+#upload
+@app.route('/upload/', methods =['GET','POST'])
+def upload():
+    user = (conn, 'B20787381')
+    return render_template('profile.html', user = user)
+
 # ------------------------------------------------------------------------------
 
 if __name__ == '__main__':
