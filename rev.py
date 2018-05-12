@@ -17,6 +17,13 @@ def addJobRev(conn, bnum, jobID, jobYear, review):
     except:
         False
 
+# gets job review based on bnum & jobID
+def getRev(conn, bnum, jobID):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select * from job_review where bnum=%s and jobID=%s', [bnum, jobID])
+    info = curs.fetchone()
+    return info
+
 # update a job review (can update year & review, given uID & jobID)
 def updateJobRev(conn, bnum, jobID, jobYear, review):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
