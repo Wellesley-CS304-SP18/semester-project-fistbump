@@ -187,7 +187,7 @@ def job(jobID):
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
-        (job, locations, reviews) = search.findJob(conn, jobID)
+        (job, locations, reviews) = search.findJob(conn, jobID, bnum)
         return render_template('job.html',
                                bnum=bnum,
                                uName=username,
