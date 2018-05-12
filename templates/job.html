@@ -31,7 +31,9 @@
           <h3>{{review.firstname}}, <i>{{review.jobYear}}</i></h3>
           <p>{{review.review}}</p>
           {% if review.reviewer == bnum %}
-            <input type="submit" name="submit" value="Edit Review">
+            <form method="POST" action="">
+              <input type="submit" name="submit" value="Edit Review">
+            </form>
           {% endif %}
         </div>
       {% endfor %}
