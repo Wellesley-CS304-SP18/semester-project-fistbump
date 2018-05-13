@@ -28,8 +28,13 @@
     {% if reviews %}
       {% for review in reviews %}
         <div style="background-color: "lightblue"; width: 90%; padding: 25px; margin: 25px;">
-          <h3>{{review.uName}}, <i>{{review.jobYear}}</i></h3>
+          <h3>{{review.firstname}}, <i>{{review.jobYear}}</i></h3>
           <p>{{review.review}}</p>
+          {% if review.reviewer == bnum %}
+            <form method="POST" action="">
+              <input type="submit" name="submit" value="Edit Review">
+            </form>
+          {% endif %}
         </div>
       {% endfor %}
     {% endif %}
