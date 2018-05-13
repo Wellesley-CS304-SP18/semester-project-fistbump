@@ -187,8 +187,9 @@ def job(jobID):
     conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
-        (job, locations, reviews) = search.findJob(conn, jobID)
+        (job, locations, reviews) = search.findJob(conn, jobID, bnum)
         return render_template('job.html',
+                               bnum=bnum,
                                uName=username,
                                job=job,
                                locations=locations,
@@ -197,6 +198,11 @@ def job(jobID):
     if request.method == 'POST':
         if request.form['submit'] == 'Add Job Review':
             return redirect(url_for('addNewReview',
+                                    jobID=jobID))
+
+    if request.method == 'POST':
+        if request.form['submit'] == 'Edit Review':
+            return redirect(url_for('editReview',
                                     jobID=jobID))
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
@@ -229,6 +235,38 @@ def addNewReview(jobID):
                 flash("Review added successfully")
             return redirect(url_for('job', jobID=jobID))
 
+# editting a review user made
+@app.route('/editReview/<jobID>', methods=['GET','POST'])
+def editReview(jobID):
+
+    if 'bnum' in session:
+        bnum = session['bnum']
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    else:
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
+
+    conn = dbconn2.connect(DSN)
+
+    if request.method == 'GET':
+        rev = getRev(conn, bnum, jobID)
+        if rev is None:
+            flash('You do not have a review for this job.')
+            return redirect(url_for('job', jobID=jobID))
+        return render_template('update_review.html',
+                               jobID = jobID,
+                               jobYear = rev['jobYear'],
+                               review = rev['review'])
+
+    if request.method == 'POST':
+        if request.form['submit'] == 'Update Review':
+            jobYear = request.form[('jobYear')]
+            review = request.form[('review')]
+
+            update = updateJobRev(conn, bnum, jobID, jobYear, review)
+            return redirect(url_for('job', jobID=jobID))
+
 #profile page
 @app.route('/profile/', methods=['GET','POST'])
 def profile():
@@ -244,6 +282,7 @@ def upload():
     user = (conn, 'B20787381')
     return render_template('profile.html', user = user)
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == '__main__':
@@ -252,7 +291,7 @@ if __name__ == '__main__':
         port = int(sys.argv[1])
         assert(port>1024)
     else:
-        port = os.getuid()
+        port = 1945
     DSN = dbconn2.read_cnf()
     DSN['db'] = db
     app.debug = True
