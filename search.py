@@ -45,7 +45,7 @@ def findJob(conn, jobID, bnum):
     job = curs.fetchone()
     curs.execute('select * from job_location where jobID=%s', [jobID])
     locations = curs.fetchall()
-    curs.execute('select firstname, jobID, jobYear, reviewer, review from job_review, user_id where jobID=%s and reviewer=%s and bnum=reviewer', [jobID, bnum])
+    curs.execute('select firstname, jobID, jobYear, reviewer, review from job_review, user_id where jobID=%s and bnum=reviewer', [jobID])
     reviews = curs.fetchall()
     curs.execute('commit')
     return (job, locations, reviews)
