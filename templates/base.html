@@ -29,6 +29,9 @@
           {% if picture_exists %}
             <div class = 'mini_column'>
               <img class = "picture_small" src = "{{src}}">
+              <form action="/logout/">
+                <button class = 'logout-style'>logout</button>
+              </form>
             </div>
             {% else %}
             <div>

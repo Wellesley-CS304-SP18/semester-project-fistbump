@@ -12,6 +12,9 @@
       <img class="prof_text" class="picture" src="{{url_for('static', filename='default.jpg')}}"  alt="default photo">
     </div>
   {% endif %}
+
+<br>
+<br>
     <form class="prof_text" method="POST" enctype=multipart/form-data action="">
         <input type="file" name="photo">
         <input class="bluebtn" type="button" name="submit" value="Update Picture">
@@ -19,10 +22,19 @@
   <h1> Name </h1>
     <p class="prof_text"> {{user.firstname}} </p>
   <h1> Username </h1>
+
     <p class="prof_text"> {{user.username}} </p>
+  <br>
 
-  <!--<h1> Favorites </h1>-->
-</div>
-
-
+  <h1> Favorites </h1>
+  {% if faved %}
+  <div id="opportunities">
+    {% for faves in faved %}
+      <p><a class = 'opp_listing'href="{{url_for('job',jobID=opportunity.jobID)}}">
+        ID:{{faves.jobID}}//{{faves.positionName}}//{{faves.companyName}}</a></p>
+    {% endfor %}
+    {% else %}
+      <p class = 'prof_text'> No favorites </p>
+  {% endif %}
+  </div>
 {% endblock %}

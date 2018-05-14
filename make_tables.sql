@@ -1,5 +1,6 @@
 USE fistbump_db;
 
+DROP TABLE IF EXISTS prof_pic;
 DROP TABLE IF EXISTS job_location;
 DROP TABLE IF EXISTS job_review;
 DROP TABLE IF EXISTS job_opp;
@@ -50,3 +51,4 @@ CREATE TABLE job_location (jobID int NOT NULL,
 CREATE TABLE favorites (bnum varchar(12) NOT NULL,
                  	jobID int NOT NULL,
 			PRIMARY KEY (bnum, jobID)) ENGINE=InnoDB;
+
