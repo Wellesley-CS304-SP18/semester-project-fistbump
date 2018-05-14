@@ -7,6 +7,7 @@ from flask_cas import CAS
 import os
 import imghdr
 
+
 app = Flask(__name__)
 CAS(app)
 
@@ -18,6 +19,7 @@ from view import *
 from opp import *
 from search import *
 from rev import *
+from profile import *
 
 app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
                                           'abcdefghijklmnopqrstuvxyz' +
@@ -305,10 +307,13 @@ def profile():
     conn = dbconn2.connect(DSN)
     if 'bnum' in session:
             bnum = session['bnum']
-
     user = getUserInfo(conn, bnum)
     username = user['username']
     exists = profExists(conn,bnum)
+    if exists == None:
+        exists = False
+    else:
+        exists = True
 
     if request.method == 'GET':
         return render_template('profile.html', src= '',user = user, uName = username, picture_exists = exists)
