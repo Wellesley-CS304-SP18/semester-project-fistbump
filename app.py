@@ -275,6 +275,7 @@ def editReview(jobID):
             flash('You do not have a review for this job.')
             return redirect(url_for('job', jobID=jobID))
         return render_template('update_review.html',
+                               uName = username,
                                jobID = jobID,
                                jobYear = rev['jobYear'],
                                review = rev['review'])
