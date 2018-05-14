@@ -2,23 +2,18 @@
 
 {% block content %}
 
-    <form method="POST" action="">
+<div class = 'middle'>
+    <h1> Update your job review for job ID #{{jobID}} </h1>
+    <form class ='rev_form' method="POST" action="">
 
-      <p>jobID = {{ jobID }}</p>
+      <p> <label for="jobYear">Job Year</label> </p>
+      <p> <input name='jobYear' value="{{jobYear}}" required> </p>
 
-      <table>
-	<tr>
-          <td><label for="jobYear">Job Year</label>
-            <input name='jobYear' value="{{jobYear}}" required></td>
-        </tr>
-
-	<tr>
-	  <td><label for="review">Review</label>
-            <input name='review' value="{{review}}" style="width: 400px; height: 250px;" required></td>
-        </tr>
-      </table>
+      <p> <label for="review">Review</label> </p>
+      <p> <input name='review' value="{{review}}" style="width: 400px; height: 250px;" required> </p>
 
       <input class = 'bluebtn' type="submit" name="submit" value="Update Review">
     </form>
+  </div>
 
 {% endblock %}
