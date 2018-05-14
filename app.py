@@ -46,6 +46,9 @@ def landing():
 @app.route('/login_pg/', methods=['GET', 'POST'])
 def login_pg():
     #if user is already logged in, redirect to home
+    if 'CAS_ATTRIBUTES' in session:
+        flash('You\'re already logged in!')
+        return redirect(url_for('home'))
 
     #render empty login page
     if request.method == 'GET':
@@ -60,16 +63,17 @@ def home():
         attribs = session['CAS_ATTRIBUTES']
         if 'bnum' in session:
             bnum = session['bnum']
-            filename = secure_filename(str(bnum)+'.jpeg')
-            pathname = 'images/'+filename
-            src=url_for('pic',fname=pathname)
         else:
             session['bnum'] = attribs['cas:id']
             bnum = session['bnum']
             firstname = attribs['cas:givenName']
             username = attribs['cas:sAMAccountName']
             opp.addUser(conn, bnum, firstname, username)
+
         exists = profExists(conn,bnum)
+        if exists == True:
+            filename = secure_filename(str(bnum)+'.jpeg')
+            src=url_for('pic',fname=filename)
 
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
@@ -80,8 +84,9 @@ def home():
     if request.method == 'GET':
         return render_template('home.html',
                                uName = username,
-                               opportunities = getOpps(conn), 
-                               picture_exists = exists)
+                               opportunities=getOpps(conn), 
+                               picture_exists=exists,
+                               src=src)
 
     if request.method == 'POST':
         # add a new job opportunity
@@ -110,31 +115,37 @@ def home():
 
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
             return render_template('home.html',
-                                   uName = username,
-                                   opportunities = jobs, src = src, picture_exists = exists)
+                                   uName=username,
+                                   opportunities=jobs, 
+                                   src=src, 
+                                   picture_exists=exists)
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
+
     conn = dbconn2.connect(DSN)
+
     if 'bnum' in session:
         bnum = session['bnum']
-        filename = secure_filename(str(bnum)+'.jpeg')
-        pathname = 'images/'+filename
-        src=url_for('pic',fname=filename)
-        exists = profExists(conn,bnum)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
 
+    exists = profExists(conn,bnum)
+    if exists == True:
+        filename = secure_filename(str(bnum)+'.jpeg')
+        src=url_for('pic',fname=filename)
+
     formErr = 'Please fill in the blank fields'
-    conn = dbconn2.connect(DSN)
 
     if request.method == 'GET':
         return render_template('job_form.html',
-                               uName = username,
-                               companies = opp.allCompany(conn),src = src)
+                               uName=username,
+                               companies=opp.allCompany(conn),
+                               picture_exists=exists,
+                               src=src)
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
@@ -155,27 +166,30 @@ def addNewJob():
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
+
     conn = dbconn2.connect(DSN)
+
     if 'bnum' in session:
         bnum = session['bnum']
-        filename = secure_filename(str(bnum)+'.jpeg')
-        pathname = 'images/'+filename
-        src=url_for('pic',fname=filename)
-        exists = profExists(conn,bnum)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
 
-    conn = dbconn2.connect(DSN)
+    exists = profExists(conn,bnum)
+    if exists == True:
+        filename = secure_filename(str(bnum)+'.jpeg')
+        src=url_for('pic',fname=filename)
 
     if request.method == 'GET':
         cities = opp.allCities(conn)
         return render_template('jobLocation.html',
-                               jobID = jobID,
-                               cities = cities,
-                               uName = username, src = src, picture_exists = exists)
+                               jobID=jobID,
+                               cities=cities,
+                               uName=username, 
+                               src=src, 
+                               picture_exists=exists)
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
@@ -195,20 +209,21 @@ def addJobLocation(jobID):
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
+
     conn = dbconn2.connect(DSN)
+
     if 'bnum' in session:
         bnum = session['bnum']
-        filename = secure_filename(str(bnum)+'.jpeg')
-        pathname = 'images/'+filename
-        src=url_for('pic',fname=filename)
-        exists = profExists(conn,bnum)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
 
-    conn = dbconn2.connect(DSN)
+    exists = profExists(conn,bnum)
+    if exists == True:
+        filename = secure_filename(str(bnum)+'.jpeg')
+        src=url_for('pic',fname=filename)
 
     # displays job info & reviews
     if request.method == 'GET':
@@ -219,22 +234,21 @@ def job(jobID):
                                job=job,
                                locations=locations,
                                reviews=reviews,
-                               src = src, picture_exists = exists)
+                               src=src, 
+                               picture_exists=exists)
 
-    # if user wants to add a review for job --> redirects to review form
     if request.method == 'POST':
+        # if user wants to add a review for job --> redirects to review form  
         if request.form['submit'] == 'Add Job Review':
             return redirect(url_for('addNewReview',
                                     jobID=jobID))
 
-    # if user wants to edit their own review --> redirects to update form
-    if request.method == 'POST':
+        # if user wants to edit their own review --> redirects to update form
         if request.form['submit'] == 'Edit Review':
             return redirect(url_for('editReview',
                                     jobID=jobID))
 
-    # if user wants to delete their own review --> rerenders page
-    if request.method == 'POST':
+        # if user wants to delete their own review --> rerenders page
         if request.form['submit'] == 'Delete Review':
             deleteJobRev(conn, bnum, jobID)
             (job, locations, reviews) = search.findJob(conn, jobID, bnum)
@@ -244,29 +258,33 @@ def job(jobID):
                                    job=job,
                                    locations=locations,
                                    reviews=reviews,
-                                   src = src, picture_exists = exists)
+                                   src=src, 
+                                   picture_exists=exists)
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
 def addNewReview(jobID):
+
     conn = dbconn2.connect(DSN)
+
     if 'bnum' in session:
         bnum = session['bnum']
-        filename = secure_filename(str(bnum)+'.jpeg')
-        pathname = 'images/'+filename
-        src=url_for('pic',fname=filename)
-        exists = profExists(conn,bnum)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
 
-    conn = dbconn2.connect(DSN)
-
+    exists = profExists(conn,bnum)
+    if exists == True:
+        filename = secure_filename(str(bnum)+'.jpeg')
+        src=url_for('pic',fname=filename)
+    
     if request.method == 'GET':
         return render_template('review_form.html',
-                               jobID = jobID,
-                               uName = username, src = src, picture_exists = exists)
+                               jobID=jobID,
+                               uName=username, 
+                               src=src, 
+                               picture_exists=exists)
 
     if request.method == 'POST':
         if request.form['submit'] == 'Submit Review':
@@ -283,21 +301,21 @@ def addNewReview(jobID):
 # editting a review user made
 @app.route('/editReview/<jobID>', methods=['GET','POST'])
 def editReview(jobID):
+
     conn = dbconn2.connect(DSN)
+
     if 'bnum' in session:
         bnum = session['bnum']
-        filename = secure_filename(str(bnum)+'.jpeg')
-        pathname = 'images/'+filename
-        src=url_for('pic',fname=filename)
-        exists = profExists(conn,bnum)
-
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
 
-    conn = dbconn2.connect(DSN)
+    exists = profExists(conn,bnum)
+    if exists == True:
+        filename = secure_filename(str(bnum)+'.jpeg')
+        src=url_for('pic',fname=filename)
 
     if request.method == 'GET':
         rev = getRev(conn, bnum, jobID)
@@ -305,11 +323,12 @@ def editReview(jobID):
             flash('You do not have a review for this job.')
             return redirect(url_for('job', jobID=jobID))
         return render_template('update_review.html',
-                               uName = username,
-                               jobID = jobID,
-                               jobYear = rev['jobYear'],
-                               review = rev['review'],
-                               src = src, picture_exists = exists)
+                               uName=username,
+                               jobID=jobID,
+                               jobYear=rev['jobYear'],
+                               review=rev['review'],
+                               src=src, 
+                               picture_exists=exists)
 
     if request.method == 'POST':
         if request.form['submit'] == 'Update Review':
@@ -318,16 +337,6 @@ def editReview(jobID):
 
             update = updateJobRev(conn, bnum, jobID, jobYear, review)
             return redirect(url_for('job', jobID=jobID))
-
-#profile page
-# @app.route('/profile/', methods=['GET','POST'])
-# def profile():
-#     if 'bnum' in session:
-#         bnum = session['bnum']
-#     conn = dbconn2.connect(DSN)
-#     user = getUserInfo(conn, bnum)
-#     username = user['username']
-#     return render_template('profile.html', user = user, uName = username)
 
 #upload
 @app.route('/profile/', methods=["GET", "POST"])
@@ -345,15 +354,13 @@ def profile():
             filename = secure_filename(str(bnum)+'.jpeg')
             pathname = 'images/'+filename
             src=url_for('pic',fname=filename)
-        else:
-            filename = secure_filename('default.jpeg')
-
+        
     if request.method == 'GET':
         return render_template('profile.html', 
-                               src = url_for('pic',fname=filename),
-                               user = user, 
-                               uName = username, 
-                               picture_exists = exists)
+                               user=user, 
+                               uName=username, 
+                               src=src,
+                               picture_exists=exists)
     else:
         try:
             if request.form['submit'] == 'Update Picture':
@@ -367,19 +374,19 @@ def profile():
                 flash('Upload successful')
                 addProfPic(conn, bnum, pathname)
                 return render_template('profile.html',
-                                   src=url_for('pic', fname=filename),
                                    bnum=bnum,
                                    user=user,
                                    uName=username,
+                                   src=src,
                                    picture_exists=exists)
 
         except Exception as err:
             flash('Upload failed: {why}'.format(why=err))
             return render_template('profile.html',
-                                   src=url_for('pic', fname=filename),
                                    bnum=bnum, 
                                    user=user, 
                                    uName=username, 
+                                   src=src,
                                    picture_exists=exists)
 
 #uploading pic route
