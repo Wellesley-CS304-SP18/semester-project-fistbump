@@ -221,6 +221,9 @@ h1{
   margin:auto;
 }
 
+#job_height{
+  height:100%;
+}
 /*job*/
 * {
     box-sizing: border-box;
