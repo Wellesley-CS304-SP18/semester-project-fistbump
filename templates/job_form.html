@@ -2,11 +2,15 @@
 
 {% block content %}
 
+<<<<<<< HEAD
 <div class = 'middle'>
 
   <h1> Add a job listing </h1>
 
     <form class = 'job_form' name="addJob" method="POST" action="{{url_for('addNewJob')}}">
+=======
+    <form name="addJob" method="POST" action="{{url_for('addNewJob')}}">
+>>>>>>> 1ecfe9b54af90a6b2a09048de0e8fc11a56da7c7
       <table>
         <tr>
           <td><label for="positionName">Position Name</label>
@@ -89,8 +93,8 @@
         </tr>
 
         <tr>
-          <td><label for="link">Job Location</label>
-            <input name='link' value="" required></td>
+          <td><label for="location">Job Location</label>
+            <input name='location' value="" required></td>
             <p> Note: You will have an opportunity to more companies on the next page
         </tr>
 
