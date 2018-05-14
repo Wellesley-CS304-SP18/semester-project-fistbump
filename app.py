@@ -330,7 +330,7 @@ def editReview(jobID):
 #     return render_template('profile.html', user = user, uName = username)
 
 #upload
-@app.route('/profile', methods=["GET", "POST"])
+@app.route('/profile/', methods=["GET", "POST"])
 def profile():
 
     conn = dbconn2.connect(DSN)
@@ -366,7 +366,12 @@ def profile():
                 f.save(pathname)
                 flash('Upload successful')
                 addProfPic(conn, bnum, pathname)
-                return render_template()
+                return render_template('profile.html',
+                                   src=url_for('pic', fname=filename),
+                                   bnum=bnum,
+                                   user=user,
+                                   uName=username,
+                                   picture_exists=exists)
 
         except Exception as err:
             flash('Upload failed: {why}'.format(why=err))
