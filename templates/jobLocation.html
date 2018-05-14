@@ -2,10 +2,13 @@
 
 {% block content %}
 
-
+<div class = 'middle'>
+  <h1> Add some additional job locations </h1>
     <form method=POST action="{{url_for('addJobLocation',jobID = jobID, cities = cities)}}">
       <table>
         <label for="locations">Please select all the locations of your job posting:</label>
+        <br>
+        <br>
         <tr>
           {% for row in cities %}
           <td>
@@ -13,16 +16,16 @@
           </td>
 	  {% endfor %}
         </tr>
-        <tr>
-          <td>
-            <label for="newLocation"> If you have a new location to add,
-              please enter it here: </label>
-              <input name="newLocation" value="">
-          </td>
-        </tr>
-
       </table>
-      <input type="submit" name="submit" value="submit">
+      <br>
+      <label for="newLocation"> If you have a new location to add,
+        please enter it here: </label>
+        <input name="newLocation" value="">
+
+        <br>
+        <br>
+      <input class = 'bluebtn' type="submit" name="submit" value="submit">
     </form>
+  </div>
 
 {% endblock %}

@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    
-    <form name="addJob" method="POST" action="{{url_for('addNewJob')}}">
+
+<div class = 'middle'>
+
+  <h1> Add a job listing </h1>
+
+    <form class = 'job_form' name="addJob" method="POST" action="{{url_for('addNewJob')}}">
       <table>
         <tr>
           <td><label for="positionName">Position Name</label>
@@ -91,7 +95,10 @@
         </tr>
 
       </table>
-      <input type="submit" name="submit" value="submit">
+      <br>
+      <input class = 'bluebtn' type="submit" name="submit" value="submit">
     </form>
+
+  </div>
 
 {% endblock %}

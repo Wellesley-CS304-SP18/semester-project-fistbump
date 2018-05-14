@@ -20,7 +20,7 @@
           {{message}}
         {% endfor %}
 
-        <div class = 'account_info'> <p> Logged in as <a href = "{{ url_for('profile') }}">{{uName}}</a> </p>
+        <div class = 'account_info'> <p> Logged in as <a class = 'user' href = "{{ url_for('profile') }}">{{uName}}</a> </p>
 
           <form action="/logout/">
             <button class = 'logout-style'>logout</button>

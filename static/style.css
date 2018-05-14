@@ -9,6 +9,8 @@ body{
   overflow-x: hidden;
 }
 
+
+
 /*header*/
 
 header{
@@ -40,7 +42,30 @@ header{
   left:2%
 }
 
+.user{
+  color:white;
+  text-decoration-line: none;
+}
+
+.user:visited{
+  color:white;
+  text-decoration-line: none;
+}
+
 /*login page*/
+.cas{
+  width:80%;
+  margin:auto;
+}
+
+.cas form{
+  text-align:center;
+}
+
+.center_text{
+  width:80%;
+  margin:auto;
+}
 
 #login_body{
   background-image: url("wecode.jpg");
@@ -154,6 +179,8 @@ header{
   margin:5%;
 }
 
+/*home*/
+
 #opportunities{
   width:80%;
   margin:auto;
@@ -169,14 +196,18 @@ h1{
   text-align:center;
 }
 
-/* //fix this
-.account_info{
-  margin-left:75%;
-  margin-top:-5%;
+.opp_listing{
+  color: black;
+  text-decoration-line:none;
 }
 
-.search{
-  padding-left:1%;
-  padding-bottom:1%;
+.opp_listing:visited{
+  color: black;
+  text-decoration-line:none;
 }
-*/
+
+/*job form*/
+.job_form, .rev_form{
+  width:75%;
+  margin:auto;
+}

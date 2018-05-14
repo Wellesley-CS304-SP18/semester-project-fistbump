@@ -13,33 +13,22 @@
     <img src = "{{url_for('static', filename='fistbump.png')}}" alt = 'iphone fistbump emoji' class = 'logo'>
 
       <div class = 'login'>
-        <h1>Welcome to Fistbump:</h1>
-        <h1>A Wellesley CS Handshake</h1>
+        <h1>Welcome to Fistbump: A Wellesley CS Handshake</h1>
+
+        <div class = 'center_text'>
+          <p> This is a platform intended for Wellesley CS students to find
+            jobs and internships through the student community. Please use this platform
+            to help your siblings find and secure opportunities during the year. </p>
+
+          <p> Log in below using your Wellesley credentials </p>
+          
+        </div>
 
         {% for message in get_flashed_messages() %}
               {{message}}
         {% endfor %}
-	
-	<form action="/login/"><button>cas</button></form>
 
-        <div class= "center">
-          <div class = "block">
-            <form method="post" action="">
-              <p><label for="email">Email: <input type="text" name="email"></label></p>
-              <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
-              <p><button type="submit" name="submit"3 value="login">Login</button></p>
-            </form>
-          </div> <!--login_block-->
-
-          <div class = "block">
-            <form method="post" action="">
-              <p><label for="userid">Email: <input type="text" name="email"></label></p>
-              <p><label for="userid">Username: <input type="text" name="uName"></label></p>
-              <p><label for="passwd">Password: <input type="password" name="pwd"></label></p>
-              <p><button type="submit" name="submit" value="register">Sign Up</button></p>
-            </form>
-          </div> <!-- signup_block-->
-        </div> <!--center -->
+	<div class = 'cas'> <form action="/login/"><button>Login</button></form> </div>
       </div> <!-- login -->
   </div>
 
