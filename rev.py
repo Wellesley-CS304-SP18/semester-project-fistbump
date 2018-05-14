@@ -24,7 +24,7 @@ def getRev(conn, bnum, jobID):
     info = curs.fetchone()
     return info
 
-# update a job review (can update year & review, given uID & jobID)
+# update a job review (can update year & review, given bnum & jobID)
 def updateJobRev(conn, bnum, jobID, jobYear, review):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('update job_review set jobYear=%s, review=%s where jobID=%s \
@@ -35,11 +35,9 @@ def deleteJobRev(conn, bnum, jobID):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('delete from job_review where reviewer=%s and jobID=%s', [bnum, jobID])
 
-# return all reviews (tuple of job & reu) an user has made given their uID
+# return all reviews a user has made given their bnum
 def allRevs(conn, bnum):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('select * from job_review where reviewer=%s', [bnum])
     jobRev = curs.fetchall()
-    curs.execute('select * from reu_review where reviewer=%s', [bnum])
-    reuRev = curs.fetchall()
-    return (jobRev, reuRev)
+    return jobRev

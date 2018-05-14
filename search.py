@@ -14,13 +14,6 @@ def allJobs(conn):
     info = curs.fetchall()
     return info
 
-# return all reus
-def allREUs(conn):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('select * from reu_opp')
-    info = curs.fetchall()
-    return info
-
 # return all jobs given search terms
 # if didn't pick filter input defaulted % in routing
 def searchJobs(conn, classPref, jobTitle, jobType, season):
@@ -50,33 +43,7 @@ def findJob(conn, jobID, bnum):
     curs.execute('commit')
     return (job, locations, reviews)
 
-# return all reus given search terms
-# if didn't pick filter input % for param
-def searchREUs(conn, deptID, classPref, deadline, isUROP):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('select * from reu_opp where deptID=%s \
-                  intersect \
-                  select * from reu_opp where classPref=%s \
-                  intersect \
-                  select * from reu_opp where deadline=%s \
-                  intersect \
-                  select * from reu_opp where isUROP=%s',
-                  [deptID, classPref, deadline, isUROP])
-    info = curs.fetchall()
-    return info
-
-# return reu, reu reviews for reuID
-def findREU(conn, reuID):
-    curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('start transaction')
-    curs.execute('select * from reu_opp where reuID=%s', [reuID])
-    reu = curs.fetchone()
-    depID = reu['deptID']
-    curs.execute('select * from reu_review where deptID=%s', [deptID])
-    reviews = curs.fetchall()
-    curs.execute('commit')
-    return (reu, reviews)
-
+# future implementation w. human resources:
 # return all human resources given
 def searchHRs(conn, companyName):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
