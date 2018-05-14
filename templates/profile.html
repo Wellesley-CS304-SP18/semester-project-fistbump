@@ -4,13 +4,13 @@
 
 <div class = 'middle'>
   {% if picture_exists %}
-  <div class = "picture">
-    <img src = "{{src}}">
-  </div>
-  {% else %}
-  <div class = "picture">
-    <img src = "{{url_for('static', filename='default.jpg')}}"  alt = 'default photo'>
-  </div>
+    <div>
+      <img class = "picture" src = "{{src}}">
+    </div>
+    {% else %}
+    <div>
+      <img class = "picture" src = "{{url_for('static', filename='default.jpg')}}"  alt = 'default photo'>
+    </div>
   {% endif %}
     <form method='POST' enctype=multipart/form-data action="">
         <input type='file' name='photo'>

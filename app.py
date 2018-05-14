@@ -72,6 +72,11 @@ def home():
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
 
+    if 'bnum' in session:
+        bnum = session['bnum']
+        filename = secure_filename(str(bnum)+'.jpeg')
+        pathname = 'images/'+filename
+        src=url_for('pic',fname=filename)
 
     if request.method == 'GET':
         return render_template('home.html',
@@ -106,13 +111,16 @@ def home():
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
             return render_template('home.html',
                                    uName = username,
-                                   opportunities = jobs)
+                                   opportunities = jobs, src = src)
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
 
     if 'bnum' in session:
         bnum = session['bnum']
+        filename = secure_filename(str(bnum)+'.jpeg')
+        pathname = 'images/'+filename
+        src=url_for('pic',fname=filename)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -125,7 +133,7 @@ def addNewJob():
     if request.method == 'GET':
         return render_template('job_form.html',
                                uName = username,
-                               companies = opp.allCompany(conn))
+                               companies = opp.allCompany(conn),src = src)
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
@@ -149,6 +157,9 @@ def addJobLocation(jobID):
 
     if 'bnum' in session:
         bnum = session['bnum']
+        filename = secure_filename(str(bnum)+'.jpeg')
+        pathname = 'images/'+filename
+        src=url_for('pic',fname=filename)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -162,7 +173,7 @@ def addJobLocation(jobID):
         return render_template('jobLocation.html',
                                jobID = jobID,
                                cities = cities,
-                               uName = username)
+                               uName = username, src = src)
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
@@ -185,6 +196,9 @@ def job(jobID):
 
     if 'bnum' in session:
         bnum = session['bnum']
+        filename = secure_filename(str(bnum)+'.jpeg')
+        pathname = 'images/'+filename
+        src=url_for('pic',fname=filename)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -201,7 +215,8 @@ def job(jobID):
                                uName=username,
                                job=job,
                                locations=locations,
-                               reviews=reviews)
+                               reviews=reviews,
+                               src = src)
 
     # if user wants to add a review for job --> redirects to review form
     if request.method == 'POST':
@@ -225,13 +240,17 @@ def job(jobID):
                                    uName=username,
                                    job=job,
                                    locations=locations,
-                                   reviews=reviews)
+                                   reviews=reviews,
+                                   src = src)
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
 def addNewReview(jobID):
 
     if 'bnum' in session:
         bnum = session['bnum']
+        filename = secure_filename(str(bnum)+'.jpeg')
+        pathname = 'images/'+filename
+        src=url_for('pic',fname=filename)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -243,7 +262,7 @@ def addNewReview(jobID):
     if request.method == 'GET':
         return render_template('review_form.html',
                                jobID = jobID,
-                               uName = username)
+                               uName = username, src = src)
 
     if request.method == 'POST':
         if request.form['submit'] == 'Submit Review':
@@ -263,6 +282,10 @@ def editReview(jobID):
 
     if 'bnum' in session:
         bnum = session['bnum']
+        filename = secure_filename(str(bnum)+'.jpeg')
+        pathname = 'images/'+filename
+        src=url_for('pic',fname=filename)
+
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -280,7 +303,8 @@ def editReview(jobID):
                                uName = username,
                                jobID = jobID,
                                jobYear = rev['jobYear'],
-                               review = rev['review'])
+                               review = rev['review'],
+                               src = src)
 
     if request.method == 'POST':
         if request.form['submit'] == 'Update Review':

@@ -20,11 +20,27 @@
           {{message}}
         {% endfor %}
 
-        <div class = 'account_info'> <p> Logged in as <a class = 'user' href = "{{ url_for('profile') }}">{{uName}}</a> </p>
 
-          <form action="/logout/">
-            <button class = 'logout-style'>logout</button>
-          </form>
+        <div class = 'account_info'>
+          <div class = 'mini_column'>
+        <p> Logged in as <a class = 'user' href = "{{ url_for('profile') }}">{{uName}}</a> </p>
+        </div>
+
+          {% if picture_exists %}
+            <div class = 'mini_column'>
+              <img class = "picture_small" src = "{{src}}">
+            </div>
+            {% else %}
+            <div>
+              <img class = "picture_small" src = "{{url_for('static', filename='default.jpg')}}"  alt = 'default photo'>
+            </div>
+
+            <form action="/logout/">
+              <button class = 'logout-style'>logout</button>
+            </form>
+          {% endif %}
+
+
 
         </div>
     </header>

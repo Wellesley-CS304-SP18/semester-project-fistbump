@@ -26,10 +26,8 @@ header{
   background-color:inherit;
   color:inherit;
   border:none;
-  position:relative;
-  left:6.5%;
-  top:-10;
 }
+
 .account_info{
   position:relative;
   left:85%;
@@ -240,4 +238,20 @@ h1{
   width: 50%;
   padding: 10px;
   height: 100%;
+}
+
+/*profile*/
+
+.picture{
+  width:200px;
+}
+
+.picture_small{
+  width:50px;
+}
+
+.mini_column {
+  float: left;
+  width: 10%;
+  padding: 10px;
 }
