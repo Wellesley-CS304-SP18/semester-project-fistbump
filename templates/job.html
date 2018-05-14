@@ -3,42 +3,46 @@
 {% block content %}
 
   {% if job %}
-  <div id = "job_info">
-    <a href="{{job.link}}" style="font-size: 50px">{{job.positionName}}</a>
-    <h3>{{job.jobTitle}} {{job.jobType}} opportunity at {{job.companyName}}</h3>
-    <h3>Application Deadline: {{job.deadline}}</h3>
-    <h3>Locations: </h3>
-    <ul>
-      {% for location in locations %}
-        <li>{{location.city}}</li>
-      {% endfor %}
-    </ul>
+  <div class="column">
+    <div id = "job_info">
+      <a href="{{job.link}}" style="font-size: 50px">{{job.positionName}}</a>
+      <h3>{{job.jobTitle}} {{job.jobType}} opportunity at {{job.companyName}}</h3>
+      <h3>Application Deadline: {{job.deadline}}</h3>
+      <h3>Locations: </h3>
+      <ul>
+        {% for location in locations %}
+          <li>{{location.city}}</li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
   {% endif %}
 
-<h2>Reviews</h2>
+  <div class="column">
+    <h2>Reviews</h2>
 
-  <div class = 'add_job_review'>
-    <form method="POST" action="">
-      <input type="submit" name="submit" value="Add Job Review">
-    </form>
-  </div>
+    <div class = 'add_job_review'>
+      <form method="POST" action="">
+        <input type="submit" name="submit" value="Add Job Review">
+      </form>
+    </div>
 
-  <div id = "reviews">
-    {% if reviews %}
-      {% for review in reviews %}
-        <div style="background-color: "lightblue"; width: 90%; padding: 25px; margin: 25px;">
-          <h3>{{review.firstname}}, <i>{{review.jobYear}}</i></h3>
-          <p>{{review.review}}</p>
-          {% if review.reviewer == bnum %}
-            <form method="POST" action="">
-              <input type="submit" name="submit" value="Edit Review">
-              <input type="submit" name="submit" value="Delete Review">
-            </form>
-          {% endif %}
-        </div>
-      {% endfor %}
-    {% endif %}
+    <div id = "reviews">
+      {% if reviews %}
+        {% for review in reviews %}
+          <div style="background-color: "lightblue"; width: 90%; padding: 25px; margin: 25px;">
+            <h3>{{review.firstname}}, <i>{{review.jobYear}}</i></h3>
+            <p>{{review.review}}</p>
+            {% if review.reviewer == bnum %}
+              <form method="POST" action="">
+                <input type="submit" name="submit" value="Edit Review">
+                <input type="submit" name="submit" value="Delete Review">
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
   </div>
 
 {% endblock %}

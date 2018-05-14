@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    
+
     <form name="addJob" method="POST" action="{{url_for('addNewJob')}}">
       <table>
         <tr>
@@ -85,8 +85,8 @@
         </tr>
 
         <tr>
-          <td><label for="link">Job Location</label>
-            <input name='link' value="" required></td>
+          <td><label for="location">Job Location</label>
+            <input name='location' value="" required></td>
             <p> Note: You will have an opportunity to more companies on the next page
         </tr>
 

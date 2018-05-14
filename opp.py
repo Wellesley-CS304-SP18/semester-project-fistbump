@@ -13,39 +13,32 @@ def getUserInfo(conn, bnum):
     curs.execute('select firstname, username from user_id where bnum = %s',[bnum])
     return curs.fetchone()
 
-# check if user can update table (same poster or admin)
-def canUpdate(conn, table, ID, bnum):
+# check if user can update job
+def canUpdate(conn, ID, bnum):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    if table == "job":
-        curs.execute('select poster from job_opp where jobID= %s', [ID])
-    if table == "reu":
-        curs.execute('select poster from reu_opp where reuID=%s', [ID])
-    if table == "hr":
-        curs.execute('select poster from human_resources where uID=%s', [ID])
+    curs.execute('select poster from job_opp where jobID= %s', [ID])
     info = curs.fetchone()
     if info is not None:
         samePoster = (info['poster'] == bnum)
         isAd = isAdmin(conn, bnum)
         return (samePoster or isAd)
-    return True
+    return False
 
 # check if user is admin
 def isAdmin(conn, bnum):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('start transaction')
     curs.execute('select uType from user_id where bnum=%s', [bnum])
     info = curs.fetchone()
-    curs.execute('commit')
     return info['uType'] == "admin"
 
 # add city
 def addCity(conn, city):
+    # tries to add all cities (error if city already in table)
     try:
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('insert into city (city) values (%s)', [city])
-        return city+" added to city."
     except:
-        return city+" already in city."
+        pass
 
 # return all cities in city
 def allCities(conn):
@@ -72,18 +65,11 @@ def updateJob(conn, jobID, bnum, companyName, link, classPref, jobType, jobTitle
 
 # add job location
 def addJobLoc(conn, bnum, jobID, city):
-    if canUpdate(conn, "job", jobID, bnum):
-        try:
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('start transaction')
-            addCity(conn, city)
-            curs.execute('insert into job_location (jobID, city) values \
-                         (%s, %s)', [jobID, city])
-            curs.execute('commit')
-            return True
-        except:
-            return False
-    return False
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('start transaction')
+    addCity(conn, city)
+    curs.execute('insert into job_location (jobID, city) values (%s, %s)', [jobID, city])
+    curs.execute('commit')
 
 # delete job location
 def deleteJobLoc(conn, bnum, jobID, city):
