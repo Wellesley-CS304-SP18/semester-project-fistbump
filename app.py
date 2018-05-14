@@ -74,6 +74,8 @@ def home():
         if exists == True:
             filename = secure_filename(str(bnum)+'.jpeg')
             src=url_for('pic',fname=filename)
+        else:
+            src=None
 
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
@@ -137,6 +139,8 @@ def addNewJob():
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
+    else:
+        src = None
 
     formErr = 'Please fill in the blank fields'
 
@@ -181,6 +185,8 @@ def addJobLocation(jobID):
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
+    else:
+        src = None
 
     if request.method == 'GET':
         cities = opp.allCities(conn)
@@ -209,7 +215,6 @@ def addJobLocation(jobID):
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
-
     conn = dbconn2.connect(DSN)
 
     if 'bnum' in session:
@@ -223,11 +228,13 @@ def job(jobID):
     exists = profExists(conn,bnum)
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
-        src=url_for('pic',fname=filename)
+        src = url_for('pic',fname=filename)
+    else:
+        src = None
 
     # displays job info & reviews
     if request.method == 'GET':
-        (job, locations, reviews, hasRev) = search.findJob(conn, jobID, bnum)
+        (job, locations, reviews) = search.findJob(conn, jobID, bnum)
         return render_template('job.html',
                                bnum=bnum,
                                uName=username,
@@ -235,8 +242,7 @@ def job(jobID):
                                locations=locations,
                                reviews=reviews,
                                src=src,
-                               picture_exists=exists,
-                               hasRev=hasRev)
+                               picture_exists=exists)
 
     if request.method == 'POST':
         # if user wants to add a review for job --> redirects to review form
@@ -252,7 +258,7 @@ def job(jobID):
         # if user wants to delete their own review --> rerenders page
         if request.form['submit'] == 'Delete Review':
             deleteJobRev(conn, bnum, jobID)
-            (job, locations, reviews, hasRev) = search.findJob(conn, jobID, bnum)
+            (job, locations, reviews) = search.findJob(conn, jobID, bnum)
             return render_template('job.html',
                                    bnum=bnum,
                                    uName=username,
@@ -260,8 +266,7 @@ def job(jobID):
                                    locations=locations,
                                    reviews=reviews,
                                    src=src,
-                                   picture_exists=exists,
-                                   hasRev=hasRev)
+                                   picture_exists=exists)
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
 def addNewReview(jobID):
@@ -280,6 +285,8 @@ def addNewReview(jobID):
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
+    else:
+        src = None
 
     if request.method == 'GET':
         return render_template('review_form.html',
@@ -318,6 +325,8 @@ def editReview(jobID):
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
+    else:
+        src = None
 
     if request.method == 'GET':
         rev = getRev(conn, bnum, jobID)
@@ -356,6 +365,8 @@ def profile():
             filename = secure_filename(str(bnum)+'.jpeg')
             pathname = 'images/'+filename
             src=url_for('pic',fname=filename)
+        else:
+            src = None
 
     if request.method == 'GET':
         return render_template('profile.html',
@@ -406,7 +417,7 @@ if __name__ == '__main__':
         port = int(sys.argv[1])
         assert(port>1024)
     else:
-        port = 1946
+        port = 1950
     DSN = dbconn2.read_cnf()
     DSN['db'] = db
     app.debug = True
