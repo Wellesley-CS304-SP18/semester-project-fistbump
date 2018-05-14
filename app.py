@@ -33,8 +33,7 @@ app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-#db = 'fistbump_db'
-db = 'lluo2_db'
+db = 'fistbump_db'
 
 # ------------------------------------------------------------------------------
 # ROUTES
@@ -75,7 +74,7 @@ def home():
         if exists == True:
             filename = secure_filename(str(bnum)+'.jpeg')
             src=url_for('pic',fname=filename)
-        else: 
+        else:
             src=None
 
     if 'CAS_USERNAME' in session:
@@ -87,7 +86,7 @@ def home():
     if request.method == 'GET':
         return render_template('home.html',
                                uName = username,
-                               opportunities=getOpps(conn), 
+                               opportunities=getOpps(conn),
                                picture_exists=exists,
                                src=src)
 
@@ -119,8 +118,8 @@ def home():
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
             return render_template('home.html',
                                    uName=username,
-                                   opportunities=jobs, 
-                                   src=src, 
+                                   opportunities=jobs,
+                                   src=src,
                                    picture_exists=exists)
 
 @app.route('/addNewJob/', methods=['GET','POST'])
@@ -141,7 +140,7 @@ def addNewJob():
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
     else:
-        src=None
+        src = None
 
     formErr = 'Please fill in the blank fields'
 
@@ -187,15 +186,15 @@ def addJobLocation(jobID):
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
     else:
-        src=None
+        src = None
 
     if request.method == 'GET':
         cities = opp.allCities(conn)
         return render_template('jobLocation.html',
                                jobID=jobID,
                                cities=cities,
-                               uName=username, 
-                               src=src, 
+                               uName=username,
+                               src=src,
                                picture_exists=exists)
 
     if request.method == 'POST':
@@ -216,7 +215,6 @@ def addJobLocation(jobID):
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
-
     conn = dbconn2.connect(DSN)
 
     if 'bnum' in session:
@@ -230,9 +228,9 @@ def job(jobID):
     exists = profExists(conn,bnum)
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
-        src=url_for('pic',fname=filename)
+        src = url_for('pic',fname=filename)
     else:
-        src=None
+        src = None
 
     # displays job info & reviews
     if request.method == 'GET':
@@ -243,11 +241,11 @@ def job(jobID):
                                job=job,
                                locations=locations,
                                reviews=reviews,
-                               src=src, 
+                               src=src,
                                picture_exists=exists)
 
     if request.method == 'POST':
-        # if user wants to add a review for job --> redirects to review form  
+        # if user wants to add a review for job --> redirects to review form
         if request.form['submit'] == 'Add Job Review':
             return redirect(url_for('addNewReview',
                                     jobID=jobID))
@@ -267,7 +265,7 @@ def job(jobID):
                                    job=job,
                                    locations=locations,
                                    reviews=reviews,
-                                   src=src, 
+                                   src=src,
                                    picture_exists=exists)
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
@@ -288,13 +286,13 @@ def addNewReview(jobID):
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
     else:
-        src=None
+        src = None
 
     if request.method == 'GET':
         return render_template('review_form.html',
                                jobID=jobID,
-                               uName=username, 
-                               src=src, 
+                               uName=username,
+                               src=src,
                                picture_exists=exists)
 
     if request.method == 'POST':
@@ -328,7 +326,7 @@ def editReview(jobID):
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
     else:
-        src=None
+        src = None
 
     if request.method == 'GET':
         rev = getRev(conn, bnum, jobID)
@@ -340,7 +338,7 @@ def editReview(jobID):
                                jobID=jobID,
                                jobYear=rev['jobYear'],
                                review=rev['review'],
-                               src=src, 
+                               src=src,
                                picture_exists=exists)
 
     if request.method == 'POST':
@@ -356,7 +354,7 @@ def editReview(jobID):
 def profile():
 
     conn = dbconn2.connect(DSN)
-    
+
     if 'bnum' in session:
         bnum = session['bnum']
         user = getUserInfo(conn, bnum)
@@ -368,12 +366,12 @@ def profile():
             pathname = 'images/'+filename
             src=url_for('pic',fname=filename)
         else:
-            src=None
+            src = None
 
     if request.method == 'GET':
-        return render_template('profile.html', 
-                               user=user, 
-                               uName=username, 
+        return render_template('profile.html',
+                               user=user,
+                               uName=username,
                                src=src,
                                picture_exists=exists)
     else:
@@ -398,9 +396,9 @@ def profile():
         except Exception as err:
             flash('Upload failed: {why}'.format(why=err))
             return render_template('profile.html',
-                                   bnum=bnum, 
-                                   user=user, 
-                                   uName=username, 
+                                   bnum=bnum,
+                                   user=user,
+                                   uName=username,
                                    src=src,
                                    picture_exists=exists)
 
@@ -419,7 +417,7 @@ if __name__ == '__main__':
         port = int(sys.argv[1])
         assert(port>1024)
     else:
-        port = 1946
+        port = 1950
     DSN = dbconn2.read_cnf()
     DSN['db'] = db
     app.debug = True
