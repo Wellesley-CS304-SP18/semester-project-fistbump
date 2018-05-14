@@ -24,3 +24,10 @@ def profExists(conn, bnum):
     if info is None:
         return False
     return True
+
+#get blob from database
+def get_blob(cursor,bnum):
+    cursor.execute('SELECT pic FROM prof_pic WHERE bnum=%s',(bnum))
+    row = cursor.fetchone()
+    data = row[0]
+    return data
