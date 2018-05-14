@@ -9,7 +9,9 @@ body{
   overflow-x: hidden;
 }
 
-
+#right{
+  background-color:white;
+}
 
 /*header*/
 
@@ -129,6 +131,11 @@ header{
   float:right;
 }
 
+.add_job_review{
+  position:fixed;
+  bottom:1%;
+  right:2%;
+}
 .dropbtn:hover, .dropbtn:focus {
     background-color: #2980B9;
 }
@@ -170,7 +177,6 @@ header{
 .middle{
     margin: auto;
     width: 80%;
-    height:100%;
     background-color: #ffffff;
     padding: 10px;
 }
@@ -181,6 +187,7 @@ header{
 
 /*home*/
 
+
 #opportunities{
   width:80%;
   margin:auto;
@@ -190,6 +197,8 @@ header{
   border-bottom:1px solid gray;
   padding:10px;
 }
+
+
 
 h1{
   font-size:20px;
