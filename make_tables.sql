@@ -1,11 +1,14 @@
 USE fistbump_db;
 
+DROP TABLE IF EXISTS prof_pic;
 DROP TABLE IF EXISTS job_location;
 DROP TABLE IF EXISTS job_review;
 DROP TABLE IF EXISTS job_opp;
 DROP TABLE IF EXISTS company;
 DROP TABLE IF EXISTS city;
 DROP TABLE IF EXISTS user_id;
+
+CREATE TABLE prof_pic (bnum varchar(12) , pic BLOB, PRIMARY KEY(bnum));
 
 CREATE TABLE user_id (bnum varchar(12) NOT NULL PRIMARY KEY,
 		      firstname varchar(50) NOT NULL,
@@ -42,4 +45,3 @@ CREATE TABLE job_location (jobID int NOT NULL,
                            PRIMARY KEY (jobID, city),
                            FOREIGN KEY (jobID) REFERENCES job_opp(jobID) ON DELETE CASCADE,
 			   FOREIGN KEY (city) REFERENCES city(city) ON DELETE RESTRICT) ENGINE=InnoDB;
-
