@@ -1,4 +1,4 @@
-# Fistbump!
+ # Fistbump!
 
 from flask import (Flask, render_template, make_response, url_for, request, redirect, flash, session, send_from_directory, jsonify)
 from werkzeug import secure_filename
@@ -33,7 +33,7 @@ app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-db = 'fistbump_db'
+db = 'lluo2_db'
 
 # ------------------------------------------------------------------------------
 # ROUTES
@@ -59,30 +59,29 @@ def home():
     if 'CAS_ATTRIBUTES' in session:
         attribs = session['CAS_ATTRIBUTES']
         if 'bnum' in session:
-            pass
+            bnum = session['bnum']
+            filename = secure_filename(str(bnum)+'.jpeg')
+            pathname = 'images/'+filename
+            src=url_for('pic',fname=pathname)
         else:
             session['bnum'] = attribs['cas:id']
             bnum = session['bnum']
             firstname = attribs['cas:givenName']
             username = attribs['cas:sAMAccountName']
             opp.addUser(conn, bnum, firstname, username)
+        exists = profExists(conn,bnum)
+
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
 
-    if 'bnum' in session:
-        bnum = session['bnum']
-        filename = secure_filename(str(bnum)+'.jpeg')
-        pathname = 'images/'+filename
-        src=url_for('pic',fname=filename)
-        exists = profExists(conn,bnum)
-
     if request.method == 'GET':
         return render_template('home.html',
                                uName = username,
-                               opportunities = getOpps(conn), picture_exists = exists)
+                               opportunities = getOpps(conn), 
+                               picture_exists = exists)
 
     if request.method == 'POST':
         # add a new job opportunity
@@ -335,19 +334,26 @@ def editReview(jobID):
 def profile():
 
     conn = dbconn2.connect(DSN)
+    
     if 'bnum' in session:
-            bnum = session['bnum']
-    user = getUserInfo(conn, bnum)
-    username = user['username']
-    exists = profExists(conn,bnum)
-    if exists == None:
-        exists = False
-    else:
-        exists = True
-        filename = secure_filename(str(bnum)+'.jpeg')
+        bnum = session['bnum']
+        user = getUserInfo(conn, bnum)
+        username = user['username']
+        exists = profExists(conn,bnum)
+
+        if exists == True:
+            filename = secure_filename(str(bnum)+'.jpeg')
+            pathname = 'images/'+filename
+            src=url_for('pic',fname=filename)
+        else:
+            filename = secure_filename('default.jpeg')
 
     if request.method == 'GET':
-        return render_template('profile.html', src= url_for('pic',fname=filename),user = user, uName = username, picture_exists = exists)
+        return render_template('profile.html', 
+                               src = url_for('pic',fname=filename),
+                               user = user, 
+                               uName = username, 
+                               picture_exists = exists)
     else:
         try:
             if request.form['submit'] == 'Update Picture':
@@ -359,14 +365,17 @@ def profile():
                 pathname = 'images/'+filename
                 f.save(pathname)
                 flash('Upload successful')
-                addProfPic(conn, bnum, fileName)
-                return render_template('profile.html',
-                                       src=url_for('pic',fname=filename),
-                                       bnum=bnum, user = user, uName = username, picture_exists = exists)
+                addProfPic(conn, bnum, pathname)
+                return render_template()
+
         except Exception as err:
-            flash('Upload failed {why}'.format(why=err))
-            return render_template('profile.html',src="",
-            bnum=bnum, user = user, uName = username, picture_exists = exists)
+            flash('Upload failed: {why}'.format(why=err))
+            return render_template('profile.html',
+                                   src=url_for('pic', fname=filename),
+                                   bnum=bnum, 
+                                   user=user, 
+                                   uName=username, 
+                                   picture_exists=exists)
 
 #uploading pic route
 @app.route('/pic/<fname>')
@@ -383,7 +392,7 @@ if __name__ == '__main__':
         port = int(sys.argv[1])
         assert(port>1024)
     else:
-        port = 1945
+        port = 1946
     DSN = dbconn2.read_cnf()
     DSN['db'] = db
     app.debug = True

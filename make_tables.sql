@@ -13,6 +13,10 @@ CREATE TABLE user_id (bnum varchar(12) NOT NULL PRIMARY KEY,
 		      numLogins int DEFAULT 1,
 		      uType ENUM('general', 'admin') NOT NULL) ENGINE=InnoDB;
 
+CREATE TABLE prof_pic (bnum varchar(12) NOT NULL PRIMARY KEY,
+       	               pic blob,
+		       FOREIGN KEY (bnum) REFERENCES user_id(bnum) ON DELETE CASCADE) ENGINE=InnoDB;
+
 CREATE TABLE city (city varchar(50) NOT NULL PRIMARY KEY) ENGINE=InnoDB;
 
 CREATE TABLE company (companyName varchar(100) NOT NULL PRIMARY KEY) ENGINE=InnoDB;
@@ -43,3 +47,6 @@ CREATE TABLE job_location (jobID int NOT NULL,
                            FOREIGN KEY (jobID) REFERENCES job_opp(jobID) ON DELETE CASCADE,
 			   FOREIGN KEY (city) REFERENCES city(city) ON DELETE RESTRICT) ENGINE=InnoDB;
 
+CREATE TABLE favorites (bnum varchar(12) NOT NULL,
+                 	jobID int NOT NULL,
+			PRIMARY KEY (bnum, jobID)) ENGINE=InnoDB;

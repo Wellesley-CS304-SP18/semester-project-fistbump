@@ -11,7 +11,8 @@ def addProfPic(conn, bnum, fileName):
     try:
         curs = conn.cursor(MySQLdb.cursors.DictCursor)
         curs.execute('insert into prof_pic (bnum, pic) \
-                      values (%s, load_file(%s))', [bnum, fileName])
+                      values (%s, load_file(%s)) \
+                      on duplicate key update pic=values(pic)', [bnum, fileName])
         return True
     except:
         False
