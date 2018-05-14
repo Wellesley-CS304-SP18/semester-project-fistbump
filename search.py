@@ -40,8 +40,14 @@ def findJob(conn, jobID, bnum):
     locations = curs.fetchall()
     curs.execute('select firstname, jobID, jobYear, reviewer, review from job_review, user_id where jobID=%s and bnum=reviewer', [jobID])
     reviews = curs.fetchall()
+    curs.execute('select * from job_review where jobID=%s and reviewer=%s', [jobID, bnum])
+    ownRev = curs.fetchone()
+    if ownRev is None:
+        hasRev = False
+    else:
+        hasRev = True
     curs.execute('commit')
-    return (job, locations, reviews)
+    return (job, locations, reviews, hasRev)
 
 # future implementation w. human resources:
 # return all human resources given
