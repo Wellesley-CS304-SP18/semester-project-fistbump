@@ -4,6 +4,9 @@ from flask import (Flask, render_template, make_response, url_for, request, redi
 from werkzeug import secure_filename
 from flask_cas import CAS
 
+import os
+import imghdr
+
 app = Flask(__name__)
 CAS(app)
 
@@ -268,19 +271,53 @@ def editReview(jobID):
             return redirect(url_for('job', jobID=jobID))
 
 #profile page
-@app.route('/profile/', methods=['GET','POST'])
-def profile():
-    if 'bnum' in session:
-        bnum = session['bnum']
-    conn = dbconn2.connect(DSN)
-    user = getUserInfo(conn, bnum)
-    return render_template('profile.html', user = user)
+# @app.route('/profile/', methods=['GET','POST'])
+# def profile():
+#     if 'bnum' in session:
+#         bnum = session['bnum']
+#     conn = dbconn2.connect(DSN)
+#     user = getUserInfo(conn, bnum)
+#     username = user['username']
+#     return render_template('profile.html', user = user, uName = username)
 
 #upload
-@app.route('/upload/', methods =['GET','POST'])
-def upload():
-    user = (conn, 'B20787381')
-    return render_template('profile.html', user = user)
+@app.route('/profile', methods=["GET", "POST"])
+def profile():
+
+    conn = dbconn2.connect(DSN)
+    if 'bnum' in session:
+            bnum = session['bnum']
+
+    user = getUserInfo(conn, bnum)
+    username = user['username']
+    exists = profExists(conn,bnum)
+
+    if request.method == 'GET':
+        return render_template('profile.html', src= '',user = user, uName = username, picture_exists = exists)
+    else:
+        try:
+            if request.form['submit'] == 'Update Picture':
+                f = request.files['photo']
+                mime_type = imghdr.what(f.stream)
+                if mime_type != 'jpeg':
+                    raise Exception('Not a JPEG')
+                filename = secure_filename(str(bnum)+'.jpeg')
+                pathname = 'images/'+filename
+                f.save(pathname)
+                flash('Upload successful')
+                return render_template('profile.html',
+                                       src=url_for('pic',fname=filename),
+                                       bnum=bnum, user = user, uName = username, picture_exists = exists)
+        except Exception as err:
+            flash('Upload failed {why}'.format(why=err))
+            return render_template('profile.html',src="",
+            bnum=bnum, user = user, uName = username, picture_exists = exists)
+
+#uploading pic route
+@app.route('/pic/<fname>')
+def pic(fname):
+    f = secure_filename(fname)
+    return send_from_directory('images',f)
 
 
 # ------------------------------------------------------------------------------
