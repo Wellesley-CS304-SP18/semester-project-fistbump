@@ -131,7 +131,14 @@ header{
     display: block;
 }
 
-.dropdown a:hover {background-color: #ddd}
+.dropdown:hover .dropdown-content {
+  display:block;
+}
+
+.dropdown a:hover {
+  background-color: #ddd;
+  display:block;
+}
 
 .show {display:block;}
 

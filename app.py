@@ -189,6 +189,7 @@ def job(jobID):
 
     conn = dbconn2.connect(DSN)
 
+    # displays job info & reviews
     if request.method == 'GET':
         (job, locations, reviews) = search.findJob(conn, jobID, bnum)
         return render_template('job.html',
@@ -198,15 +199,29 @@ def job(jobID):
                                locations=locations,
                                reviews=reviews)
 
+    # if user wants to add a review for job --> redirects to review form
     if request.method == 'POST':
         if request.form['submit'] == 'Add Job Review':
             return redirect(url_for('addNewReview',
                                     jobID=jobID))
 
+    # if user wants to edit their own review --> redirects to update form
     if request.method == 'POST':
         if request.form['submit'] == 'Edit Review':
             return redirect(url_for('editReview',
                                     jobID=jobID))
+
+    # if user wants to delete their own review --> rerenders page
+    if request.method == 'POST':
+        if request.form['submit'] == 'Delete Review':
+            deleteJobRev(conn, bnum, jobID)
+            (job, locations, reviews) = search.findJob(conn, jobID, bnum)
+            return render_template('job.html',
+                                   bnum=bnum,
+                                   uName=username,
+                                   job=job,
+                                   locations=locations,
+                                   reviews=reviews)
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
 def addNewReview(jobID):
