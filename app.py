@@ -84,7 +84,7 @@ def home():
     if request.method == 'GET':
         return render_template('home.html',
                                uName = username,
-                               opportunities=getOpps(conn), 
+                               opportunities=getOpps(conn),
                                picture_exists=exists,
                                src=src)
 
@@ -116,8 +116,8 @@ def home():
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
             return render_template('home.html',
                                    uName=username,
-                                   opportunities=jobs, 
-                                   src=src, 
+                                   opportunities=jobs,
+                                   src=src,
                                    picture_exists=exists)
 
 @app.route('/addNewJob/', methods=['GET','POST'])
@@ -187,8 +187,8 @@ def addJobLocation(jobID):
         return render_template('jobLocation.html',
                                jobID=jobID,
                                cities=cities,
-                               uName=username, 
-                               src=src, 
+                               uName=username,
+                               src=src,
                                picture_exists=exists)
 
     if request.method == 'POST':
@@ -227,18 +227,19 @@ def job(jobID):
 
     # displays job info & reviews
     if request.method == 'GET':
-        (job, locations, reviews) = search.findJob(conn, jobID, bnum)
+        (job, locations, reviews, hasRev) = search.findJob(conn, jobID, bnum)
         return render_template('job.html',
                                bnum=bnum,
                                uName=username,
                                job=job,
                                locations=locations,
                                reviews=reviews,
-                               src=src, 
-                               picture_exists=exists)
+                               src=src,
+                               picture_exists=exists,
+                               hasRev=hasRev)
 
     if request.method == 'POST':
-        # if user wants to add a review for job --> redirects to review form  
+        # if user wants to add a review for job --> redirects to review form
         if request.form['submit'] == 'Add Job Review':
             return redirect(url_for('addNewReview',
                                     jobID=jobID))
@@ -251,15 +252,16 @@ def job(jobID):
         # if user wants to delete their own review --> rerenders page
         if request.form['submit'] == 'Delete Review':
             deleteJobRev(conn, bnum, jobID)
-            (job, locations, reviews) = search.findJob(conn, jobID, bnum)
+            (job, locations, reviews, hasRev) = search.findJob(conn, jobID, bnum)
             return render_template('job.html',
                                    bnum=bnum,
                                    uName=username,
                                    job=job,
                                    locations=locations,
                                    reviews=reviews,
-                                   src=src, 
-                                   picture_exists=exists)
+                                   src=src,
+                                   picture_exists=exists,
+                                   hasRev=hasRev)
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
 def addNewReview(jobID):
@@ -278,12 +280,12 @@ def addNewReview(jobID):
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
-    
+
     if request.method == 'GET':
         return render_template('review_form.html',
                                jobID=jobID,
-                               uName=username, 
-                               src=src, 
+                               uName=username,
+                               src=src,
                                picture_exists=exists)
 
     if request.method == 'POST':
@@ -327,7 +329,7 @@ def editReview(jobID):
                                jobID=jobID,
                                jobYear=rev['jobYear'],
                                review=rev['review'],
-                               src=src, 
+                               src=src,
                                picture_exists=exists)
 
     if request.method == 'POST':
@@ -343,7 +345,7 @@ def editReview(jobID):
 def profile():
 
     conn = dbconn2.connect(DSN)
-    
+
     if 'bnum' in session:
         bnum = session['bnum']
         user = getUserInfo(conn, bnum)
@@ -354,11 +356,11 @@ def profile():
             filename = secure_filename(str(bnum)+'.jpeg')
             pathname = 'images/'+filename
             src=url_for('pic',fname=filename)
-        
+
     if request.method == 'GET':
-        return render_template('profile.html', 
-                               user=user, 
-                               uName=username, 
+        return render_template('profile.html',
+                               user=user,
+                               uName=username,
                                src=src,
                                picture_exists=exists)
     else:
@@ -383,9 +385,9 @@ def profile():
         except Exception as err:
             flash('Upload failed: {why}'.format(why=err))
             return render_template('profile.html',
-                                   bnum=bnum, 
-                                   user=user, 
-                                   uName=username, 
+                                   bnum=bnum,
+                                   user=user,
+                                   uName=username,
                                    src=src,
                                    picture_exists=exists)
 
