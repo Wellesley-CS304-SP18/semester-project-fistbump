@@ -33,7 +33,8 @@ app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-db = 'fistbump_db'
+#db = 'fistbump_db'
+db = 'lluo2_db'
 
 # ------------------------------------------------------------------------------
 # ROUTES
@@ -74,6 +75,8 @@ def home():
         if exists == True:
             filename = secure_filename(str(bnum)+'.jpeg')
             src=url_for('pic',fname=filename)
+        else: 
+            src=None
 
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
@@ -137,6 +140,8 @@ def addNewJob():
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
+    else:
+        src=None
 
     formErr = 'Please fill in the blank fields'
 
@@ -181,6 +186,8 @@ def addJobLocation(jobID):
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
+    else:
+        src=None
 
     if request.method == 'GET':
         cities = opp.allCities(conn)
@@ -224,6 +231,8 @@ def job(jobID):
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
+    else:
+        src=None
 
     # displays job info & reviews
     if request.method == 'GET':
@@ -278,7 +287,9 @@ def addNewReview(jobID):
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
-    
+    else:
+        src=None
+
     if request.method == 'GET':
         return render_template('review_form.html',
                                jobID=jobID,
@@ -316,6 +327,8 @@ def editReview(jobID):
     if exists == True:
         filename = secure_filename(str(bnum)+'.jpeg')
         src=url_for('pic',fname=filename)
+    else:
+        src=None
 
     if request.method == 'GET':
         rev = getRev(conn, bnum, jobID)
@@ -354,7 +367,9 @@ def profile():
             filename = secure_filename(str(bnum)+'.jpeg')
             pathname = 'images/'+filename
             src=url_for('pic',fname=filename)
-        
+        else:
+            src=None
+
     if request.method == 'GET':
         return render_template('profile.html', 
                                user=user, 
