@@ -12,8 +12,8 @@
   <body>
     <header>
 
-        <a href = "{{ url_for('home') }}">
-        <img src = "{{url_for('static', filename='fistbump.png')}}" alt = 'iphone fistbump emoji' class = 'logo'>
+        <a href="{{ url_for('home') }}">
+        <img src="{{url_for('static', filename='fistbump.png')}}" alt="iphone fistbump emoji" class="logo">
         </a>
 
         {% for message in get_flashed_messages() %}
@@ -21,19 +21,19 @@
         {% endfor %}
 
 
-        <div class = 'account_info'>
-          <div class = 'mini_column'>
-        <p> Logged in as <a class = 'user' href = "{{ url_for('profile') }}">{{uName}}</a> </p>
+        <div class="account_info">
+          <div class="mini_column">
+        <p> Logged in as <a class="user" href="{{ url_for('profile') }}">{{uName}}</a> </p>
         </div>
 
           {% if picture_exists %}
-            <div class = 'mini_column'>
-              <img class = "picture_small" src = "{{src}}">
+            <div class="mini_column">
+              <img class="picture_small" src="{{src}}">
               <form action="/logout/">
                 <button class = 'logout-style'>logout</button>
               </form>
             </div>
-            {% else %}
+          {% else %}
             <div>
               <img class = "picture_small" src = "{{url_for('static', filename='default.jpg')}}"  alt = 'default photo'>
             </div>
