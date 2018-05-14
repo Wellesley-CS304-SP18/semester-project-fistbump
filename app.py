@@ -77,11 +77,12 @@ def home():
         filename = secure_filename(str(bnum)+'.jpeg')
         pathname = 'images/'+filename
         src=url_for('pic',fname=filename)
+        exists = profExists(conn,bnum)
 
     if request.method == 'GET':
         return render_template('home.html',
                                uName = username,
-                               opportunities = getOpps(conn))
+                               opportunities = getOpps(conn), picture_exists = exists)
 
     if request.method == 'POST':
         # add a new job opportunity
@@ -111,16 +112,17 @@ def home():
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
             return render_template('home.html',
                                    uName = username,
-                                   opportunities = jobs, src = src)
+                                   opportunities = jobs, src = src, picture_exists = exists)
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
-
+    conn = dbconn2.connect(DSN)
     if 'bnum' in session:
         bnum = session['bnum']
         filename = secure_filename(str(bnum)+'.jpeg')
         pathname = 'images/'+filename
         src=url_for('pic',fname=filename)
+        exists = profExists(conn,bnum)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -154,12 +156,13 @@ def addNewJob():
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
 def addJobLocation(jobID):
-
+    conn = dbconn2.connect(DSN)
     if 'bnum' in session:
         bnum = session['bnum']
         filename = secure_filename(str(bnum)+'.jpeg')
         pathname = 'images/'+filename
         src=url_for('pic',fname=filename)
+        exists = profExists(conn,bnum)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -173,7 +176,7 @@ def addJobLocation(jobID):
         return render_template('jobLocation.html',
                                jobID = jobID,
                                cities = cities,
-                               uName = username, src = src)
+                               uName = username, src = src, picture_exists = exists)
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
@@ -193,12 +196,13 @@ def addJobLocation(jobID):
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
 def job(jobID):
-
+    conn = dbconn2.connect(DSN)
     if 'bnum' in session:
         bnum = session['bnum']
         filename = secure_filename(str(bnum)+'.jpeg')
         pathname = 'images/'+filename
         src=url_for('pic',fname=filename)
+        exists = profExists(conn,bnum)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -216,7 +220,7 @@ def job(jobID):
                                job=job,
                                locations=locations,
                                reviews=reviews,
-                               src = src)
+                               src = src, picture_exists = exists)
 
     # if user wants to add a review for job --> redirects to review form
     if request.method == 'POST':
@@ -241,16 +245,17 @@ def job(jobID):
                                    job=job,
                                    locations=locations,
                                    reviews=reviews,
-                                   src = src)
+                                   src = src, picture_exists = exists)
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
 def addNewReview(jobID):
-
+    conn = dbconn2.connect(DSN)
     if 'bnum' in session:
         bnum = session['bnum']
         filename = secure_filename(str(bnum)+'.jpeg')
         pathname = 'images/'+filename
         src=url_for('pic',fname=filename)
+        exists = profExists(conn,bnum)
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
@@ -262,7 +267,7 @@ def addNewReview(jobID):
     if request.method == 'GET':
         return render_template('review_form.html',
                                jobID = jobID,
-                               uName = username, src = src)
+                               uName = username, src = src, picture_exists = exists)
 
     if request.method == 'POST':
         if request.form['submit'] == 'Submit Review':
@@ -279,12 +284,13 @@ def addNewReview(jobID):
 # editting a review user made
 @app.route('/editReview/<jobID>', methods=['GET','POST'])
 def editReview(jobID):
-
+    conn = dbconn2.connect(DSN)
     if 'bnum' in session:
         bnum = session['bnum']
         filename = secure_filename(str(bnum)+'.jpeg')
         pathname = 'images/'+filename
         src=url_for('pic',fname=filename)
+        exists = profExists(conn,bnum)
 
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
@@ -304,7 +310,7 @@ def editReview(jobID):
                                jobID = jobID,
                                jobYear = rev['jobYear'],
                                review = rev['review'],
-                               src = src)
+                               src = src, picture_exists = exists)
 
     if request.method == 'POST':
         if request.form['submit'] == 'Update Review':
@@ -338,9 +344,10 @@ def profile():
         exists = False
     else:
         exists = True
+        filename = secure_filename(str(bnum)+'.jpeg')
 
     if request.method == 'GET':
-        return render_template('profile.html', src= '',user = user, uName = username, picture_exists = exists)
+        return render_template('profile.html', src= url_for('pic',fname=filename),user = user, uName = username, picture_exists = exists)
     else:
         try:
             if request.form['submit'] == 'Update Picture':
@@ -352,6 +359,7 @@ def profile():
                 pathname = 'images/'+filename
                 f.save(pathname)
                 flash('Upload successful')
+                addProfPic(conn, bnum, fileName)
                 return render_template('profile.html',
                                        src=url_for('pic',fname=filename),
                                        bnum=bnum, user = user, uName = username, picture_exists = exists)
