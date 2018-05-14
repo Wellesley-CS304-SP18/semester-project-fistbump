@@ -255,3 +255,12 @@ h1{
   width: 10%;
   padding: 10px;
 }
+
+.prof_text{
+  text-align:center;
+}
+
+.picture_container{
+  width:50%;
+  margin:auto;
+}
