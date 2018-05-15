@@ -175,6 +175,7 @@ header{
 .middle{
     margin: auto;
     width: 80%;
+    height:100%;
     background-color: #ffffff;
     padding: 10px;
 }
@@ -264,4 +265,8 @@ h1{
 .picture_container{
   width:25%;
   margin:auto;
+}
+
+#favorite{
+  width:50%;
 }

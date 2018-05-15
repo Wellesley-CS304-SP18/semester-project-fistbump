@@ -7,6 +7,11 @@ import dbconn2
 
 # ------------------------------------------------------------------------------
 
+#gets the job name from the jobID
+def getJobName (conn,jobID):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select positionName from job_opp where jobID = %s',[jobID])
+    return curs.fetchone()
 #gives the username based on bnum
 def getUserInfo(conn, bnum):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)

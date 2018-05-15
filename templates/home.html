@@ -55,7 +55,7 @@
   <div id="opportunities">
       <h1> Current Job Opportunities: </h1>
     {% for opportunity in opportunities %}
-      <p><a class = 'opp_listing'href="{{url_for('job',jobID=opportunity.jobID)}}">ID:{{opportunity.jobID}}//{{opportunity.positionName}}//{{opportunity.companyName}}</a></p>
+      <p><a class = 'opp_listing'href="{{url_for('job',jobID=opportunity.jobID)}}">{{opportunity.positionName}} at {{opportunity.companyName}}</a></p>
         {% for location in locations %}
           <p>{{location}}</p>
 	{% endfor %}

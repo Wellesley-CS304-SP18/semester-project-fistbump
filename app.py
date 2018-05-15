@@ -272,7 +272,8 @@ def job(jobID):
 def addNewReview(jobID):
 
     conn = dbconn2.connect(DSN)
-
+    job = getJobName(conn,jobID)
+    jobName = job['positionName']
     if 'bnum' in session:
         bnum = session['bnum']
     if 'CAS_USERNAME' in session:
@@ -290,7 +291,7 @@ def addNewReview(jobID):
 
     if request.method == 'GET':
         return render_template('review_form.html',
-                               jobID=jobID,
+                               jobName=jobName,
                                uName=username,
                                src=src,
                                picture_exists=exists)
@@ -305,13 +306,15 @@ def addNewReview(jobID):
                 flash("A review already exists for this job and user")
             else:
                 flash("Review added successfully")
-            return redirect(url_for('job', jobID=jobID))
+            return redirect(url_for('job', jobName=jobName))
 
 # editting a review user made
 @app.route('/editReview/<jobID>', methods=['GET','POST'])
 def editReview(jobID):
 
     conn = dbconn2.connect(DSN)
+    job = getJobName(conn,jobID)
+    jobName = job['positionName']
 
     if 'bnum' in session:
         bnum = session['bnum']
@@ -332,10 +335,10 @@ def editReview(jobID):
         rev = getRev(conn, bnum, jobID)
         if rev is None:
             flash('You do not have a review for this job.')
-            return redirect(url_for('job', jobID=jobID))
+            return redirect(url_for('job', jobName=jobName))
         return render_template('update_review.html',
                                uName=username,
-                               jobID=jobID,
+                               jobName=jobName,
                                jobYear=rev['jobYear'],
                                review=rev['review'],
                                src=src,
@@ -347,7 +350,7 @@ def editReview(jobID):
             review = request.form[('review')]
 
             update = updateJobRev(conn, bnum, jobID, jobYear, review)
-            return redirect(url_for('job', jobID=jobID))
+            return redirect(url_for('job', jobName=jobName))
 
 #upload
 @app.route('/profile/', methods=["GET", "POST"])
