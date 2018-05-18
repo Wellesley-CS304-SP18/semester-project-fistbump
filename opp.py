@@ -105,7 +105,6 @@ def addCompany(conn, companyName):
 # add job opp
 def addJob(conn, bnum, companyName, link, classPref, jobType, jobTitle, positionName, season, deadline):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
-    curs.execute('start transaction')
     addCompany(conn, companyName)
     curs.execute('insert into job_opp (poster, companyName, link, classPref, \
                  jobType, jobTitle, positionName, season, deadline) values \
@@ -115,7 +114,6 @@ def addJob(conn, bnum, companyName, link, classPref, jobType, jobTitle, position
     curs.execute('select last_insert_id()')
     info = curs.fetchone()
     jobID = info['last_insert_id()']
-    curs.execute('commit')
     return jobID
 
 # delete job opp
