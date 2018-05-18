@@ -378,8 +378,8 @@ def profile():
                                src=src,
                                picture_exists=exists)
     else:
-        try:
-            if request.form['submit'] == 'Update Picture':
+        if request.form['submit'] == 'Update Picture':
+            try:
                 f = request.files['photo']
                 mime_type = imghdr.what(f.stream)
                 if mime_type != 'jpeg':
@@ -396,14 +396,22 @@ def profile():
                                    src=src,
                                    picture_exists=exists)
 
-        except Exception as err:
-            flash('Upload failed: {why}'.format(why=err))
-            return render_template('profile.html',
+            except Exception as err:
+                flash('Upload failed: {why}'.format(why=err))
+                return render_template('profile.html',
                                    bnum=bnum,
                                    user=user,
                                    uName=username,
                                    src=src,
                                    picture_exists=exists)
+
+        if request.form['submit'] == 'Delete Picture':
+            deleteProfPic(conn, bnum)
+            return render_template('profile.html',
+                                   bnum=bnum,
+                                   user=user,
+                                   uName=username,
+                                   src=src)
 
 #uploading pic route
 @app.route('/pic/<fname>')

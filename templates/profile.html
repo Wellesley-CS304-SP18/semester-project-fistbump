@@ -18,6 +18,9 @@
     <form class="prof_text" method="POST" enctype=multipart/form-data action="">
         <input type="file" name="photo">
         <input class="bluebtn" type="submit" name="submit" value="Update Picture">
+        {% if picture_exists %}
+          <input class="bluebtn" type="submit" name="submit" value="Delete Picture">
+        {% endif %}
     </form>
   <h1> Name </h1>
     <p class="prof_text"> {{user.firstname}} </p>

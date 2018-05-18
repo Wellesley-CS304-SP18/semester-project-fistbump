@@ -17,6 +17,12 @@ def addProfPic(conn, bnum, fileName):
     except:
         False
 
+# delete a profile pic
+def deleteProfPic(conn, bnum):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('delete from prof_pic where bnum=%s', [bnum])
+
+
 # checks if profile pic exists
 def profExists(conn, bnum):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
