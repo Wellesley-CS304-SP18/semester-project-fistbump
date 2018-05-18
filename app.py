@@ -153,17 +153,17 @@ def addNewJob():
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
-            link = request.form[('link')]
-            classPref = request.form[('classPref')] #radio button
-            jobTitle = request.form[('jobTitle')] #radio button
-            jobType = request.form[('jobType')] #radio button
-            positionName = request.form[('positionName')]
-            season = request.form[('season')] #radio button
-            deadline = request.form[('deadline')]
-            company = request.form[('companyName')] #can only add in one job
-            city = request.form[('location')]
+            link = request.form['link']
+            classPref = request.form['classPref'] #radio button
+            jobTitle = request.form['jobTitle'] #radio button
+            jobType = request.form['jobType'] #radio button
+            positionName = request.form['positionName']
+            season = request.form['season'] #radio button
+            deadline = request.form['deadline']
+            company = request.form['companyName'] #can only add in one job
+            city = request.form['location']
             if company == 'none':
-                company = request.form[('newCompany')]
+                company = request.form['newCompany']
             jobID = opp.addJob(conn, bnum, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
             opp.addJobLoc(conn, bnum, jobID, city)
             return redirect(url_for('addJobLocation', jobID=jobID))
