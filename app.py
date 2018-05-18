@@ -59,6 +59,12 @@ def home():
 
     conn = dbconn2.connect(DSN)
 
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    else:
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
+
     if 'CAS_ATTRIBUTES' in session:
         attribs = session['CAS_ATTRIBUTES']
         if 'bnum' in session:
@@ -70,18 +76,9 @@ def home():
             username = attribs['cas:sAMAccountName']
             opp.addUser(conn, bnum, firstname, username)
 
-        exists = profExists(conn,bnum)
-        if exists == True:
-            filename = secure_filename(str(bnum)+'.jpeg')
-            src=url_for('pic',fname=filename)
-        else:
-            src=None
+        src = ""
+        getSrc(conn, bnum, src)
 
-    if 'CAS_USERNAME' in session:
-        username = session['CAS_USERNAME']
-    else:
-        flash('Please login to view this page content')
-        return redirect(url_for('login_pg'))
 
     if request.method == 'GET':
         return render_template('home.html',
@@ -135,12 +132,8 @@ def addNewJob():
         flash('Please login to view this page content')
         return redirect(url_for('login_pg'))
 
-    exists = profExists(conn,bnum)
-    if exists == True:
-        filename = secure_filename(str(bnum)+'.jpeg')
-        src=url_for('pic',fname=filename)
-    else:
-        src = None
+    src = ""
+    getSrc(conn, bnum, src)
 
     formErr = 'Please fill in the blank fields'
 
@@ -182,12 +175,8 @@ def addJobLocation(jobID):
         flash('Please login to view this page content.')
         return redirect(url_for('login_pg'))
 
-    exists = profExists(conn,bnum)
-    if exists == True:
-        filename = secure_filename(str(bnum)+'.jpeg')
-        src=url_for('pic',fname=filename)
-    else:
-        src = None
+    src = ""
+    getSrc(conn, bnum, src)
 
     if request.method == 'GET':
         cities = opp.allCities(conn)
@@ -285,12 +274,8 @@ def addNewReview(jobID):
         flash('Please login to view this page content.')
         return redirect(url_for('login_pg'))
 
-    exists = profExists(conn,bnum)
-    if exists == True:
-        filename = secure_filename(str(bnum)+'.jpeg')
-        src=url_for('pic',fname=filename)
-    else:
-        src = None
+    src = ""
+    getSrc(conn, bnum, src)
 
     if request.method == 'GET':
         return render_template('review_form.html',
@@ -327,12 +312,8 @@ def editReview(jobID):
         flash('Please login to view this page content.')
         return redirect(url_for('login_pg'))
 
-    exists = profExists(conn,bnum)
-    if exists == True:
-        filename = secure_filename(str(bnum)+'.jpeg')
-        src=url_for('pic',fname=filename)
-    else:
-        src = None
+    src = ""
+    getSrc(conn, bnum, src)
 
     if request.method == 'GET':
         rev = getRev(conn, bnum, jobID)
@@ -365,14 +346,9 @@ def profile():
         bnum = session['bnum']
         user = getUserInfo(conn, bnum)
         username = user['username']
-        exists = profExists(conn,bnum)
 
-        if exists == True:
-            filename = secure_filename(str(bnum)+'.jpeg')
-            pathname = 'images/'+filename
-            src=url_for('pic',fname=filename)
-        else:
-            src = None
+        src = ""
+        getSrc(conn, bnum, src)
 
     if request.method == 'GET':
         return render_template('profile.html',
