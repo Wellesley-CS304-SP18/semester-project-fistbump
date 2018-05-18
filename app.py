@@ -153,19 +153,20 @@ def addNewJob():
 
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
-            link = request.form[('link')]
-            classPref = request.form[('classPref')] #radio button
-            jobTitle = request.form[('jobTitle')] #radio button
-            jobType = request.form[('jobType')] #radio button
-            positionName = request.form[('positionName')]
-            season = request.form[('season')] #radio button
-            deadline = request.form[('deadline')]
-            company = request.form[('companyName')] #can only add in one job
-            city = request.form[('location')]
+            link = request.form['link']
+            classPref = request.form['classPref'] #radio button
+            jobTitle = request.form['jobTitle'] #radio button
+            jobType = request.form['jobType'] #radio button
+            positionName = request.form['positionName']
+            season = request.form['season'] #radio button
+            deadline = request.form['deadline']
+            company = request.form['companyName'] #can only add in one job
+            city = request.form['location']
             if company == 'none':
-                company = request.form[('newCompany')]
+                company = request.form['newCompany']
             jobID = opp.addJob(conn, bnum, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
             opp.addJobLoc(conn, bnum, jobID, city)
+            flash(city+' added for job')
             return redirect(url_for('addJobLocation', jobID=jobID))
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
@@ -178,7 +179,7 @@ def addJobLocation(jobID):
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
-        flash('Please login to view this page content')
+        flash('Please login to view this page content.')
         return redirect(url_for('login_pg'))
 
     exists = profExists(conn,bnum)
@@ -200,10 +201,11 @@ def addJobLocation(jobID):
     if request.method == 'POST':
         if request.form['submit'] == 'submit':
             cities = opp.allCities(conn)
-            if bool(cities):
+            if cities:
                 try:
                     locations = request.form.getlist('city')
                     for city in locations:
+                        flash(city+' added for job.')
                         opp.addJobLoc(conn, bnum, jobID, city)
                 except:
                     pass
@@ -211,6 +213,7 @@ def addJobLocation(jobID):
             if newLocation: #can a user submit with an empty value
                 opp.addCity(conn, newLocation)
                 opp.addJobLoc(conn, bnum, jobID, newLocation)
+                flash('New city '+newLocation+' added for job.')
         return redirect(url_for('home'))
 
 @app.route('/job/<jobID>', methods=['GET', 'POST'])
@@ -222,7 +225,7 @@ def job(jobID):
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
-        flash('Please login to view this page content')
+        flash('Please login to view this page content.')
         return redirect(url_for('login_pg'))
 
     exists = profExists(conn,bnum)
@@ -279,7 +282,7 @@ def addNewReview(jobID):
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
-        flash('Please login to view this page content')
+        flash('Please login to view this page content.')
         return redirect(url_for('login_pg'))
 
     exists = profExists(conn,bnum)
@@ -303,9 +306,9 @@ def addNewReview(jobID):
 
             addJob = addJobRev(conn, bnum, jobID, jobYear, review)
             if not addJob:
-                flash("A review already exists for this job and user")
+                flash("A review already exists for this job and user.")
             else:
-                flash("Review added successfully")
+                flash("Review added successfully.")
             return redirect(url_for('job', jobName=jobName))
 
 # editting a review user made
@@ -321,7 +324,7 @@ def editReview(jobID):
     if 'CAS_USERNAME' in session:
         username = session['CAS_USERNAME']
     else:
-        flash('Please login to view this page content')
+        flash('Please login to view this page content.')
         return redirect(url_for('login_pg'))
 
     exists = profExists(conn,bnum)
@@ -387,7 +390,7 @@ def profile():
                 filename = secure_filename(str(bnum)+'.jpeg')
                 pathname = 'images/'+filename
                 f.save(pathname)
-                flash('Upload successful')
+                flash('Upload successful.')
                 addProfPic(conn, bnum, pathname)
                 return render_template('profile.html',
                                    bnum=bnum,
@@ -397,7 +400,7 @@ def profile():
                                    picture_exists=exists)
 
             except Exception as err:
-                flash('Upload failed: {why}'.format(why=err))
+                flash('Upload failed: {why}'.format(why=err)+".")
                 return render_template('profile.html',
                                    bnum=bnum,
                                    user=user,

@@ -28,13 +28,4 @@ def profExists(conn, bnum):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('select * from prof_pic where bnum=%s', [bnum])
     info = curs.fetchone()
-    if info is None:
-        return False
-    return True
-
-#get blob from database
-def get_blob(cursor,bnum):
-    cursor.execute('SELECT pic FROM prof_pic WHERE bnum=%s',(bnum))
-    row = cursor.fetchone()
-    data = row[0]
-    return data
+    return info is not None
