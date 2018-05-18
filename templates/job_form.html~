@@ -9,13 +9,13 @@
     <form class = 'job_form' name="addJob" method="POST" action="{{url_for('addNewJob')}}">
       <table>
         <tr>
-          <td><label for="positionName"> <strong> Position Name </strong> </label>
+          <td><label for="positionName">Position Name</label>
             <input name="positionName" value="" required></td>
         </tr>
 
         <tr>
           <td>
-            <label for="jobTitle"> <strong> Job Title </strong> </label>
+            <label for="jobTitle">Job Title</label>
             <input type="radio" name="jobTitle" value="1" required><label for="1">Engineering</label>
             <input type="radio" name="jobTitle" value="2"><label for="2">Design</label>
             <input type="radio" name="jobTitle" value="3"><label for="3">PM</label>
@@ -25,7 +25,7 @@
 
         <tr>
           <td>
-            <label for="jobType"> <strong> Job Type </strong> </label>
+            <label for="jobType">Job Type</label>
             <input type="radio" name="jobType" value="1" required><label for="1">Internship</label>
             <input type="radio" name="jobType" value="2"><label for="2">Part-time</label>
             <input type="radio" name="jobType" value="3"><label for="3">Full-time</label>
@@ -34,7 +34,7 @@
 
         <tr>
           <td>
-            <label for="season"> <strong> Season </strong> </label>
+            <label for="season">Season</label>
             <input type="radio" name="season" value="1" required><label for="1">Fall</label>
             <input type="radio" name="season" value="2"><label for="2">Spring</label>
             <input type="radio" name="season" value="3"><label for="3">Summer</label>
@@ -45,7 +45,7 @@
 
         <tr>
           <td>
-            <label for="classPref"> <strong> Class Preference </strong> </label>
+            <label for="classPref">Class Preference</label>
             <br>
             <input type="radio" name="classPref" value="1" required><label for="1">Freshman</label>
             <br>
@@ -66,14 +66,14 @@
 
         <tr>
           <td>
-          <label for="deadline"> <strong> Deadline </strong> </label>
+          <label for="deadline">Deadline</label>
           <input type="date" name="deadline" min="2018-05-01" required>
           </td>
         </tr>
 
         <tr>
           <td>
-            <label for="companyName"> <strong> Companies: </strong> </label>
+            <label for="companyName">Companies:</label>
 	    <select name="companyName" required>
               <option value="none">Choose One</option>
               {% for company in companies %}
@@ -92,13 +92,13 @@
         </tr>
 
         <tr>
-          <td><label for="link"> <strong> Link to Job description </strong> </label>
+          <td><label for="link">Link to Job description</label>
             <p> Please put the entire URL like so: https://www.microsoft.com/en-us/</p>
             <input name='link' value="" required></td>
         </tr>
 
         <tr>
-          <td><label for="location"><strong>Job Location </strong> </label>
+          <td><label for="location">Job Location</label>
             <input name='location' value="" required></td>
             <p> Note: You will have an opportunity to more companies on the next page </p>
         </tr>
