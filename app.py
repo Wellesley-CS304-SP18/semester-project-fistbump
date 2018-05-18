@@ -99,21 +99,21 @@ def home():
         if request.form['submit'] == "Filter":
             # try & except (do not need to check something for all filters)
             try:
-                classPref = "='"+request.form['classPref']+"'"
+                classPref = request.form['classPref']
             except:
-                classPref = "regexp 'freshman|sophomore|junior|senior|underclassman|upperclassman|all'"
+                classPref = False
             try:
-                jobType = "='"+request.form['jobType']+"'"
+                jobType = request.form['jobType']
             except:
-                jobType = "regexp 'internship|part-time|full-time'"
+                jobType = False
             try:
-                jobTitle = "='"+request.form['jobTitle']+"'"
+                jobTitle = request.form['jobTitle']
             except:
-                jobTitle = "regexp 'engineering|design|pm|other'"
+                jobTitle = False
             try:
-                season = "='"+request.form['season']+"'"
+                season = request.form['season']
             except:
-                season = "regexp 'fall|spring|summer|winter|year-round'"
+                season = False
 
             jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
             return render_template('home.html',

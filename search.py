@@ -19,14 +19,34 @@ def allJobs(conn):
 def searchJobs(conn, classPref, jobTitle, jobType, season):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     # strings for what sql query to execute (since all enums could need regexp)
-    classPrefExec = "jobID in (select jobID from job_opp where classPref "+classPref+")"
-    jobTitleExec = "jobID in (select jobID from job_opp where jobTitle "+jobTitle+")"
-    jobTypeExec = "jobID in (select jobID from job_opp where jobType "+jobType+")"
-    seasonExec = "jobID in (select jobID from job_opp where season "+season+")"
-    filters = " and ".join([classPrefExec, jobTitleExec, jobTypeExec, seasonExec])
-    print('select * from job_opp where '+filters)
-    # don't need to worry about sql injections (values coming from our own form)
-    curs.execute('select * from job_opp where '+filters)
+    classPrefExec = "classPref=%s"
+    jobTitleExec = "jobTitle=%s"
+    jobTypeExec = "jobType=%s"
+    seasonExec = "season=%s"
+
+    # only filters that were selected
+    selFilters = []
+    filterInputs = []
+    if classPref:
+        selFilters.append(classPrefExec)
+        filterInputs.append(classPref)
+    if jobTitle:
+        selFilters.append(jobTitleExec)
+        filterInputs.append(jobTitle)
+    if jobType:
+        selFilters.append(jobTypeExec)
+        filterInputs.append(jobType)
+    if season:
+        selFilters.append(seasonExec)
+        filterInputs.append(season)
+
+    filters = " and ".join(selFilters)
+
+    # if no filters applied then set as jobID>0 (returns all job opps)
+    if filters == "":
+        filters = "jobID > 0"
+    print 'select * from job_opp where '+filters
+    curs.execute('select * from job_opp where '+filters, filterInputs)
     info = curs.fetchall()
     return info
 
