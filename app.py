@@ -166,6 +166,7 @@ def addNewJob():
                 company = request.form['newCompany']
             jobID = opp.addJob(conn, bnum, company, link, classPref, jobType, jobTitle, positionName, season, deadline)
             opp.addJobLoc(conn, bnum, jobID, city)
+            flash('New location added')
             return redirect(url_for('addJobLocation', jobID=jobID))
 
 @app.route('/addJobLocation/<jobID>', methods=['GET','POST'])
