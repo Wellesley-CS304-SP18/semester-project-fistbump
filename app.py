@@ -34,8 +34,7 @@ app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-#db = 'fistbump_db'
-db='lluo2_db'
+db = 'fistbump_db'
 
 # ------------------------------------------------------------------------------
 # ROUTES
