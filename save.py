@@ -26,10 +26,17 @@ def deleteSavedJob(conn,jobID,bnum):
 def getSavedJobs (conn,bnum):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('select jobID from saves where bnum = %s',[bnum])
-    curs.fetchall()
+    jobs = curs.fetchall()
+    return jobs
 
 #get the corresponding information for the proper job
 def getJobInfo(conn, jobID):
     curs = conn.cursor(MySQLdb.cursors.DictCursor)
     curs.execute('select * from job_opp where jobID = %s',[jobID])
-    curs.fetchone()
+    return curs.fetchone()
+
+#checks if a job is saved:
+def checkSaved(conn,jobID):
+    curs = conn.cursor(MySQLdb.cursors.DictCursor)
+    curs.execute('select * from saves where jobID = %s',[jobID])
+    return curs.fetchone()

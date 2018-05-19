@@ -34,8 +34,8 @@ app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-#db = 'fistbump_db'
-db='lluo2_db'
+db = 'fistbump_db'
+#db='lluo2_db'
 # ------------------------------------------------------------------------------
 # ROUTES
 
@@ -81,6 +81,7 @@ def displayHome():
             username = attribs['cas:sAMAccountName']
             opp.addUser(conn, bnum, firstname, username)
 
+        #grabs the profile picture the user if it exists
         src,exists = getSrc(conn, bnum)
 
 
@@ -112,8 +113,7 @@ def home():
             username = attribs['cas:sAMAccountName']
             opp.addUser(conn, bnum, firstname, username)
 
-        src = ""
-        getSrc(conn, bnum, src)
+        src,exists = getSrc(conn, bnum)
 
     # add new job
     if request.form['submit'] == "Add New Job":
@@ -245,6 +245,13 @@ def job(jobID):
     src,exists = getSrc(conn, bnum)
 
     # displays job info & reviews
+
+    #checks if a job is saved
+    if checkSaved(conn,jobID) is None:
+        saved = False;
+    else:
+        saved = True;
+
     if request.method == 'GET':
         (job, locations, reviews) = search.findJob(conn, jobID, bnum)
         return render_template('job.html',
@@ -255,7 +262,7 @@ def job(jobID):
                                reviews=reviews,
                                src=src,
                                picture_exists=exists,
-                               saved = None)
+                               saved = saved)
 
     if request.method == 'POST':
         # if user wants to add a review for job --> redirects to review form
@@ -280,16 +287,34 @@ def job(jobID):
                                    reviews=reviews,
                                    src=src,
                                    picture_exists=exists,
-                                   saved = None)
+                                   saved = saved)
         #user saves a job --> create a table entry with the saved job and bnum
         if request.form['submit'] == 'Save':
-            print "saved"
-            save.saveJob(conn,jobID,bnum)
+            saveJob(conn,jobID,bnum)
+            (job, locations, reviews) = search.findJob(conn, jobID, bnum)
+            return render_template('job.html',
+                                   bnum=bnum,
+                                   uName=username,
+                                   job=job,
+                                   locations=locations,
+                                   reviews=reviews,
+                                   src=src,
+                                   picture_exists=exists,
+                                   saved = True)
 
         #user unsaves a job --> remove that entry from the saves table
         if request.form['submit'] == 'Unsave':
-            print "unsaved"
-            save.deleteSavedJob(conn,jobID,bnum)
+            deleteSavedJob(conn,jobID,bnum)
+            (job, locations, reviews) = search.findJob(conn, jobID, bnum)
+            return render_template('job.html',
+                                   bnum=bnum,
+                                   uName=username,
+                                   job=job,
+                                   locations=locations,
+                                   reviews=reviews,
+                                   src=src,
+                                   picture_exists=exists,
+                                   saved = False)
 
 
 
@@ -368,7 +393,7 @@ def editReview(jobID):
             update = updateJobRev(conn, bnum, jobID, jobYear, review)
             return redirect(url_for('job', jobName=jobName))
 
-#upload
+
 @app.route('/profile/', methods=["GET", "POST"])
 def profile():
 
@@ -383,11 +408,11 @@ def profile():
 
     #loading in saves
     savedJobs = list()
-    jobIDs = getSavedJobs (conn,bnum)
+    jobs = getSavedJobs(conn,bnum)
 
-    if jobIDs is not None:
-        for jobID in jobIDs:
-            savedJobs.append(getJobInfo(jobID))
+    if jobs is not None:
+        for job in jobs:
+            savedJobs.append(getJobInfo(conn,job['jobID']))
     else:
         savedJobs = None
 
@@ -397,13 +422,13 @@ def profile():
                                uName=username,
                                src=src,
                                picture_exists=exists,
-                               save = savedJobs)
-    else:
+                               saved = savedJobs)
+    else: #upload
         if request.form['submit'] == 'Update Picture':
             try:
                 f = request.files['photo']
                 mime_type = imghdr.what(f.stream)
-                if mime_type != 'jpeg':
+                if mime_type != 'jpeg': # only allows JPEGs to be uploaded
                     raise Exception('Not a JPEG')
                 filename = secure_filename(str(bnum)+'.jpeg')
                 pathname = 'images/'+filename
@@ -416,7 +441,7 @@ def profile():
                                    uName=username,
                                    src=src,
                                    picture_exists=exists,
-                                   save = savedJobs)
+                                   saved = savedJobs)
 
             except Exception as err:
                 flash('Upload failed: {why}'.format(why=err)+".")
@@ -426,7 +451,7 @@ def profile():
                                    uName=username,
                                    src=src,
                                    picture_exists=exists,
-                                   save = savedJobs)
+                                   saved = savedJobs)
 
         if request.form['submit'] == 'Delete Picture':
             deleteProfPic(conn, bnum)
@@ -435,7 +460,7 @@ def profile():
                                    user=user,
                                    uName=username,
                                    src=src,
-                                   save = savedJobs)
+                                   saved = savedJobs)
 
 #uploading pic route
 @app.route('/pic/<fname>')
