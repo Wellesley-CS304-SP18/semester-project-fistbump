@@ -25,10 +25,10 @@
         </ul>
       </div>
     </div>
-    {% if favorited %}
-    <input id="favorite" class="bluebtn" type="submit" name="submit" value="Save">
+    {% if saved %}
+      <input id="favorite" class="bluebtn" type="submit" name="submit" value="Unsave">
     {% else %}
-    <input id="favorite" class="bluebtn" type="submit" name="submit" value="Unsave">
+      <input id="favorite" class="bluebtn" type="submit" name="submit" value="Save">
     {% endif %}
   </div>
   {% endif %}

@@ -230,8 +230,15 @@ def job(jobID):
                                locations=locations,
                                reviews=reviews,
                                src=src,
-                               picture_exists=exists,
-                               saved = None)
+                               picture_exists=exists)
+
+    #user saves a job --> create a table entry with the saved job and bnum
+    if request.form['submit'] == 'Save':
+        saveJob(conn,jobID,bnum)
+
+    #user unsaves a job --> remove that entry from the saves table
+    if request.form['submit'] == 'Save':
+        deleteSavedJob(conn,jobID,bnum)
 
     if request.method == 'POST':
         # if user wants to add a review for job --> redirects to review form
@@ -255,20 +262,7 @@ def job(jobID):
                                    locations=locations,
                                    reviews=reviews,
                                    src=src,
-                                   picture_exists=exists,
-                                   saved = None)
-        #user saves a job --> create a table entry with the saved job and bnum
-        if request.form['submit'] == 'Save':
-            print "saved"
-            save.saveJob(conn,jobID,bnum)
-
-        #user unsaves a job --> remove that entry from the saves table
-        if request.form['submit'] == 'Unsave':
-            print "unsaved"
-            save.deleteSavedJob(conn,jobID,bnum)
-
-
-
+                                   picture_exists=exists)
 
 @app.route('/addNewReview/<jobID>', methods=['GET','POST'])
 def addNewReview(jobID):
@@ -360,12 +354,9 @@ def profile():
     #loading in saves
     savedJobs = list()
     jobIDs = getSavedJobs (conn,bnum)
-
     if jobIDs is not None:
         for jobID in jobIDs:
-            savedJobs.append(getJobInfo(jobID))
-    else:
-        savedJobs = None
+            savedJobs.append(getJobInfo(jobID)
 
     if request.method == 'GET':
         return render_template('profile.html',

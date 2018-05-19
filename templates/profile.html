@@ -30,11 +30,11 @@
   <br>
 
   <h1> Favorites </h1>
-  {% if faved %}
+  {% if saved %}
   <div id="opportunities">
-    {% for faves in faved %}
-      <p><a class = 'opp_listing'href="{{url_for('job',jobID=opportunity.jobID)}}">
-        ID:{{faves.jobID}}//{{faves.positionName}}//{{faves.companyName}}</a></p>
+    {% for save in saved %}
+      <p><a class = 'opp_listing'href="{{url_for('job',jobID=save.jobID)}}">
+        ID:{{save.jobID}}//{{save.positionName}}//{{save.companyName}}</a></p>
     {% endfor %}
     {% else %}
       <p class = 'prof_text'> No favorites </p>

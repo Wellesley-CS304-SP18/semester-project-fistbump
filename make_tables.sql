@@ -1,5 +1,6 @@
 USE fistbump_db;
 
+DROP TABLE IF EXISTS saves;
 DROP TABLE IF EXISTS prof_pic;
 DROP TABLE IF EXISTS job_location;
 DROP TABLE IF EXISTS job_review;
@@ -48,7 +49,8 @@ CREATE TABLE job_location (jobID int NOT NULL,
                            FOREIGN KEY (jobID) REFERENCES job_opp(jobID) ON DELETE CASCADE,
 			   FOREIGN KEY (city) REFERENCES city(city) ON DELETE RESTRICT) ENGINE=InnoDB;
 
-CREATE TABLE favorites (bnum varchar(12) NOT NULL,
-                 	jobID int NOT NULL,
-			PRIMARY KEY (bnum, jobID)) ENGINE=InnoDB;
-
+CREATE TABLE saves (bnum varchar(12) NOT NULL,
+                 	jobID int(11) NOT NULL,
+									FOREIGN KEY (bnum) REFERENCES user_id(bnum) ON DELETE RESTRICT,
+									FOREIGN KEY (jobID) REFERENCES job_opp(jobID) ON DELETE RESTRICT,
+									PRIMARY KEY (bnum, jobID)) ENGINE=InnoDB;
