@@ -4,6 +4,8 @@
 import sys
 import MySQLdb
 import dbconn2
+from werkzeug import secure_filename
+
 
 #-------------------------------------------------------------------------------
 # add a profile pic
