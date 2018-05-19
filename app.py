@@ -13,7 +13,7 @@ CAS(app)
 
 import sys, os, random
 import dbconn2
-import bcrypt
+import datetime
 import view, opp, search, rev, profile
 from view import *
 from opp import *
@@ -34,8 +34,9 @@ app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-db = 'fistbump_db'
-#db='lluo2_db'
+#db = 'fistbump_db'
+db='lluo2_db'
+
 # ------------------------------------------------------------------------------
 # ROUTES
 
@@ -352,7 +353,7 @@ def addNewReview(jobID):
                 flash("A review already exists for this job and user.")
             else:
                 flash("Review added successfully.")
-            return redirect(url_for('job', jobName=jobName))
+            return redirect(url_for('job', jobID=jobID))
 
 # editting a review user made
 @app.route('/editReview/<jobID>', methods=['GET','POST'])
