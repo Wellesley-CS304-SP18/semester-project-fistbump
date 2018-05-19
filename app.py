@@ -14,7 +14,7 @@ CAS(app)
 import sys, os, random
 import dbconn2
 import bcrypt
-import view, opp, search, rev
+import view, opp, search, rev, profile
 from view import *
 from opp import *
 from search import *
@@ -34,8 +34,8 @@ app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-db = 'fistbump_db'
-
+#db = 'fistbump_db'
+db='lluo2_db'
 # ------------------------------------------------------------------------------
 # ROUTES
 
@@ -58,8 +58,9 @@ def login_pg():
     if request.method == 'GET':
         return render_template('login.html')
 
-@app.route('/home/', methods=['GET', 'POST'])
-def home():
+# only displaying home page
+@app.route('/home/')
+def displayHome():
 
     conn = dbconn2.connect(DSN)
 
@@ -83,44 +84,67 @@ def home():
         src,exists = getSrc(conn, bnum)
 
 
-    if request.method == 'GET':
-        return render_template('home.html',
+    return render_template('home.html',
                                uName = username,
                                opportunities=getOpps(conn),
                                picture_exists=exists,
                                src=src)
 
-    if request.method == 'POST':
-        # add a new job opportunity
-        if request.form['submit'] == "Add New Job":
-            return redirect(url_for('addNewJob'))
+@app.route('/home/', methods=['POST'])
+def home():
 
-        # filter through all opportunities
-        if request.form['submit'] == "Filter":
-            # try & except (do not need to check something for all filters)
-            try:
-                classPref = request.form['classPref']
-            except:
-                classPref = False
-            try:
-                jobType = request.form['jobType']
-            except:
-                jobType = False
-            try:
-                jobTitle = request.form['jobTitle']
-            except:
-                jobTitle = False
-            try:
-                season = request.form['season']
-            except:
-                season = False
+    conn = dbconn2.connect(DSN)
 
-            jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
-            return render_template('home.html',
-                                   uName=username,
-                                   opportunities=jobs,
-                                   src=src,
-                                   picture_exists=exists)
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    else:
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
+
+    if 'CAS_ATTRIBUTES' in session:
+        attribs = session['CAS_ATTRIBUTES']
+        if 'bnum' in session:
+            bnum = session['bnum']
+        else:
+            session['bnum'] = attribs['cas:id']
+            bnum = session['bnum']
+            firstname = attribs['cas:givenName']
+            username = attribs['cas:sAMAccountName']
+            opp.addUser(conn, bnum, firstname, username)
+
+        src = ""
+        getSrc(conn, bnum, src)
+
+    # add new job
+    if request.form['submit'] == "Add New Job":
+        return redirect(url_for('addNewJob'))
+
+    # filter through all opportunities
+    if request.form['submit'] == "Filter":
+        # try & except (do not need to check something for all filters)
+        try:
+            classPref = request.form['classPref']
+        except:
+            classPref = False
+        try:
+            jobType = request.form['jobType']
+        except:
+            jobType = False
+        try:
+            jobTitle = request.form['jobTitle']
+        except:
+            jobTitle = False
+        try:
+            season = request.form['season']
+        except:
+            season = False
+
+        jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
+        return render_template('home.html',
+                               uName=username,
+                               opportunities=jobs,
+                               src=src,
+                               picture_exists=exists)
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
@@ -428,7 +452,7 @@ if __name__ == '__main__':
         port = int(sys.argv[1])
         assert(port>1024)
     else:
-        port = 1950
+        port = 1947
     DSN = dbconn2.read_cnf()
     DSN['db'] = db
     app.debug = True
