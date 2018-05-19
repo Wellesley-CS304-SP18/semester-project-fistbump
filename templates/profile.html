@@ -33,11 +33,11 @@
   {% if saved %}
   <div id="opportunities">
     {% for save in saved %}
-      <p><a class = 'opp_listing'href="{{url_for('job',jobID=save.jobID)}}">
+      <p><a class= "opp_listing" href="{{url_for('job',jobID=save.jobID)}}">
         ID:{{save.jobID}}//{{save.positionName}}//{{save.companyName}}</a></p>
     {% endfor %}
     {% else %}
-      <p class = 'prof_text'> No favorites </p>
+      <p class="prof_text"> No favorites </p>
   {% endif %}
   </div>
 {% endblock %}
