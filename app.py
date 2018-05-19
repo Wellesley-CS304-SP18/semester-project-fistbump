@@ -14,7 +14,7 @@ CAS(app)
 import sys, os, random
 import dbconn2
 import bcrypt
-import view, opp, search, rev
+import view, opp, search, rev, profile
 from view import *
 from opp import *
 from search import *
@@ -33,8 +33,8 @@ app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_AFTER_LOGOUT'] = 'login_pg'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 
-db = 'fistbump_db'
-
+#db = 'fistbump_db'
+db='lluo2_db'
 # ------------------------------------------------------------------------------
 # ROUTES
 
@@ -79,9 +79,9 @@ def home():
             username = attribs['cas:sAMAccountName']
             opp.addUser(conn, bnum, firstname, username)
 
-        src = ""
-        getSrc(conn, bnum, src)
-
+    src = ""
+    getSrc(conn, bnum, src)
+    exists = profExists(conn,bnum)
 
     if request.method == 'GET':
         return render_template('home.html',
@@ -137,6 +137,7 @@ def addNewJob():
 
     src = ""
     getSrc(conn, bnum, src)
+    exists = profExists(conn,bnum)
 
     formErr = 'Please fill in the blank fields'
 
@@ -180,6 +181,7 @@ def addJobLocation(jobID):
 
     src = ""
     getSrc(conn, bnum, src)
+    exists = profExists(conn,bnum)
 
     if request.method == 'GET':
         cities = opp.allCities(conn)
@@ -219,13 +221,10 @@ def job(jobID):
     else:
         flash('Please login to view this page content.')
         return redirect(url_for('login_pg'))
-
+    
+    src = ""
+    getSrc(conn, bnum, src)
     exists = profExists(conn,bnum)
-    if exists == True:
-        filename = secure_filename(str(bnum)+'.jpeg')
-        src = url_for('pic',fname=filename)
-    else:
-        src = None
 
     # displays job info & reviews
     if request.method == 'GET':
@@ -279,6 +278,7 @@ def addNewReview(jobID):
 
     src = ""
     getSrc(conn, bnum, src)
+    exists = profExists(conn,bnum)
 
     if request.method == 'GET':
         return render_template('review_form.html',
@@ -317,6 +317,7 @@ def editReview(jobID):
 
     src = ""
     getSrc(conn, bnum, src)
+    exists = profExists(conn,bnum)
 
     if request.method == 'GET':
         rev = getRev(conn, bnum, jobID)
@@ -350,9 +351,10 @@ def profile():
         user = getUserInfo(conn, bnum)
         username = user['username']
 
-        src = ""
-        getSrc(conn, bnum, src)
-
+    src = ""
+    getSrc(conn, bnum, src)
+    exists = profExists(conn,bnum)
+    
     if request.method == 'GET':
         return render_template('profile.html',
                                user=user,
@@ -410,7 +412,7 @@ if __name__ == '__main__':
         port = int(sys.argv[1])
         assert(port>1024)
     else:
-        port = 1950
+        port = 1947
     DSN = dbconn2.read_cnf()
     DSN['db'] = db
     app.debug = True
