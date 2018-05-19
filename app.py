@@ -40,6 +40,9 @@ db = 'fistbump_db'
 
 @app.route('/', methods=['GET'])
 def landing():
+    # redirect to home if logged in already
+    if 'CAS_ATTRIBUTES' in session:
+        return redirect(url_for('home'))    
     return redirect(url_for('login_pg'))
 
 # login and register on the same html page
