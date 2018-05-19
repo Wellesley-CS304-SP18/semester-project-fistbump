@@ -14,7 +14,7 @@ CAS(app)
 import sys, os, random
 import dbconn2
 import bcrypt
-import view, opp, search, rev
+import view, opp, search, rev, profile
 from view import *
 from opp import *
 from search import *
@@ -57,17 +57,10 @@ def login_pg():
     if request.method == 'GET':
         return render_template('login.html')
 
-# only displaying home page
-@app.route('/home/')
-def displayHome():
+@app.route('/home/', methods=['GET', 'POST'])
+def home():
 
     conn = dbconn2.connect(DSN)
-
-    if 'CAS_USERNAME' in session:
-        username = session['CAS_USERNAME']
-    else:
-        flash('Please login to view this page content')
-        return redirect(url_for('login_pg'))
 
     if 'CAS_ATTRIBUTES' in session:
         attribs = session['CAS_ATTRIBUTES']
@@ -80,66 +73,50 @@ def displayHome():
             username = attribs['cas:sAMAccountName']
             opp.addUser(conn, bnum, firstname, username)
 
-        src = ""
-        profile.getSrc(conn, bnum, src)
+        exists = profExists(conn,bnum)
+        if exists == True:
+            filename = secure_filename(str(bnum)+'.jpeg')
+            src=url_for('pic',fname=filename)
 
-    return render_template('home.html',
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    else:
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
+
+    if request.method == 'GET':
+        return render_template('home.html',
                                uName = username,
                                opportunities=getOpps(conn),
                                picture_exists=exists,
                                src=src)
 
-@app.route('/home/', methods=['POST'])
-def home():
+    if request.method == 'POST':
+        # add a new job opportunity
+        if request.form['submit'] == "Add New Job":
+            return redirect(url_for('addNewJob'))
 
-    conn = dbconn2.connect(DSN)
+        if request.form['submit'] == "Filter":
+            # try & except (do not need to check something for all filters)
+            try:
+                classPref = request.form['classPref']
+            except:
+                classPref = False
+            try:
+                jobType = request.form['jobType']
+            except:
+                jobType = False
+            try:
+                jobTitle = request.form['jobTitle']
+            except:
+                jobTitle = False
+            try:
+                season = request.form['season']
+            except:
+                season = False
 
-    if 'CAS_USERNAME' in session:
-        username = session['CAS_USERNAME']
-    else:
-        flash('Please login to view this page content')
-        return redirect(url_for('login_pg'))
-
-    if 'CAS_ATTRIBUTES' in session:
-        attribs = session['CAS_ATTRIBUTES']
-        if 'bnum' in session:
-            bnum = session['bnum']
-        else:
-            session['bnum'] = attribs['cas:id']
-            bnum = session['bnum']
-            firstname = attribs['cas:givenName']
-            username = attribs['cas:sAMAccountName']
-            opp.addUser(conn, bnum, firstname, username)
-
-        src = ""
-        getSrc(conn, bnum, src)
-
-    # add new job
-    if request.form['submit'] == "Add New Job":
-        return redirect(url_for('addNewJob'))
-
-    # filter through all opportunities
-    if request.form['submit'] == "Filter":
-        # try & except (do not need to check something for all filters)
-        try:
-            classPref = request.form['classPref']
-        except:
-            classPref = False
-        try:
-            jobType = request.form['jobType']
-        except:
-            jobType = False
-        try:
-            jobTitle = request.form['jobTitle']
-        except:
-            jobTitle = False
-        try:
-            season = request.form['season']
-        except:
-            season = False
-
-        jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
-        return render_template('home.html',
+            jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
+            return render_template('home.html',
                                uName=username,
                                opportunities=jobs,
                                src=src,
