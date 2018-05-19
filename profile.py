@@ -32,9 +32,9 @@ def profExists(conn, bnum):
 
 #does all the checking of the database for a prof and gives the proper src for the html
 def getSrc(conn, bnum, src):
-exists = profExists(conn,bnum)
-if exists == True:
-    filename = secure_filename(str(bnum)+'.jpeg')
-    src=url_for('pic',fname=filename)
-else:
-    src=None
+    exists = profExists(conn,bnum)
+    if exists == True:
+        filename = secure_filename(str(bnum)+'.jpeg')
+        src=url_for('pic',fname=filename)
+    else:
+        src=None

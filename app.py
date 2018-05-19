@@ -42,7 +42,7 @@ db = 'fistbump_db'
 def landing():
     # redirect to home if logged in already
     if 'CAS_ATTRIBUTES' in session:
-        return redirect(url_for('home'))    
+        return redirect(url_for('home'))
     return redirect(url_for('login_pg'))
 
 # login and register on the same html page
@@ -57,7 +57,39 @@ def login_pg():
     if request.method == 'GET':
         return render_template('login.html')
 
-@app.route('/home/', methods=['GET', 'POST'])
+# only displaying home page
+@app.route('/home/')
+def displayHome():
+
+    conn = dbconn2.connect(DSN)
+
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    else:
+        flash('Please login to view this page content')
+        return redirect(url_for('login_pg'))
+
+    if 'CAS_ATTRIBUTES' in session:
+        attribs = session['CAS_ATTRIBUTES']
+        if 'bnum' in session:
+            bnum = session['bnum']
+        else:
+            session['bnum'] = attribs['cas:id']
+            bnum = session['bnum']
+            firstname = attribs['cas:givenName']
+            username = attribs['cas:sAMAccountName']
+            opp.addUser(conn, bnum, firstname, username)
+
+        src = ""
+        profile.getSrc(conn, bnum, src)
+
+    return render_template('home.html',
+                               uName = username,
+                               opportunities=getOpps(conn),
+                               picture_exists=exists,
+                               src=src)
+
+@app.route('/home/', methods=['POST'])
 def home():
 
     conn = dbconn2.connect(DSN)
@@ -82,45 +114,36 @@ def home():
         src = ""
         getSrc(conn, bnum, src)
 
+    # add new job
+    if request.form['submit'] == "Add New Job":
+        return redirect(url_for('addNewJob'))
 
-    if request.method == 'GET':
+    # filter through all opportunities
+    if request.form['submit'] == "Filter":
+        # try & except (do not need to check something for all filters)
+        try:
+            classPref = request.form['classPref']
+        except:
+            classPref = False
+        try:
+            jobType = request.form['jobType']
+        except:
+            jobType = False
+        try:
+            jobTitle = request.form['jobTitle']
+        except:
+            jobTitle = False
+        try:
+            season = request.form['season']
+        except:
+            season = False
+
+        jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
         return render_template('home.html',
-                               uName = username,
-                               opportunities=getOpps(conn),
-                               picture_exists=exists,
-                               src=src)
-
-    if request.method == 'POST':
-        # add a new job opportunity
-        if request.form['submit'] == "Add New Job":
-            return redirect(url_for('addNewJob'))
-
-        # filter through all opportunities
-        if request.form['submit'] == "Filter":
-            # try & except (do not need to check something for all filters)
-            try:
-                classPref = request.form['classPref']
-            except:
-                classPref = False
-            try:
-                jobType = request.form['jobType']
-            except:
-                jobType = False
-            try:
-                jobTitle = request.form['jobTitle']
-            except:
-                jobTitle = False
-            try:
-                season = request.form['season']
-            except:
-                season = False
-
-            jobs = search.searchJobs(conn, classPref, jobTitle, jobType, season)
-            return render_template('home.html',
-                                   uName=username,
-                                   opportunities=jobs,
-                                   src=src,
-                                   picture_exists=exists)
+                               uName=username,
+                               opportunities=jobs,
+                               src=src,
+                               picture_exists=exists)
 
 @app.route('/addNewJob/', methods=['GET','POST'])
 def addNewJob():
