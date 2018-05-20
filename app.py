@@ -324,7 +324,8 @@ def addNewReview(jobID):
 
     conn = dbconn2.connect(DSN)
     job = getJobName(conn,jobID)
-    jobName = job['positionName']
+    
+    = job['positionName']
     if 'bnum' in session:
         bnum = session['bnum']
     if 'CAS_USERNAME' in session:
@@ -376,10 +377,10 @@ def editReview(jobID):
         rev = getRev(conn, bnum, jobID)
         if rev is None:
             flash('You do not have a review for this job.')
-            return redirect(url_for('job', jobName=jobName))
+            return redirect(url_for('job', jobID=jobID))
         return render_template('update_review.html',
                                uName=username,
-                               jobName=jobName,
+                               jobID=jobID,
                                jobYear=rev['jobYear'],
                                review=rev['review'],
                                src=src,
@@ -391,7 +392,7 @@ def editReview(jobID):
             review = request.form[('review')]
 
             update = updateJobRev(conn, bnum, jobID, jobYear, review)
-            return redirect(url_for('job', jobName=jobName))
+            return redirect(url_for('job', jobID=jobID))
 
 
 @app.route('/profile/', methods=["GET", "POST"])
